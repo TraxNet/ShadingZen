@@ -2,17 +2,17 @@
 
 ShadingZen is a complete game engine targeting android devices supporting OpenGL 2.0 and licensed under the permissive MIT License. It was designed to be easy to use and extend, trying to offer the same good ideas that made Cocos2D so popular. Behind the scenes the concept of parallel tasks is exploited to take full advantage of modern  multicore mobile CPUs. 
 
-It has been used comercially in [Kids 3D Cube](https://play.google.com/store/apps/details?id=org.traxnet.kidscube) a logic game for kids available at Google Play.
+It has been used commercially in [Kids 3D Cube](https://play.google.com/store/apps/details?id=org.traxnet.kidscube) a logic game for kids available at Google Play.
 
 ## Easy to use
 
-The setup required to start working with the engine has been reduced to the creation of an Android Activity and a few more clases that hold the game logic. ShadingZen provides a GLSurfaceView that has been fine tuned to support different display properties and hardware. 
+The setup required to start working with the engine has been reduced to the creation of an Android Activity and a few more classes that hold the game logic. ShadingZen provides a GLSurfaceView that has been fine tuned to support different display properties and hardware. 
 
 ## Future
 
-The are some features like shadow casting and post processing effects that require a few underlaying changes to the library. It also lacks documentation and is probably the area that requires more effort to make ShadingZen shine.
+The are some features like shadow casting and post processing effects that require a few underlying changes to the library. It also lacks documentation and is probably the area that requires more effort to make ShadingZen shine.
 
-Some worked is planned to offer a toolchain to work with 3DS Studio MAX and offer some basic artist workflow. The library currently can work with static .obj meshes.
+Some worked is planned to offer a tool-chain to work with 3DS Studio MAX and offer some basic artist workflow. The library currently can work with static .obj meshes.
 
 ## License
 
