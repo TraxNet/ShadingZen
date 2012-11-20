@@ -109,7 +109,7 @@ public class RenderModelTask extends RenderTask {
 		
 		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, _modelMatrix.getAsArray3x3(), 0);
 		
-		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("eye_point"), 1, _renderService.getCameraPosition().getAsArray(), 0);
+		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("eye_point"), 1, _renderService.getCamera().getPosition().getAsArray(), 0);
 		
 		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("diffuse_color"), 1, _diffuseColor.getAsArray(), 0);
 		

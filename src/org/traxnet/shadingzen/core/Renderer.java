@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,6 +25,7 @@ import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 import org.traxnet.shadingzen.rendertask.ChangeClearColorRenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTask;
+import org.traxnet.shadingzen.rendertask.RenderTaskBatch;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -50,12 +52,14 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	ShadersProgram _lastProgram;
 	
 	Object _renderTasksLock;
-	Stack<RenderTask> _currentRenderTasks;
+	//Stack<RenderTask> _currentRenderTasks;
+	LinkedList<RenderTaskBatch> _renderBatchesBuffer;
+	RenderTaskBatch _currentBatch = null;
 	long _frameTime = 0;
 	Vector4 _clearColor;
 	boolean _forceReload = false;
 	boolean _abortedByException = false;
-	RenderTask [] _tasksArray;
+	RenderTaskBatch [] _tasksArray;
 	RenderTask _backgroundRenderTask = null;
 	
 	
@@ -63,7 +67,8 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	
 	public Renderer(Context context){
 		_shapes = new HashMap<String, Shape>();
-		_currentRenderTasks = new Stack<RenderTask>();
+		//_currentRenderTasks = new Stack<RenderTask>();
+		_renderBatchesBuffer = new LinkedList<RenderTaskBatch>();
 		_context = context;
 		_renderTasksLock = new Object();
 		_isContentReady = false;
@@ -72,8 +77,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		
 		_orthoVertsMaxBuffSize = 400*6; // 400 verts (coords + UV)
 		_orthoVertsBuffer = new float[_orthoVertsMaxBuffSize];
-		
-		_tasksArray = new RenderTask[25];
+		_tasksArray = new RenderTaskBatch[1];
 	}
 	
 	
@@ -102,15 +106,15 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			return;
 		
 		try{
-			int num_tasks = 0;
+			int num_batches = 0;
 			long delta_time = System.nanoTime() - _frameTime;
 			
 			TaskManager.getSharedInstance().synchronizeTasks();
 			
 			synchronized(_renderTasksLock){
-				_tasksArray = _currentRenderTasks.toArray(_tasksArray);
-				num_tasks = _currentRenderTasks.size();
-				_currentRenderTasks.clear();
+				_tasksArray = _renderBatchesBuffer.toArray(_tasksArray);
+				num_batches = _renderBatchesBuffer.size();
+				_renderBatchesBuffer.clear();
 			}
 			
 			TaskManager.getSharedInstance().distributeTasks(delta_time);
@@ -127,9 +131,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			
 			_yaw += 0.5*3.14/360;
 			
-			_viewMatrix = _currentCamera.getViewMatrix().getAsArray();
-			_projectionMatrix = _currentCamera.getProjectionMatrix().getAsArray();
-			_orthoProjectionMatrix = _currentCamera.getOrthoProjectionMatrix().getAsArray();
+			this.computeMVPMatricesForCurrentCamera();
 	
 			// Clean our drawing buffers
 			
@@ -148,16 +150,15 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			//GLES20.glCullFace(GLES20.GL_BACK);
 			
 			
-			for(int i = 0; i < num_tasks; i++){
+			for(int i = 0; i < num_batches; i++){
 				
-				RenderTask task = _tasksArray[i];
+				RenderTaskBatch batch = _tasksArray[i];
 				
-				if(!task.onDriverLoad(_context))
+				if(!batch.onDriverLoad(_context))
 					continue;
 							
-				// Let the shape draw itself
-				task.onDraw(this);
-				checkGlError("draw");
+				batch.onDraw(this);
+			
 			}
 			
 			ResourcesManager.getSharedInstance().doCleanUp();
@@ -247,15 +248,15 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		_currentCamera = camera;
 	}
 	
+	public void computeMVPMatricesForCurrentCamera(){
+		_viewMatrix = _currentCamera.getViewMatrix().getAsArray();
+		_projectionMatrix = _currentCamera.getProjectionMatrix().getAsArray();
+		_orthoProjectionMatrix = _currentCamera.getOrthoProjectionMatrix().getAsArray();
+	}
+	
 	public void pushTask(RenderTask task){
 		synchronized(_renderTasksLock){
-			_currentRenderTasks.push(task);
-		}
-	}
-
-	public void removeTask(RenderTask task){
-		synchronized(_renderTasksLock){
-			_currentRenderTasks.remove(task);
+			_currentBatch.AddTask(task);
 		}
 	}
 	
@@ -352,17 +353,25 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	
 	
 	@Override
-	public Vector3 getCameraPosition()
-	{
-		return _currentCamera.getPosition();
-	}
-	
-	@Override
 	public void addRenderTask(RenderTask task)
 	{
 		synchronized(_renderTasksLock){
-			_currentRenderTasks.push(task);
+			if(null == _currentBatch)
+			{
+				Log.e("ShadingZen", "Renderer.addRenderTask: no current batch available");
+				return;
+			}
+			_currentBatch.AddTask(task);
 		}
+	}
+	
+	@Override
+	public void pushRenderBatch(RenderTaskBatch batch) {
+		synchronized(_renderTasksLock){
+			_renderBatchesBuffer.add(batch);
+			_currentBatch = batch;
+		}
+		
 	}
 	
 	@Override
@@ -390,4 +399,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	public int getCurrentOrthoVertsIndex(){
 		return _orthoVertsCurrentIndex;
 	}
+
+
+	
 }

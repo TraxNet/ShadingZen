@@ -55,7 +55,7 @@ public abstract class Pawn extends Collider {
 		
 		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, rot.getAsArray3x3(), 0);
 		
-		GLES20.glUniform3fv(_program.getUniformLocation("eye_point"), 1, renderer.getCameraPosition().getAsArray(), 0);
+		GLES20.glUniform3fv(_program.getUniformLocation("eye_point"), 1, renderer.getCamera().getPosition().getAsArray(), 0);
 		
 	}
 }

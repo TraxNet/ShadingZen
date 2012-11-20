@@ -9,6 +9,7 @@ import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.EntityManager.EntityHolder;
 import org.traxnet.shadingzen.core2d.Node2d;
 import org.traxnet.shadingzen.math.Matrix4;
+import org.traxnet.shadingzen.rendertask.RenderSceneRenderBatch;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -162,6 +163,15 @@ public final class Engine implements Runnable {
 		Scene scene = getCurrentScene();
 		if(null != scene){
 			EntityManager entity_manager = scene.getEntityManager();
+			
+			try {
+				RenderSceneRenderBatch render_scene_batch = RenderSceneRenderBatch.createFromPool();
+				renderer.pushRenderBatch(render_scene_batch);
+			} catch (InstantiationException e) {
+				return;
+			} catch (IllegalAccessException e) {
+				return;
+			}
 			
 			scene.onDraw(renderer);
 			
