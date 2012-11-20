@@ -2,7 +2,7 @@
 
 ShadingZen is a complete game engine targeting android devices supporting OpenGL 2.0 and licensed under the permissive MIT License. It was designed to be easy to use and extend, trying to offer the same good ideas that made Cocos2D so popular. Behind the scenes the concept of parallel tasks is exploited to take full advantage of modern  multicore mobile CPUs. 
 
-It has been used comercially in [Kids 3D Cube](https://play.google.com) a logic game for kids available at Google Play.
+It has been used comercially in [Kids 3D Cube](https://play.google.com/store/apps/details?id=org.traxnet.kidscube) a logic game for kids available at Google Play.
 
 ## Easy to use
 
