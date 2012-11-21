@@ -39,6 +39,7 @@ public final class Engine implements Runnable {
     private int _currentFrameId = 0;  
     private ShadersProgram _debugWireframeProgram;  
     private GameInfo _currentGameInfo = null;
+    private Vector<IShadowCaster> _cachedShadowCasters = null;
     
     static Engine globalInstance = null;
     public static Engine getSharedInstance(){
@@ -53,6 +54,7 @@ public final class Engine implements Runnable {
         deltaX = 0;  
         deltaY = 0;
         _logicThread = new Thread(this);
+        _cachedShadowCasters = new Vector<IShadowCaster>();
         
         globalInstance = this;
     }
@@ -164,24 +166,47 @@ public final class Engine implements Runnable {
 		if(null != scene){
 			EntityManager entity_manager = scene.getEntityManager();
 			
-			try {
-				RenderSceneRenderBatch render_scene_batch = RenderSceneRenderBatch.createFromPool();
-				renderer.pushRenderBatch(render_scene_batch);
-			} catch (InstantiationException e) {
-				return;
-			} catch (IllegalAccessException e) {
-				return;
-			}
+			renderSceneAsNormal(renderer, scene, entity_manager);
 			
-			scene.onDraw(renderer);
-			
-			float[] scene_model_matrix = scene.getLocalModelMatrix().getAsArray();
-			
-			drawHierarchy(renderer, entity_manager, scene_model_matrix);
+			// TODO: We don't need to update shadowmap each frame
+			renderSceneShadowMap(renderer);
 		}
 		
 		if(null != _currentGameInfo)
 			_currentGameInfo.onPostDraw(renderer);
+	}
+	
+	private void renderSceneShadowMap(RenderService renderer){
+		for(IShadowCaster caster : _cachedShadowCasters){
+			try{ 
+				Entity entity = (Entity)caster;
+				if(entity.isPendingDestroy() || !caster.castsShadow())
+					continue;
+				
+				caster.onDepthMapDraw(renderer);
+			} catch(Exception ex){
+				Log.e("ShadingZen", "Exception found while rendering as shadow caster entity:" + ((Entity)caster).getNameId(), ex);
+			}
+		}
+	}
+
+	private void renderSceneAsNormal(RenderService renderer, Scene scene,
+			EntityManager entity_manager) {
+		pushNewRenderSceneBatch(renderer);
+		scene.onDraw(renderer);
+		float[] scene_model_matrix = scene.getLocalModelMatrix().getAsArray();		
+		drawHierarchy(renderer, entity_manager, scene_model_matrix);
+	}
+
+	private void pushNewRenderSceneBatch(RenderService renderer) {
+		try {
+			RenderSceneRenderBatch render_scene_batch = RenderSceneRenderBatch.createFromPool();
+			renderer.pushRenderBatch(render_scene_batch);
+		} catch (InstantiationException e) {
+			
+		} catch (IllegalAccessException e) {
+			
+		}
 	}
 	
 	public void drawHierarchy(RenderService renderer, EntityManager entity_manager, float[] scene_model_matrix){
@@ -214,6 +239,10 @@ public final class Engine implements Runnable {
 						ordered_list.add(0, holder);
 					else
 						ordered_list.add(holder);
+					
+					// Update cached actors 
+					if(IShadowCaster.class.isInstance(entity))
+						_cachedShadowCasters.add((IShadowCaster)entity);
 				} else {
 					ordered_list.add(holder);
 				}

@@ -52,25 +52,25 @@ public class DirectionalLight extends Actor implements LightEmitter {
 
 	@Override
 	protected void onUpdate(float deltaTime) {
-		// TODO Auto-generated method stub
+		// Put your animated lighting effect here 
 		
 	}
 
 	@Override
 	public void onDraw(RenderService renderer) throws Exception {
-		// TODO Auto-generated method stub
+		// Would be a good place to render a flare effect
 		
 	}
 
 	@Override
 	public void onLoad() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void onUnload() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

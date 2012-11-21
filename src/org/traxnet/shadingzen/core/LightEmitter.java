@@ -1,7 +1,5 @@
 package org.traxnet.shadingzen.core;
 
-import org.traxnet.shadingzen.math.Vector3;
-
 public interface LightEmitter {
 	
 	public enum ShadowCastingType {
