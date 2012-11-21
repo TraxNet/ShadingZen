@@ -12,7 +12,7 @@ The setup required to start working with the engine has been reduced to the crea
 
 The are some features like shadow casting and post processing effects that require a few underlying changes to the library. It also lacks documentation and is probably the area that requires more effort to make ShadingZen shine.
 
-Some worked is planned to offer a tool-chain to work with 3DS Studio MAX and offer some basic artist workflow. The library currently can work with static .obj meshes.
+Something is planned to offer a tool-chain to work with 3DS Studio MAX and offer some basic artist workflow. The library currently can use static .obj meshes.
 
 ## License
 
