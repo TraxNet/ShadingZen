@@ -11,7 +11,7 @@ import org.traxnet.shadingzen.core.RenderBuffer;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ResourcesManager;
 import org.traxnet.shadingzen.core.ShadersProgram;
-import org.traxnet.shadingzen.core.Texture;
+import org.traxnet.shadingzen.core.BitmapTexture;
 import org.traxnet.shadingzen.rendertask.RenderTask;
 
 import android.content.Context;
@@ -24,7 +24,7 @@ public class QuadAtlas extends Node2d {
 	TreeSet<Quad> _orderedQuads;
 	int _maxQuads;
 	boolean _needsBufferUpdate = false;
-	Texture _texture;
+	BitmapTexture _texture;
 	int _blendSrc, _blendDst;
 	
 	/*
@@ -37,11 +37,11 @@ public class QuadAtlas extends Node2d {
 	}
 	
 	public void init(int max_quads, String texture_id, int texture_resource_id){
-		_texture = (Texture) ResourcesManager.getSharedInstance().factory(Texture.class, (Entity)this, texture_id, texture_resource_id, new Texture.Parameters());
+		_texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, texture_id, texture_resource_id, new BitmapTexture.Parameters());
 		init(max_quads, _texture);
 	}
 	
-	public void init(int max_quads, Texture texture){
+	public void init(int max_quads, BitmapTexture texture){
 		ShadersProgram program = (ShadersProgram)ResourcesManager.getSharedInstance().factory(ShadersProgram.class, (Entity)this, "QuadAtlasShader", 0);   
 		if(!program.isProgramDefined()){
 			program.setName("QuadAtlasShader");
@@ -53,12 +53,12 @@ public class QuadAtlas extends Node2d {
 		this.internalInit(max_quads, texture, program);
 	}
 	
-	public void initWithProgram(int max_quads, Texture texture, ShadersProgram program){
+	public void initWithProgram(int max_quads, BitmapTexture texture, ShadersProgram program){
 		registerResource(program);
 		this.internalInit(max_quads, texture, program);
 	}
 	
-	void internalInit(int max_quads, Texture texture, ShadersProgram program){
+	void internalInit(int max_quads, BitmapTexture texture, ShadersProgram program){
 		_renderBuffer = (RenderBuffer) ResourcesManager.getSharedInstance().factory(RenderBuffer.class, (Entity)this, UUID.randomUUID().toString());
 		_renderBuffer.init(max_quads*4*6, GLES20.GL_STATIC_DRAW, max_quads*6, GLES20.GL_STATIC_DRAW);
 		//ResourcesManager.getSharedInstance().registerResource(_renderBuffer, this, null);
@@ -149,7 +149,7 @@ public class QuadAtlas extends Node2d {
 	
 	
 	class QuadRenderTask extends RenderTask {
-		Texture _texture;
+		BitmapTexture _texture;
 		RenderBuffer _buffer;
 		int _offset, _numQuads;
 		Node2d _owner;
@@ -163,7 +163,7 @@ public class QuadAtlas extends Node2d {
 		 * @param quad_offset The offset inside the elements buffer (faces) from which we start rendering this set of quads
 		 * @param buffer RenderBuffer with buffers for verts and elements
 		 */
-		public QuadRenderTask(Texture texture, int quad_offset, RenderBuffer buffer, Node2d owner){
+		public QuadRenderTask(BitmapTexture texture, int quad_offset, RenderBuffer buffer, Node2d owner){
 			_texture = texture;
 			_buffer = buffer;
 			_offset = quad_offset;

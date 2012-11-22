@@ -26,7 +26,7 @@ public abstract class Actor extends Entity {
 	
 	protected Shape _mesh;
 	protected ShadersProgram _program;
-	protected Texture _texture;
+	protected BitmapTexture _texture;
 	protected Actor _parent;
 	
 	public Actor(){

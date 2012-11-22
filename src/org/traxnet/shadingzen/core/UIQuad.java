@@ -4,7 +4,7 @@ public class UIQuad implements Comparable<Object>{
 	float _x, _y;
 	float _width, _height;
 	float _u1, _u2, _v1, _v2;
-	Texture _texture;
+	BitmapTexture _texture;
 	
 	/*
 	 * UI Quad rendered as an orthogonal quad
@@ -19,7 +19,7 @@ public class UIQuad implements Comparable<Object>{
 	 * @param u2 Right U texture coordinate
 	 * @param v2 Bottom V texture coordinate
 	 */
-	public UIQuad(Texture texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2){
+	public UIQuad(BitmapTexture texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2){
 		_x = x;
 		_y = y;
 		_width = width;
@@ -32,7 +32,7 @@ public class UIQuad implements Comparable<Object>{
 		_texture = texture;
 	}
 	
-	Texture getTexture(){
+	BitmapTexture getTexture(){
 		return _texture;
 	}
 	

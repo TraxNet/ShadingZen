@@ -6,14 +6,14 @@ import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.Entity;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ResourcesManager;
-import org.traxnet.shadingzen.core.Texture;
+import org.traxnet.shadingzen.core.BitmapTexture;
 
 import android.content.Context;
 
 public class FontPage extends Entity{
 	short _id = 0;
 	String _file = null;
-	Texture _texture;
+	BitmapTexture _texture;
 	
 	public void parseTokens(StringTokenizer tokenizer, Context context, int texture_res){
 		while(tokenizer.hasMoreTokens()){
@@ -30,12 +30,12 @@ public class FontPage extends Entity{
 		//String id = _file.substring(0, _file.lastIndexOf('.'));
 		//int res_id = context.getResources().getIdentifier(id, "raw", packageid);
 
-		Texture.Parameters params = new Texture.Parameters();
-		_texture = (Texture) ResourcesManager.getSharedInstance().factory(Texture.class, (Entity)this, _file, texture_res, params);
+		BitmapTexture.Parameters params = new BitmapTexture.Parameters();
+		_texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, _file, texture_res, params);
 		
 	}
 	
-	public Texture getTexture(){
+	public BitmapTexture getTexture(){
 		return _texture;
 	}
 	

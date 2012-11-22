@@ -18,7 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.R.raw;
-import org.traxnet.shadingzen.core.Texture.TextureType;
+import org.traxnet.shadingzen.core.BitmapTexture.TextureType;
 import org.traxnet.shadingzen.core.Engine;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Vector3;
@@ -133,6 +133,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			
 			this.computeMVPMatricesForCurrentCamera();
 	
+			/*
 			// Clean our drawing buffers
 			
 			// On some mobiles, glDepthMask(true) is needed for the depth buffer to be cleared correctly
@@ -148,7 +149,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			// TODO: Ensure we are not changing this during the frame and move
 			// all this call to the setup-engine step
 			//GLES20.glCullFace(GLES20.GL_BACK);
-			
+			*/
 			
 			for(int i = 0; i < num_batches; i++){
 				
@@ -260,9 +261,12 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		}
 	}
 	
-	
 	public void setBackgroundRenderTask(RenderTask task){
 		_backgroundRenderTask = task;
+	}
+	
+	public RenderTask getBackgroundRenderTask(){
+		return _backgroundRenderTask;
 	}
 	
 	/// Private methods ///////////////////

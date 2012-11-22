@@ -11,7 +11,7 @@ public class TestEntity extends Collider {
 	OBJMesh _mesh;
 	ShadersProgram _program;
 	Renderer _openglRenderer;
-	Texture _texture;
+	BitmapTexture _texture;
 	float _rot;
 	
 	public TestEntity(){
@@ -22,8 +22,8 @@ public class TestEntity extends Collider {
 		_program.attachVertexShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_simple_vertex));
         _program.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_simple_fragment));
         _mesh.attachProgram(_program);
-        Texture.Parameters params = new Texture.Parameters();
-        _texture = (Texture) ResourcesManager.getSharedInstance().factory(Texture.class, (Entity)this, "Teture", R.raw.alpha_tex, params);
+        BitmapTexture.Parameters params = new BitmapTexture.Parameters();
+        _texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, "Teture", R.raw.alpha_tex, params);
         
 	}
 	

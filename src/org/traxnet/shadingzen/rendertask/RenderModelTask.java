@@ -4,7 +4,7 @@ import org.traxnet.shadingzen.core.Model;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.core.Shape;
-import org.traxnet.shadingzen.core.Texture;
+import org.traxnet.shadingzen.core.BitmapTexture;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Vector4;
 
@@ -16,12 +16,12 @@ public class RenderModelTask extends RenderTask {
 	Shape _shape;
 	Matrix4 _modelMatrix;
 	RenderService _renderService;
-	Texture _texture;
+	BitmapTexture _texture;
 	float [] _mvp = new float[16];
 	float [] _mv = new float[16];
 	boolean _isDepthOnly = false;
 	
-	protected RenderModelTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, Texture texture){
+	protected RenderModelTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
 		_program = program;
 		_shape = shape;
 		_modelMatrix = model_matrix;
@@ -42,7 +42,7 @@ public class RenderModelTask extends RenderTask {
 		_blend = false;
 	}
 	
-	public static RenderModelTask buildTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, Texture texture){
+	public static RenderModelTask buildTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
 		return new RenderModelTask(program, shape, model_matrix, texture);	
 	}
 	public static RenderModelTask buildTask(Model model, Matrix4 model_matrix){

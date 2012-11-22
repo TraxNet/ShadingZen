@@ -18,6 +18,6 @@ public interface RenderService {
 	public Context getContext();
 	public void checkGlError(String op);
 	public void setClearColor(Vector4 color);
-	
+	public RenderTask getBackgroundRenderTask();
 	public void pushRenderBatch(RenderTaskBatch batch);
 }

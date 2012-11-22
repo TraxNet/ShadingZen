@@ -5,7 +5,7 @@ import android.opengl.GLES20;
 
 public class Model extends Entity {
 	ShadersProgram _program;
-	Texture _texture;
+	BitmapTexture _texture;
 	Shape _shape;
 	BBox _bbox;
 	
@@ -54,10 +54,10 @@ public class Model extends Entity {
 		return _program;
 	}
 
-	public void setTexture(Texture texture){
+	public void setTexture(BitmapTexture texture){
 		_texture = texture;
 	}
-	public Texture getTexture(){
+	public BitmapTexture getTexture(){
 		return _texture;
 	}
 	

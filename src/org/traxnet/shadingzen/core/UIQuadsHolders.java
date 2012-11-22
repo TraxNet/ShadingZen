@@ -95,7 +95,7 @@ public class UIQuadsHolders extends Entity {
 	}
 	
 	class UIQuadRenderTask extends RenderTask {
-		Texture _texture;
+		BitmapTexture _texture;
 		RenderBuffer _buffer;
 		int _offset, _numQuads;
 		
@@ -106,7 +106,7 @@ public class UIQuadsHolders extends Entity {
 		 * @param quad_offset The offset inside the elements buffer (faces) from which we start rendering this set of quads
 		 * @param buffer RenderBuffer with buffers for verts and elements
 		 */
-		public UIQuadRenderTask(Texture texture, int quad_offset, RenderBuffer buffer){
+		public UIQuadRenderTask(BitmapTexture texture, int quad_offset, RenderBuffer buffer){
 			_texture = texture;
 			_buffer = buffer;
 			_offset = quad_offset;

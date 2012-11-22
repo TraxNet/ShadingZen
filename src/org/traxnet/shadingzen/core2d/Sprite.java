@@ -4,14 +4,14 @@ import java.util.UUID;
 
 import org.traxnet.shadingzen.core.Entity;
 import org.traxnet.shadingzen.core.ResourcesManager;
-import org.traxnet.shadingzen.core.Texture;
+import org.traxnet.shadingzen.core.BitmapTexture;
 
 public class Sprite extends QuadAtlas {
 	public Sprite(){
 		
 	}
 	
-	public static Sprite spriteWithTexture(Node2d parent_node, Texture texture, String actor_name, short x, short y){
+	public static Sprite spriteWithTexture(Node2d parent_node, BitmapTexture texture, String actor_name, short x, short y){
 		Sprite node = (Sprite) parent_node.spawn(Sprite.class, actor_name);
 		node.init(1, texture);
 		
@@ -25,7 +25,7 @@ public class Sprite extends QuadAtlas {
 	public static Sprite spriteWithTexture(Node2d parent_node, int res_id, short x, short y){
 		Sprite node = (Sprite) parent_node.spawn(Sprite.class, UUID.randomUUID().toString());
 		
-		Texture texture = (Texture) ResourcesManager.getSharedInstance().factory(Texture.class, (Entity)node, ""+res_id, res_id, new Texture.Parameters());
+		BitmapTexture texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)node, ""+res_id, res_id, new BitmapTexture.Parameters());
 		
 		
 		node.init(1, texture);

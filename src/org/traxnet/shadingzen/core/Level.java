@@ -1,7 +1,7 @@
 package org.traxnet.shadingzen.core;
 
 import org.traxnet.shadingzen.R;
-import org.traxnet.shadingzen.core.Texture.TextureType;
+import org.traxnet.shadingzen.core.BitmapTexture.TextureType;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -55,7 +55,7 @@ public abstract class Level extends Entity {
 	class SkyDomeActor extends Actor{
 		Sphere _skydomeSphere;
 		ShadersProgram _skydomeProgram;
-		Texture _skydomeTexture;
+		BitmapTexture _skydomeTexture;
 		
 		public SkyDomeActor(){
 			
@@ -109,7 +109,7 @@ public abstract class Level extends Entity {
 			_skydomeProgram.attachVertexShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_vertex));
 			_skydomeProgram.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_fragment));
 			_skydomeSphere.attachProgram(_skydomeProgram);
-			Texture.Parameters params = new Texture.Parameters();
+			BitmapTexture.Parameters params = new BitmapTexture.Parameters();
 			params.setType(TextureType.TextureCubeMap);
 			params.setCubeMapImage(0, R.raw.skydome1);
 			params.setCubeMapImage(1, R.raw.skydome2);
@@ -117,7 +117,7 @@ public abstract class Level extends Entity {
 			params.setCubeMapImage(3, R.raw.skydome4);
 			params.setCubeMapImage(4, R.raw.skydome5);
 			params.setCubeMapImage(5, R.raw.skydome6);
-			_skydomeTexture = (Texture)ResourcesManager.getSharedInstance().factory(Texture.class, this, "SkyDomeTexture", 0, params);
+			_skydomeTexture = (BitmapTexture)ResourcesManager.getSharedInstance().factory(BitmapTexture.class, this, "SkyDomeTexture", 0, params);
 			
 		}
 

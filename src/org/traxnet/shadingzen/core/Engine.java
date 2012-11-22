@@ -9,6 +9,8 @@ import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.EntityManager.EntityHolder;
 import org.traxnet.shadingzen.core2d.Node2d;
 import org.traxnet.shadingzen.math.Matrix4;
+import org.traxnet.shadingzen.rendertask.BindFrameBufferRenderTask;
+import org.traxnet.shadingzen.rendertask.BindTextureRenderTargetTask;
 import org.traxnet.shadingzen.rendertask.RenderSceneRenderBatch;
 
 import android.content.Context;
@@ -40,6 +42,7 @@ public final class Engine implements Runnable {
     private ShadersProgram _debugWireframeProgram;  
     private GameInfo _currentGameInfo = null;
     private Vector<IShadowCaster> _cachedShadowCasters = null;
+    private TextureRenderTarget _shadowMapRenderTarget = null;
     
     static Engine globalInstance = null;
     public static Engine getSharedInstance(){
@@ -96,6 +99,10 @@ public final class Engine implements Runnable {
 	
 	public int getViewHeight(){
 		return _viewHeight;
+	}
+	
+	public Texture getShadowMapTexture(){
+		return _shadowMapRenderTarget;
 	}
 	
 	public Scene getCurrentScene(){
@@ -177,6 +184,17 @@ public final class Engine implements Runnable {
 	}
 	
 	private void renderSceneShadowMap(RenderService renderer){
+		pushNewRenderSceneBatch(renderer);
+		
+		BindTextureRenderTargetTask bind_target = new BindTextureRenderTargetTask();
+		bind_target.init(_shadowMapRenderTarget);
+		renderer.addRenderTask(bind_target);
+		
+		if(null == _shadowMapRenderTarget){
+			_shadowMapRenderTarget = new TextureRenderTarget();
+			_shadowMapRenderTarget.init(256, 256);
+		}
+		
 		for(IShadowCaster caster : _cachedShadowCasters){
 			try{ 
 				Entity entity = (Entity)caster;
@@ -193,6 +211,7 @@ public final class Engine implements Runnable {
 	private void renderSceneAsNormal(RenderService renderer, Scene scene,
 			EntityManager entity_manager) {
 		pushNewRenderSceneBatch(renderer);
+		renderer.addRenderTask(new BindFrameBufferRenderTask());
 		scene.onDraw(renderer);
 		float[] scene_model_matrix = scene.getLocalModelMatrix().getAsArray();		
 		drawHierarchy(renderer, entity_manager, scene_model_matrix);

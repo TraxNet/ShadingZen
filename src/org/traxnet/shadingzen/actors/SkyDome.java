@@ -6,8 +6,8 @@ import org.traxnet.shadingzen.core.Entity;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ResourcesManager;
 import org.traxnet.shadingzen.core.ShadersProgram;
-import org.traxnet.shadingzen.core.Texture;
-import org.traxnet.shadingzen.core.Texture.TextureType;
+import org.traxnet.shadingzen.core.BitmapTexture;
+import org.traxnet.shadingzen.core.BitmapTexture.TextureType;
 import org.traxnet.shadingzen.exceptions.InvalidTextureType;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
@@ -22,7 +22,7 @@ public class SkyDome extends Actor {
 	CubeShape _cubeShape;
 	ShadersProgram _circleShapeProgram;
 	RenderSkyDomeTask _task;
-	Texture _texture;
+	BitmapTexture _texture;
 	
 	public void init() throws Exception {
 		_circleShapeProgram = initSkyDomeProgram();
@@ -36,8 +36,8 @@ public class SkyDome extends Actor {
 		_task.initWithCubemapTexture(_texture, _circleShapeProgram, _cubeShape, Matrix4.identity().getAsArray());	
 	}
 	
-	Texture loadCubeMap(){
-		Texture.Parameters params = new Texture.Parameters();
+	BitmapTexture loadCubeMap(){
+		BitmapTexture.Parameters params = new BitmapTexture.Parameters();
 		params.setType(TextureType.TextureCubeMap);
 		params.setCubeMapImage(0, R.raw.skydome1);
 		params.setCubeMapImage(1, R.raw.skydome2);
@@ -46,7 +46,7 @@ public class SkyDome extends Actor {
 		params.setCubeMapImage(4, R.raw.skydome5);
 		params.setCubeMapImage(5, R.raw.skydome6);
 		
-		Texture texture = (Texture) ResourcesManager.getSharedInstance().factory(Texture.class, (Entity)this, "SkyDomeTexture", R.raw.alpha_tex, new Texture.Parameters());
+		BitmapTexture texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, "SkyDomeTexture", R.raw.alpha_tex, new BitmapTexture.Parameters());
 		return texture;
 	}
 	
@@ -88,7 +88,7 @@ public class SkyDome extends Actor {
 	
 	class RenderSkyDomeTask extends RenderTask {
 		CubeShape _shape;
-		Texture _texture;
+		BitmapTexture _texture;
 		boolean _needsBufferUpdate = true;
 		float [] _modelMatrix;
 		float [] _mvp = new float[16];
@@ -98,7 +98,7 @@ public class SkyDome extends Actor {
 			
 		}
 		
-		public void initWithCubemapTexture(Texture cubemap_texture, ShadersProgram program, CubeShape shape, float [] model_matrix) throws Exception {
+		public void initWithCubemapTexture(BitmapTexture cubemap_texture, ShadersProgram program, CubeShape shape, float [] model_matrix) throws Exception {
 			_shape = shape;
 			_program = program;
 			_texture = cubemap_texture;
