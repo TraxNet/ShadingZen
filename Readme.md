@@ -8,6 +8,8 @@ It has been used commercially in [Kids 3D Cube](https://play.google.com/store/ap
 
 The setup required to start working with the engine has been reduced to the creation of an Android Activity and a few more classes that hold the game logic. ShadingZen provides a GLSurfaceView that has been fine tuned to support different display properties and hardware. 
 
+Please see the [documentation](https://github.com/TraxNet/ShadingZen/wiki).
+
 ## Future
 
 The are some features like shadow casting and post processing effects that require a few underlying changes to the library. It also lacks documentation and is probably the area that requires more effort to make ShadingZen shine.
