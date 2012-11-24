@@ -12,13 +12,13 @@ import android.view.WindowManager;
 
 import org.traxnet.shadingzen.core.font.BMFont;
 
-public class EgineGLSurfaceView extends GLSurfaceView implements RenderNotificationsDelegate {
+public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotificationsDelegate {
 	private org.traxnet.shadingzen.core.Renderer _openglRenderer;
 	private Context _context;
 	private Handler _handler;
 	private Engine _engine;
 	
-	public EgineGLSurfaceView(Context context, org.traxnet.shadingzen.core.Renderer renderer){
+	public EngineGLSurfaceView(Context context, org.traxnet.shadingzen.core.Renderer renderer){
 		super(context);	
 		_context = context;
 		_openglRenderer = renderer;

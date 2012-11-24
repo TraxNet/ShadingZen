@@ -176,7 +176,7 @@ public final class Engine implements Runnable {
 			renderSceneAsNormal(renderer, scene, entity_manager);
 			
 			// TODO: We don't need to update shadowmap each frame
-			renderSceneShadowMap(renderer);
+			//renderSceneShadowMap(renderer);
 		}
 		
 		if(null != _currentGameInfo)
