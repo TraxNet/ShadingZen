@@ -16,6 +16,16 @@ import org.traxnet.shadingzen.math.Vector3;
 import android.opengl.Matrix;
 import android.util.Log;
 
+/** 
+ * Actor is the base class for all objects within the scene that have position and rotation.
+ * It also keeps a hierarchy of child Actors.
+ * 
+ * Action enable actor to do simple actions without having to track and handle updates for those actions
+ * within the Actor's code. Actions are scheduled and executed by the engine for each frame enabling
+ * easy animations and transitions. @see Action for more info.
+ * 
+ * To create your own Actor sublass, extend from it and implement onUpdate.
+ */
 public abstract class Actor extends Entity {
 	protected Vector3 _position;
 	protected Quaternion _rotation;
@@ -90,10 +100,21 @@ public abstract class Actor extends Entity {
 		return _parent;
 	}
 	
+	/** 
+	 * Adds a new children actor to the hierarchy 
+	 *
+	 * @param child the child actor to be added.
+	 */
 	public void addChildren(Actor child){
 		_childrenActors.put(child._nameId, child);
 	}
 	
+	/**
+	 * Removes a child actor from the list of children. 
+	 * If child actor is not found no error is reported.
+	 * 
+	 * @param child child actor to be removed.
+	 */
 	public void removeChildren(Actor child){
 		//child.setParent(null);
 		child.markForDestroy();
@@ -103,12 +124,22 @@ public abstract class Actor extends Entity {
 		}
 	}
 	
+	/**
+	 * Remos a child actor given its ID. 
+	 * If child actor is not found no error is reported.
+	 * 
+	 * @param childId
+	 */
 	public void removeChildren(String childId){
 		Actor child = _childrenActors.get(childId);
 		//child.setParent(null);
 		child.markForDestroy();
 	}
 	
+	/**
+	 * Retuns the collection of children actors. May be empty.
+	 * @return the children collection.
+	 */
 	public Collection<Actor> getChildren(){
 		return _childrenActors.values();
 	}
@@ -153,7 +184,11 @@ public abstract class Actor extends Entity {
 		_rotation = _rotation.mul(rot);
 	}
 	
-	/** Get local actor position relative to parent actor */
+	/** 
+	 * Get local actor position relative to parent actor 
+	 *
+	 * @return the actor position.
+	 */
 	public Vector3 getPosition(){
 		return _position;
 	}
@@ -193,11 +228,14 @@ public abstract class Actor extends Entity {
 		onUpdate(delta);
 	}
 	
-	/** Must be overriden by child classes */ 
+	/** 
+	 * Called each frame to keep the actor updated. Must be overriden by child classes 
+	 *
+	 * @param deltaTime the time in seconds elapsed since the last onUpdate call.
+	 */ 
 	protected abstract void onUpdate(float deltaTime);
 	
 	
-
 	// ACTIONS ////////
 	
 	/** Steps one delta-time for each action registered for this actor */

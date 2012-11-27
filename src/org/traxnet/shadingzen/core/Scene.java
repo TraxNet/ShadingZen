@@ -24,6 +24,13 @@ public class Scene extends Actor{
 		return _entityManager;
 	}
 	
+	/** Spawns a new Actor an make it child of the given parent Actor 
+	 * 
+	 * @param _class The type of Actor we want to spawn
+	 * @param parent The parent of the newly created Actor
+	 * @param nameId The ID 
+	 * @return a new instance of the given Actor class
+	 */
 	public synchronized Actor spawn(Class<? extends Actor> _class, Actor parent, String nameId){
 		return _entityManager.spawn(_class, parent, nameId);
 	}

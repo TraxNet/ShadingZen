@@ -11,17 +11,19 @@ import android.opengl.Matrix;
 import android.util.FloatMath;
 
 
-/*
+/**
+ * Base class for all 2D objects. It is based mostly in Coco2D.
+ * 
  * Order of transforms applied:
  * 	The node will be translated (position)
  * 	The node will be rotated (rotation)
  * 	The node will be scaled (scale)
  */
 public class Node2d extends Actor /*implements Comparable*/ {
-	protected float _nodeRotation;
+	protected float _nodeRotation; /** Node rotation in radians */
 	//protected Vector2 _nodePosition; /** Node position in normalized screen dimensions of 480x800 pixels */
-	protected Vector2 _nodeAnchorPoint;
-	protected Vector2 _contentSize;
+	protected Vector2 _nodeAnchorPoint; /** Anchor point for rotations and scaling */
+	protected Vector2 _contentSize; /** Returns the content size TODO: in pixels? */
 	protected int _zOrder;
 	protected float _nodeAlpha;
 	protected Vector3 _nodeColor;
@@ -47,18 +49,22 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		//_zorderedChildNodes = new TreeSet<Node2d>();
 	}
 	
+	/** If true, this node and children will be drawn first during the background rendering step. */
 	public void setNodeDrawInBackground(boolean value){
 		_nodeDrawInBackground = value;
 	}
 	
+	/** Returns whenever this node and children must be drawn before anything else in screen */
 	public boolean getNodeDrawInBackground(){
 		return _nodeDrawInBackground;
 	}
 	
+	/** Sets the internal node color in RGB format */
 	public void setNodeColor(float r, float g, float b){
 		_nodeColor.set(r, g, b);
 	}
 	
+	/** Returns the internal node color */
 	public Vector3 getNodeColor(){
 		return _nodeColor;
 	}
@@ -71,8 +77,8 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_nodeCachedModelMatrixIsDirty = true;
 	}
 	
-	/*
-	 * Sets node position in current screen dimensions
+	/**
+	 * Sets node position in current screen dimensions. This affects node's local position relative to parent actor.
 	 */
 	public void setPositionInPixels(Vector2 position){
 		float x = (position.getX()/Engine.getSharedInstance().getViewWidth())*480;
@@ -83,7 +89,7 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_nodeCachedModelMatrixIsDirty = true;
 	}
 	
-	/*
+	/**
 	 * Gets node position in current screen dimensions
 	 */
 	public Vector2 getPositionInPixels(){
@@ -96,6 +102,7 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_zOrder = z;
 	}
 	
+	/** Sets the 2D node rotation in radians */
 	public void setNodeRotation(float rads){
 		_nodeRotation = rads;
 		
@@ -105,11 +112,13 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_nodeCachedModelMatrixIsDirty = true;
 	}
 	
+	/** Returns the node rotation in radians */
 	public float getNodeRotation(){
 		return _nodeRotation;
 	}
 	
 
+	/** Sets the scale transformation applied during rendering */
 	@Override
 	public void setScale(float scale){
 		_scale = scale;

@@ -60,6 +60,8 @@ public final class Engine implements Runnable {
         _cachedShadowCasters = new Vector<IShadowCaster>();
         
         globalInstance = this;
+        
+        Log.i("ShadingZen", "Engine started with surface size: " + viewWidth + "x" + viewHeight);
     }
 	
 	public void Init(Context context, Renderer renderer){
@@ -138,6 +140,8 @@ public final class Engine implements Runnable {
 	}
 	
 	public void updateTick(){
+		//Log.i("ShadingZen", "updateTick");
+		
 		long nanotime = System.nanoTime();
 		long delta_time = nanotime - _frameTime;
 		
