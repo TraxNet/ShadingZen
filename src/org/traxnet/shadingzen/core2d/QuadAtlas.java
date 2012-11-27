@@ -18,6 +18,13 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+/**
+ * A QuadAtlas is a more optimized version of an sprite/quad as it packs many quads sharing 
+ * the same texture into just one OpenGL call and texture lookup. Use QuadAtlas over Quad for 
+ * clear performance reasons. 
+ *
+ * Usage:
+ */
 public class QuadAtlas extends Node2d {
 	RenderBuffer _renderBuffer;
 	ShadersProgram _program;
