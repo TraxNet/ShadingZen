@@ -1,0 +1,8 @@
+version 1.0-beta2 (future release)
+	[REQ] Add the concept of RenderTarget to support rendering to a texture
+	[BUG] 
+
+version 1.0-beta1 21-Nov-2012
+	[NEW] Initial public version
+	[NEW] Added support for render batches. Render batches are blocks of render tasks that share
+		  a common render state, for example rendering a shadowmap. 

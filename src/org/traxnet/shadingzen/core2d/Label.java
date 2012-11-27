@@ -16,10 +16,17 @@ import org.traxnet.shadingzen.math.Vector4;
 import android.opengl.GLES20;
 import android.util.Log;
 
-/*
- * Label can render a text string with the given BMFont file.
+/**
+ * Label can render a text string with the given BMFont file (http://www.angelcode.com/products/bmfont/). 
  * 
- * Note: Current only one page is support, this the BMFont can only have one texture with
+ * Using a Label:
+ *     Label label = spawn(Label.class, "my label");
+ *	   label.initWithStringAndFont("this a test string", R.raw.myfont, R.raw.myfonttexture);
+ *     
+ * In order to change the text (this is an slow operation):
+ *     label.rebuildText("my new string");
+ *
+ * Note: Current only one page is supported, this means that the BMFont can only have one texture with
  * 		 all characters inside.
  */
 public class Label extends QuadAtlas {
@@ -30,12 +37,26 @@ public class Label extends QuadAtlas {
 		_color = new Vector4(1.f, 1.f, 1.f, 1.f);
 	}
 	
+	/** 
+	 * Initializes the label with the given font file and texture
+	 *
+	 * @param text the text we want to draw
+	 * @param resource_id the valid bmfont file
+	 * @param texture_res a valid android resource id pointing to the font texture
+	 */
 	public void initWithStringAndFont(String text, int resource_id, int texture_res){
 		initWithCapacityAndFont(text.length(), resource_id, texture_res);
 		
 		generateQuadsForText(text);
 	}
 	
+	/** 
+	 * Initializes the label with the given font file and texture, without text
+	 *
+	 * @param capacity chars capactity
+	 * @param resource_id the valid bmfont file
+	 * @param texture_res a valid android resource id pointing to the font texture
+	 */
 	public void initWithCapacityAndFont(int capacity, int resource_id, int texture_res){
 		
 		allocateNewRenderBufferWithCapacity(capacity);
