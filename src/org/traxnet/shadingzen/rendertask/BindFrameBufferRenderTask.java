@@ -19,6 +19,8 @@ public class BindFrameBufferRenderTask extends RenderTask {
 	public void setFrameBufferId(int id){
 		_frameBufferId = id;
 	}
+	
+	public BindFrameBufferRenderTask(){}
 
 	@Override
 	public void onDraw(RenderService service) throws Exception {
@@ -42,6 +44,16 @@ public class BindFrameBufferRenderTask extends RenderTask {
 	@Override
 	public boolean onDriverLoad(Context context) {
 		return true;
+	}
+
+	@Override
+	public void initializeFromPool() {
+		_frameBufferId = 0;
+	}
+
+	@Override
+	public void finalizeFromPool() {
+		
 	}
 
 }

@@ -34,6 +34,7 @@ public abstract class RenderTaskBatch implements Poolable {
 			try {
 				task.onDraw(service);
 				service.checkGlError("Task Draw");
+				RenderTaskPool.sharedInstance().freeTask(task);
 			} catch (Exception e) {
 				Log.e("ShadingZen", "Error rendering task of type [" + task.getClass().getName() + "]:" + e.getLocalizedMessage());
 				StringWriter sw = new StringWriter();

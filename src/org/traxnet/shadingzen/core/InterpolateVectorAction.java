@@ -2,13 +2,22 @@ package org.traxnet.shadingzen.core;
 
 import org.traxnet.shadingzen.math.Vector3;
 
-import android.util.Log;
-
+/**
+ * Interpolates a vector from an initial value to a final value. 
+ * Vector coordinates are linearly interpolated by a common step amount which depends on the animation time
+ *
+ */
 public class InterpolateVectorAction extends Action {
 	Vector3 _targetVar, _startValues, _finalValues;
 	float _currentSecs, _targetSecs;
 	boolean _isDone = false;
 	
+	/**
+	 * Default constructor
+	 * @param target Vector3 object to apply to this interpolation
+	 * @param final_values Final value to give to the target Vector3 object
+	 * @param secs Time to end the interpolation
+	 */
 	public InterpolateVectorAction(Vector3 target, Vector3 final_values, float secs){
 		_targetVar = target;
 		_finalValues = final_values;

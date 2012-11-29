@@ -12,7 +12,9 @@ import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ResourcesManager;
 import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.core.BitmapTexture;
+import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -106,7 +108,9 @@ public class QuadAtlas extends Node2d {
 		QuadRenderTask current_task = null;
 		short verts_offset = 0, faces_offset = 0;
 		
-		current_task = new QuadRenderTask(_texture, 0, _renderBuffer, this);
+		current_task = (QuadRenderTask) RenderTaskPool.sharedInstance().newTask(QuadRenderTask.class);
+		
+		current_task.init(_texture, 0, _renderBuffer, this);
 		current_task.setBlendingFunc(_blendSrc, _blendDst);
 		current_task.enableBlending();
 		current_task.disableDepthTest();
@@ -155,29 +159,59 @@ public class QuadAtlas extends Node2d {
 	
 	
 	
-	class QuadRenderTask extends RenderTask {
+	public static class QuadRenderTask extends RenderTask {
 		BitmapTexture _texture;
 		RenderBuffer _buffer;
+		Matrix4 _matrix = Matrix4.identity();
 		int _offset, _numQuads;
 		Node2d _owner;
 		boolean _needsBufferUpdate = true;
+		float [] mvp = new float[16];
+		float [] ortho_matrix = new float[16];
 		
-		
+		public QuadRenderTask(){}
 		/*
-		 * Constructor for UIQuadRenderTask
+		 * initializator for UIQuadRenderTask
 		 * 
 		 * @param texture The texture for this set of primitives
 		 * @param quad_offset The offset inside the elements buffer (faces) from which we start rendering this set of quads
 		 * @param buffer RenderBuffer with buffers for verts and elements
 		 */
-		public QuadRenderTask(BitmapTexture texture, int quad_offset, RenderBuffer buffer, Node2d owner){
+		public void init(BitmapTexture texture, int quad_offset, RenderBuffer buffer, Node2d owner){
 			_texture = texture;
 			_buffer = buffer;
 			_offset = quad_offset;
 			_numQuads = 0;
-			_owner = owner;
+			_owner = owner; // TODO: remove!!
 			_blendSrc = GLES20.GL_SRC_ALPHA;
 			_blendDst = GLES20.GL_ONE_MINUS_SRC_ALPHA;
+			_matrix.set(owner.getWorldModelMatrix());
+			
+			int viewport_h = Engine.getSharedInstance().getViewHeight();
+			int viewport_w = Engine.getSharedInstance().getViewWidth();
+			
+			float view_factor_x = (float)viewport_w/(float)480;
+			float view_factor_y = (float)viewport_h/(float)800;
+			
+			ortho_matrix[0] = view_factor_x*2.f/viewport_w;
+			ortho_matrix[1] = 0.f;
+			ortho_matrix[2] = 0.f;
+			ortho_matrix[3] = 0.f;
+			
+			ortho_matrix[4] = 0.f;
+			ortho_matrix[5] = view_factor_y*2.f/viewport_h;
+			ortho_matrix[6] = 0.f;
+			ortho_matrix[7] = 0.f;
+			
+			ortho_matrix[8] = 0.f;
+			ortho_matrix[9] = 0.f;
+			ortho_matrix[10] = 1.f;
+			ortho_matrix[11] = 0.f;
+			
+			ortho_matrix[12] = -1.f;
+			ortho_matrix[13] = -1.f;
+			ortho_matrix[14] = 1.f;
+			ortho_matrix[15] = 1.f;
 		}
 		
 		public void setNumQuads(int num_quads){
@@ -221,23 +255,18 @@ public class QuadAtlas extends Node2d {
 		}
 		
 		void setProgramUniforms() throws Exception {
-			int viewport_h = Engine.getSharedInstance().getViewHeight();
-			int viewport_w = Engine.getSharedInstance().getViewWidth();
 			
-			float view_factor_x = (float)viewport_w/(float)480;
-			float view_factor_y = (float)viewport_h/(float)800;
-			
-			
+			/*
 			float [] ortho_matrix2 = {
 					view_factor_x*2.f/viewport_w, 		   	0.f, 	0.f, 0.f,
                     0.f, view_factor_y*2.f/viewport_h, 		0.f, 	0.f,
                     0.f, 					  			 	0.f, 	1.f, 0.f,
                     -1.f, 					  				-1.f, 	1.f, 1.f
-			};
+			};*/
 			
-			float [] mvp = new float[16];
 			
-			Matrix.multiplyMM(mvp, 0, ortho_matrix2, 0, _owner.getWorldModelMatrix().getAsArray(), 0);
+			
+			Matrix.multiplyMM(mvp, 0, ortho_matrix, 0, _matrix.getAsArray(), 0);
 			
 			GLES20.glUniform1f(_program.getUniformLocation("node_alpha"), this._owner.getNodeAlpha());
 			
@@ -282,6 +311,18 @@ public class QuadAtlas extends Node2d {
 			}
 			
 			return true;
+		}
+
+		@Override
+		public void initializeFromPool() {
+			
+			
+		}
+
+		@Override
+		public void finalizeFromPool() {
+			
+			
 		}
 		
 		

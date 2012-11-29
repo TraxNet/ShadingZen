@@ -3,6 +3,11 @@ package org.traxnet.shadingzen.core;
 import org.traxnet.shadingzen.math.Matrix4;
 
 
+/**
+ * Shape is a reusable 3d object which may be shared by different Actors. This minimizes memory usage (main and OpenGL memory).
+ * As it extends from Resource it must obey load/unload to OpenGL driver memory rules. Please @see org.traxnet.shadingzen.OBJMesh for
+ * a more direct example of a Shape subclass.
+ */
 public abstract class Shape extends Resource {
 	protected Matrix4 _modelMatrix;
 	protected ShadersProgram _program;

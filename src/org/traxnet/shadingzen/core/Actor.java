@@ -2,13 +2,8 @@ package org.traxnet.shadingzen.core;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Quaternion;
 import org.traxnet.shadingzen.math.Vector3;
@@ -24,13 +19,13 @@ import android.util.Log;
  * within the Actor's code. Actions are scheduled and executed by the engine for each frame enabling
  * easy animations and transitions. @see Action for more info.
  * 
- * To create your own Actor sublass, extend from it and implement onUpdate.
+ * To create your own Actor subclass, extend from it and implement onUpdate.
  */
 public abstract class Actor extends Entity {
 	protected Vector3 _position;
 	protected Quaternion _rotation;
 	protected float _scale;
-	protected Matrix4 _worldMatrix, _localMatrix;
+	protected Matrix4 _worldMatrix, _localMatrix, _scalingMatrix;
 	protected HashMap<String, Actor> _childrenActors;
 	protected Vector<Action> _activeActions;
 	
@@ -45,6 +40,7 @@ public abstract class Actor extends Entity {
 		_childrenActors = new HashMap<String, Actor>();
 		_worldMatrix = Matrix4.identity();
 		_localMatrix = Matrix4.identity();
+		_scalingMatrix = Matrix4.identity();
 		_activeActions = new Vector<Action>();
 		_scale = 1.f;
 	}
@@ -65,7 +61,7 @@ public abstract class Actor extends Entity {
 		_childrenActors.clear();
 		
 		for(Action action: _activeActions){
-			
+			action.cancel();
 		}
 		
 		super.unregister();
@@ -217,7 +213,9 @@ public abstract class Actor extends Entity {
 		local_matrix = getRotationMatrix();
 		local_matrix.setTranslation(getPosition());
 		
-		Matrix.multiplyMM(_localMatrix.getAsArray(), 0, local_matrix.getAsArray(), 0, Matrix4.scale(getScale()).getAsArray(), 0);
+		_scalingMatrix.setScalingRow(getScale());
+		
+		Matrix.multiplyMM(_localMatrix.getAsArray(), 0, local_matrix.getAsArray(), 0, _scalingMatrix.getAsArray(), 0);
 		return _localMatrix;
 	}
 	

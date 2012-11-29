@@ -14,26 +14,27 @@ import android.opengl.Matrix;
 
 public class RenderModelTask extends RenderTask {
 	Shape _shape;
-	Matrix4 _modelMatrix;
-	RenderService _renderService;
+	Matrix4 _modelMatrix = new Matrix4();
 	BitmapTexture _texture;
 	float [] _mvp = new float[16];
 	float [] _mv = new float[16];
 	boolean _isDepthOnly = false;
 	
-	protected RenderModelTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
+	
+	public void init(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
 		_program = program;
 		_shape = shape;
-		_modelMatrix = model_matrix;
+		_modelMatrix.set(model_matrix);
 		_texture = texture;
 		
-		_diffuseColor = new Vector4(1.f, 1.f, 1.f, 1.f);
-		_ambientColor = new Vector4(1.f, 1.f, 1.f, 1.f);
-		_depthTest = true;
-		_blend = false;
+		
+		
 	}
 	
-	protected RenderModelTask(Model model, Matrix4 model_matrix){
+	public RenderModelTask(){
+	}
+	
+	protected void init(Model model, Matrix4 model_matrix){
 		_program = model.getShadersProgram();
 		_shape = model.getShape();
 		_modelMatrix = model_matrix;
@@ -42,6 +43,7 @@ public class RenderModelTask extends RenderTask {
 		_blend = false;
 	}
 	
+	/*
 	public static RenderModelTask buildTask(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
 		return new RenderModelTask(program, shape, model_matrix, texture);	
 	}
@@ -50,24 +52,23 @@ public class RenderModelTask extends RenderTask {
 		return task;
 	}
 	/** Creates a render task that only contributes to depth buffer */
-	public static RenderModelTask buildDepthOnlyTask(Model model, Matrix4 model_matrix){
+	/*public static RenderModelTask buildDepthOnlyTask(Model model, Matrix4 model_matrix){
 		RenderModelTask task = new RenderModelTask(model, model_matrix);
 		task._isDepthOnly = true;
 		return task;
-	}
+	}*/
 	
 
 	@Override
 	public void onDraw(RenderService service) throws Exception {
 		bindDepthTestIfSet();
 		
-		_renderService = service;
 
-		_renderService.setProgram(_program);
+		service.setProgram(_program);
 	
 		
 		GLES20.glUniform1i(_program.getUniformLocation("tex_unit"), 0);
-		setGlobalUniformVariables();
+		setGlobalUniformVariables(service);
 		
 		if(null != _texture)
 			_texture.bindTexture(0);
@@ -98,24 +99,43 @@ public class RenderModelTask extends RenderTask {
 	}
 	
 	
-	private void setGlobalUniformVariables() throws Exception {	
+	private void setGlobalUniformVariables(RenderService renderer) throws Exception {	
 		// Calculate model-view-projection matrix
-		Matrix.multiplyMM(_mv, 0, _renderService.getViewMatrix(), 0, _modelMatrix.getAsArray(), 0);
+		Matrix.multiplyMM(_mv, 0, renderer.getViewMatrix(), 0, _modelMatrix.getAsArray(), 0);
 		GLES20.glUniformMatrix4fv(_program.getUniformLocationNoCheck("mv_matrix"), 1, false, _mv, 0);
 		
-		Matrix.multiplyMM(_mvp, 0, _renderService.getProjectionMatrix(), 0, _mv, 0);
+		Matrix.multiplyMM(_mvp, 0, renderer.getProjectionMatrix(), 0, _mv, 0);
 		// Move to the shaders as an uniform
 		GLES20.glUniformMatrix4fv(_program.getUniformLocation("mvp_matrix"), 1, false, _mvp, 0);
 		
 		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, _modelMatrix.getAsArray3x3(), 0);
 		
-		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("eye_point"), 1, _renderService.getCamera().getPosition().getAsArray(), 0);
+		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("eye_point"), 1, renderer.getCamera().getPosition().getAsArray(), 0);
 		
 		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("diffuse_color"), 1, _diffuseColor.getAsArray(), 0);
 		
 		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("ambient_color"), 1, _ambientColor.getAsArray(), 0);
 		
 		checkGlError("RenderModelTask.setGlobalUniformVariables");
+	}
+
+	@Override
+	public void initializeFromPool() {
+		_diffuseColor.set(1.f, 1.f, 1.f, 1.f);
+		_ambientColor.set(1.f, 1.f, 1.f, 1.f);
+		_blendDst = 0;
+		_blendSrc = 0;
+		_depthTest = true;
+		_blend = false;
+		
+		
+		_renderingFlags = 0;
+	}
+
+	@Override
+	public void finalizeFromPool() {
+		_program = null;
+		
 	}
 
 }

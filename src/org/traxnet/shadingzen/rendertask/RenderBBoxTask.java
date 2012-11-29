@@ -21,19 +21,22 @@ import android.util.Log;
 
 public class RenderBBoxTask extends RenderTask {
 	BBox _bbox;
-	Matrix4 _modelMatrix;
-	Vector4 _color;
+	Matrix4 _modelMatrix = new Matrix4();
+	Vector4 _color = Vector4.zero();
+	float [] _mvp = new float[16];
+	float [] _mv = new float[16];
 	
     // Vertices, Normals, Coords, Indices
     private IntBuffer _bufferIds;
 
     private ShortBuffer _ib;
     private FloatBuffer _mainb;
+    
+    public RenderBBoxTask(){}
 	
-	public RenderBBoxTask(BBox box){
+	public void init(BBox box){
 		_bbox = box;
 		//_modelMatrix = modelMatrix;
-		_color = new Vector4(1.f, 1.f, 1.f, 1.f);
 		
 		_program = Engine.getSharedInstance().getDebugWireframeProgram();
 		
@@ -136,8 +139,8 @@ public class RenderBBoxTask extends RenderTask {
         
 	}
 	
-	public void setModelMatrix(Matrix4 modelMatrix){
-		_modelMatrix = modelMatrix; 
+	public Matrix4 getModelMatrix(){
+		return _modelMatrix;
 	}
 	
 	public void setColorRGBA(Vector4 c){
@@ -206,8 +209,7 @@ public class RenderBBoxTask extends RenderTask {
 		return !has_failed;
 	}
 	
-	float [] _mvp = new float[16];
-	float [] _mv = new float[16];
+	
 	
 	private void setGlobalUniformVariables(RenderService service) throws Exception {
 		//Log.i("ShadingZen", "Setting global uniform variables for this program");
@@ -228,6 +230,25 @@ public class RenderBBoxTask extends RenderTask {
 		GLES20.glUniform4f(_program.getUniformLocation("color"), _color.getX(), _color.getY(), _color.getZ(), _color.getW());
 		
 		//checkGlError("RenderModelTask.setGlobalUniformVariables");
+	}
+
+	@Override
+	public void initializeFromPool() {
+		_color.set(0.f, 0.f, 0.f, 0.f);
+		_blendDst = 0;
+		_blendSrc = 0;
+	}
+
+	@Override
+	public void finalizeFromPool() {
+		_bufferIds.clear();
+		_bufferIds = null;
+		this._ib.clear();
+		_ib = null;
+		this._mainb.clear();
+		_mainb = null;
+		_bbox = null;
+		
 	}
 
 }

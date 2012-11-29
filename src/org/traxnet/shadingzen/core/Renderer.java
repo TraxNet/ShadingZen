@@ -2,30 +2,21 @@ package org.traxnet.shadingzen.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.HashMap;
-import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.traxnet.shadingzen.R;
-import org.traxnet.shadingzen.R.raw;
-import org.traxnet.shadingzen.core.BitmapTexture.TextureType;
 import org.traxnet.shadingzen.core.Engine;
 import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 import org.traxnet.shadingzen.rendertask.ChangeClearColorRenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskBatch;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -83,7 +74,8 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	
 	public void setClearColor(Vector4 color){
 		_clearColor = color;
-		ChangeClearColorRenderTask task = new ChangeClearColorRenderTask(color);
+		ChangeClearColorRenderTask task =  (ChangeClearColorRenderTask) RenderTaskPool.sharedInstance().newTask(ChangeClearColorRenderTask.class);
+		task.setColor(color.getX(), color.getY(), color.getZ(), color.getW());
 		addRenderTask(task);
 		
 	}
@@ -284,6 +276,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	 * @param program Program to be used
 	 * @param shape Used to compute its rigid-body transform
 	 */
+	@SuppressWarnings("unused")
 	private void setGlobalUniformVariables(ShadersProgram program, Shape shape) throws Exception{
 		//Log.i("ShadingZen", "Setting global uniform variables for this program");
 		float [] mvp = new float[16];

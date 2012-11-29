@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -18,10 +16,10 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
 
-/** Loads an tracks what has been read from resources
+/** 
+ * The ResourceManager is singleton object that tracks resources and references from those using those resources. 
+ * It manages when to unload/load resources from OpenGL memory
  * 
- * @author oscar
- *
  */
 public class ResourcesManager {
 	HashMap<String, Resource> _resourcesCache;
@@ -74,19 +72,52 @@ public class ResourcesManager {
 		Log.e("ShadingZen", sw.toString());
 	}
 	
-	
+	/**
+	 * Returns a new resource and add a new reference to the given Entity.
+	 * 
+	 * @param proto Type of resource to create
+	 * @param owner Owner reference this new resource
+	 * @return a new instance of the given resource type
+	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner){
 		return factory(proto, owner, null, 0, null);
 	}
 	
+	/**
+	 * Returns a new resource and add a new reference to the given Entity.
+	 * 
+	 * @param proto Type of resource to create
+	 * @param owner Owner reference this new resource
+	 * @param id An ID to identify this resource. If asked for a new resource with the same ID, no copy is generate but this one is reused.
+	 * @return a new instance of the given resource type
+	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner, String id){
 		return factory(proto, owner, id, 0, null);
 	}
 	
+	/**
+	 * Returns a new resource and add a new reference to the given Entity.
+	 * 
+	 * @param proto Type of resource to create
+	 * @param owner Owner reference this new resource
+	 * @param id An ID to identify this resource. If asked for a new resource with the same ID, no copy is generate but this one is reused.
+	 * @param res_id The raw resource id to be used during resource loading
+	 * @return a new instance of the given resource type
+	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner, String id, int res_id){
 		return factory(proto, owner, id, res_id, null);
 	}
 	
+	/**
+	 * Returns a new resource and add a new reference to the given Entity.
+	 * 
+	 * @param proto Type of resource to create
+	 * @param owner Owner reference this new resource
+	 * @param id An ID to identify this resource. If asked for a new resource with the same ID, no copy is generate but this one is reused.
+	 * @param res_id The raw resource id to be used during resource loading
+	 * @param data An opaque object to be passed during resource creation. It contains initialization data (for example texture parameters).
+	 * @return a new instance of the given resource type
+	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner, String id, int res_id, Object data){
 		synchronized(_lock){
 			if(null == id){
@@ -155,7 +186,7 @@ public class ResourcesManager {
 		}
 	}
 	
-	
+	/** Called by the engine to clean resource in runtime */
 	public void doCleanUp(){
 		/*
 		//Log.v("ShadingZen", "ResourcesManager> doCleanUp start");

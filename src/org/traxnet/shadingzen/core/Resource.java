@@ -1,7 +1,5 @@
 package org.traxnet.shadingzen.core;
 
-import java.util.Map;
-
 import android.content.Context;
 
 public abstract class Resource {

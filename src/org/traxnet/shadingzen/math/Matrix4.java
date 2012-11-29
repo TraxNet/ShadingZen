@@ -104,6 +104,13 @@ public class Matrix4 {
 		return matrix;
 	}
 	
+	public void setScalingRow(float scale){
+		_m[0] = scale;
+		_m[5] = scale;
+		_m[10] = scale;
+		_m[15] = 1.f;
+	}
+	/*
 	public static Matrix4 scale(float scale){
 		Matrix4 matrix = new Matrix4();
 		// TODO: Remove this method
@@ -113,10 +120,32 @@ public class Matrix4 {
 		matrix._m[15] = 1.f;
 		
 		return matrix;
-	}
+	}*/
 	public void scaleByFactor(float scale) {
 		_m[0] *= scale;
 		_m[5] *= scale;
 		_m[10] *= scale;
+	}
+	
+	public void set(Matrix4 other){
+		_m[0] = other._m[0];
+		_m[1] = other._m[1];
+		_m[2] = other._m[2];
+		_m[3] = other._m[3];
+		
+		_m[4] = other._m[4];
+		_m[5] = other._m[5];
+		_m[6] = other._m[6];
+		_m[7] = other._m[7];
+		
+		_m[8] = other._m[8];
+		_m[9] = other._m[9];
+		_m[10] = other._m[10];
+		_m[11] = other._m[11];
+		
+		_m[12] = other._m[12];
+		_m[13] = other._m[13];
+		_m[14] = other._m[14];
+		_m[15] = other._m[15];
 	}
 }

@@ -101,4 +101,8 @@ public class Vector4 {
 				);
 	}
 	
+	
+	public static Vector4 zero(){
+		return new Vector4(0.f, 0.f, 0.f, 0.f);
+	}
 }

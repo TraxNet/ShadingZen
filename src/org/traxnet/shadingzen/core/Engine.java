@@ -12,6 +12,7 @@ import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.BindFrameBufferRenderTask;
 import org.traxnet.shadingzen.rendertask.BindTextureRenderTargetTask;
 import org.traxnet.shadingzen.rendertask.RenderSceneRenderBatch;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -43,6 +44,7 @@ public final class Engine implements Runnable {
     private GameInfo _currentGameInfo = null;
     private Vector<IShadowCaster> _cachedShadowCasters = null;
     private TextureRenderTarget _shadowMapRenderTarget = null;
+    float [] _cached_model_matrix = new float[16];
     
     static Engine globalInstance = null;
     public static Engine getSharedInstance(){
@@ -190,7 +192,7 @@ public final class Engine implements Runnable {
 	private void renderSceneShadowMap(RenderService renderer){
 		pushNewRenderSceneBatch(renderer);
 		
-		BindTextureRenderTargetTask bind_target = new BindTextureRenderTargetTask();
+		BindTextureRenderTargetTask bind_target = (BindTextureRenderTargetTask) RenderTaskPool.sharedInstance().newTask(BindTextureRenderTargetTask.class);
 		bind_target.init(_shadowMapRenderTarget);
 		renderer.addRenderTask(bind_target);
 		
@@ -215,7 +217,10 @@ public final class Engine implements Runnable {
 	private void renderSceneAsNormal(RenderService renderer, Scene scene,
 			EntityManager entity_manager) {
 		pushNewRenderSceneBatch(renderer);
-		renderer.addRenderTask(new BindFrameBufferRenderTask());
+			
+		BindFrameBufferRenderTask bind_target = (BindFrameBufferRenderTask) RenderTaskPool.sharedInstance().newTask(BindFrameBufferRenderTask.class);
+		
+		renderer.addRenderTask(bind_target);
 		scene.onDraw(renderer);
 		float[] scene_model_matrix = scene.getLocalModelMatrix().getAsArray();		
 		drawHierarchy(renderer, entity_manager, scene_model_matrix);
@@ -327,15 +332,15 @@ public final class Engine implements Runnable {
 				parent_model = _ownerScene.getLocalModelMatrix().getAsArray();
 			}*/
 			
-			float [] model_matrix = new float[16];
 			
-			Matrix.multiplyMM(model_matrix, 0, parent_model_matrix, 0, actor.getLocalModelMatrix().getAsArray(), 0);
-			actor.setWorldModelMatrix(new Matrix4(model_matrix));
+			
+			Matrix.multiplyMM(actor.getWorldModelMatrix().getAsArray(), 0, parent_model_matrix, 0, actor.getLocalModelMatrix().getAsArray(), 0);
+			//actor.setWorldModelMatrix(new Matrix4(_cached_model_matrix));
 			
 			actor.onDraw(renderer);
 				
 			for(Actor child : actor.getChildren()){
-				drawActor(renderer, child, model_matrix);
+				drawActor(renderer, child, actor.getWorldModelMatrix().getAsArray());
 				child.setFrameId(_currentFrameId);
 			}
 		} catch(Exception ex){

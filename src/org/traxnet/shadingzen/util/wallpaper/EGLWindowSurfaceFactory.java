@@ -6,6 +6,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 
+
 /**
  * An interface for customizing the eglCreateWindowSurface and eglDestroySurface
  * calls.

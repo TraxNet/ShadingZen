@@ -7,10 +7,12 @@ import android.content.Context;
 import android.opengl.GLES20;
 
 public class ChangeClearColorRenderTask extends RenderTask {
-	Vector4 _clearColor;
+	Vector4 _clearColor = Vector4.zero();
 	
-	public ChangeClearColorRenderTask(Vector4 color){
-		_clearColor = color;
+	public ChangeClearColorRenderTask(){}
+	
+	public void setColor(float r, float g, float b, float a){
+		_clearColor.set(r, g, b, a);
 	}
 
 	@Override
@@ -21,6 +23,16 @@ public class ChangeClearColorRenderTask extends RenderTask {
 	@Override
 	public boolean onDriverLoad(Context context) {
 		return true;
+	}
+
+	@Override
+	public void initializeFromPool() {
+		_clearColor.set(0.f, 0.f, 0.f, 0.f);
+	}
+
+	@Override
+	public void finalizeFromPool() {
+		
 	}
 
 }

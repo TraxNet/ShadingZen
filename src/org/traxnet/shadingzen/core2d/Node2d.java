@@ -81,12 +81,29 @@ public class Node2d extends Actor /*implements Comparable*/ {
 	 * Sets node position in current screen dimensions. This affects node's local position relative to parent actor.
 	 */
 	public void setPositionInPixels(Vector2 position){
-		float x = (position.getX()/Engine.getSharedInstance().getViewWidth())*480;
-		float y = (position.getX()/Engine.getSharedInstance().getViewHeight())*800;
-		_position.setX(x);
-		_position.setY(y);
+		setPositionInPixels(position.getX(), position.getY());
+	}
+	
+	/**
+	 * Sets node position in current screen dimensions. This affects node's local position relative to parent actor.
+	 */
+	public void setPositionInPixels(float x, float y){
+		float tx = (x/Engine.getSharedInstance().getViewWidth())*480;
+		float ty = (y/Engine.getSharedInstance().getViewHeight())*800;
+		_position.setX(tx);
+		_position.setY(ty);
 		
 		_nodeCachedModelMatrixIsDirty = true;
+	}
+	
+	/**
+	 * Centers in screen the current node2d unless the parent node has some translation that is applied before current's node2d transform
+	 */
+	public void centerInScreen(){
+		float x = Engine.getSharedInstance().getViewWidth()*0.5f;
+		float y = Engine.getSharedInstance().getViewHeight()*0.5f;
+		
+		setPositionInPixels(x, y);
 	}
 	
 	/**

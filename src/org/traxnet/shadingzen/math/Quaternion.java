@@ -4,6 +4,7 @@ import android.util.FloatMath;
 
 public class Quaternion {
 	private float _x, _y, _z, _w;
+	private float[] _data = null;
 	
 	public Quaternion(){
 		setIdentity();
@@ -68,7 +69,8 @@ public class Quaternion {
 	 */
 	public Matrix4 toMatrix(){
 		float x2, y2, z2, xx, xy, xz, yy, yz, zz, wx, wy, wz;
-		float [] data = new float[16];
+		if(null == _data)
+			_data = new float[16];
 		// calculate coefficients
 		x2 = _x + _x;
 		y2 = _y + _y;
@@ -78,27 +80,27 @@ public class Quaternion {
 		yy = _y * y2;   yz = _y * z2;   zz = _z * z2;
 		wx = _w * x2;   wy = _w * y2;   wz = _w * z2;
 
-		data[0] = 1.0f - (yy + zz);
-		data[1] = xy - wz;
-		data[2] = xz + wy;
-		data[3] = 0.0f;
+		_data[0] = 1.0f - (yy + zz);
+		_data[1] = xy - wz;
+		_data[2] = xz + wy;
+		_data[3] = 0.0f;
  
-		data[4] = xy + wz;
-		data[5] = 1.0f - (xx + zz);
-		data[6] = yz - wx;
-		data[7] = 0.0f;
+		_data[4] = xy + wz;
+		_data[5] = 1.0f - (xx + zz);
+		_data[6] = yz - wx;
+		_data[7] = 0.0f;
 
-		data[8] = xz - wy;
-		data[9] = yz + wx;
-		data[10] = 1.0f - (xx + yy);
-		data[11] = 0.0f;
+		_data[8] = xz - wy;
+		_data[9] = yz + wx;
+		_data[10] = 1.0f - (xx + yy);
+		_data[11] = 0.0f;
 
-		data[12] = 0.0f;
-		data[13] = 0.0f;
-		data[14] = 0.0f;
-		data[15] = 1.0f;
+		_data[12] = 0.0f;
+		_data[13] = 0.0f;
+		_data[14] = 0.0f;
+		_data[15] = 1.0f;
 		
-		return new Matrix4(data);
+		return new Matrix4(_data);
 	}
 	
 	public Quaternion set (float x, float y, float z, float w) {

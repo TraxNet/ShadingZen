@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.rendertask.RenderTask;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -65,7 +66,8 @@ public class UIQuadsHolders extends Entity {
 				//if(null != current_task)
 					//renderer.addRenderTask(current_task);
 				
-				current_task = new UIQuadRenderTask(next.getTexture(), verts_offset, _renderBuffer);
+				current_task = (UIQuadRenderTask) RenderTaskPool.sharedInstance().newTask(UIQuadRenderTask.class);
+				current_task.init(next.getTexture(), verts_offset, _renderBuffer);
 				current_texture = next.getTexture().getTextureId();
 				renderer.addRenderTask(current_task);
 			} 
@@ -99,6 +101,8 @@ public class UIQuadsHolders extends Entity {
 		RenderBuffer _buffer;
 		int _offset, _numQuads;
 		
+		public UIQuadRenderTask(){}
+		
 		/*
 		 * Constructor for UIQuadRenderTask
 		 * 
@@ -106,7 +110,7 @@ public class UIQuadsHolders extends Entity {
 		 * @param quad_offset The offset inside the elements buffer (faces) from which we start rendering this set of quads
 		 * @param buffer RenderBuffer with buffers for verts and elements
 		 */
-		public UIQuadRenderTask(BitmapTexture texture, int quad_offset, RenderBuffer buffer){
+		public void init(BitmapTexture texture, int quad_offset, RenderBuffer buffer){
 			_texture = texture;
 			_buffer = buffer;
 			_offset = quad_offset;
@@ -195,6 +199,18 @@ public class UIQuadsHolders extends Entity {
 			_buffer.updateElementBuffer();
 			
 			return true;
+		}
+
+		@Override
+		public void initializeFromPool() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void finalizeFromPool() {
+			// TODO Auto-generated method stub
+			
 		}
 		
 		

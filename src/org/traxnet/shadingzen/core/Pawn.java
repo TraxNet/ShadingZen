@@ -1,8 +1,6 @@
 package org.traxnet.shadingzen.core;
 
 import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Quaternion;
-import org.traxnet.shadingzen.math.Vector3;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;

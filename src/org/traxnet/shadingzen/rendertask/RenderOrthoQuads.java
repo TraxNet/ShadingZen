@@ -28,4 +28,20 @@ public class RenderOrthoQuads extends RenderTask {
 		return false;
 	}
 
+
+
+	@Override
+	public void initializeFromPool() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void finalizeFromPool() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

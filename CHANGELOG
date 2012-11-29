@@ -1,6 +1,8 @@
 version 1.0-beta2 (future release)
+	[DOC] Added tons of new documentation lines. 
+	[NEW] Utility classes to easily create live wallpapers
+	
 	[REQ] Add the concept of RenderTarget to support rendering to a texture
-	[BUG] 
 
 version 1.0-beta1 21-Nov-2012
 	[NEW] Initial public version

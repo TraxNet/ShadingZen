@@ -94,9 +94,6 @@ public class SkyDome extends Actor {
 		float [] _mvp = new float[16];
 		float [] _mv = new float[16];
 		
-		public RenderSkyDomeTask(){
-			
-		}
 		
 		public void initWithCubemapTexture(BitmapTexture cubemap_texture, ShadersProgram program, CubeShape shape, float [] model_matrix) throws Exception {
 			_shape = shape;
@@ -151,6 +148,18 @@ public class SkyDome extends Actor {
 			GLES20.glUniformMatrix4fv(_program.getUniformLocation("mvp_matrix"), 1, false, _mvp, 0);
 			
 			GLES20.glUniform1i(_program.getUniformLocationNoCheck("tex_unit"), 0);
+			
+		}
+
+		@Override
+		public void initializeFromPool() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void finalizeFromPool() {
+			// TODO Auto-generated method stub
 			
 		}
 		

@@ -1,13 +1,10 @@
 package org.traxnet.shadingzen.core;
 
 import android.opengl.Matrix;
-import android.util.FloatMath;
 import java.lang.Math;
 
-import javax.microedition.khronos.opengles.GL10;
 
 import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Quaternion;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 

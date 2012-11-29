@@ -4,6 +4,7 @@ import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.rendertask.RenderModelTask;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 
 
@@ -37,7 +38,8 @@ public class TestEntity extends Collider {
 
 	@Override
 	public void onDraw(RenderService renderer) {
-		RenderModelTask task = RenderModelTask.buildTask(_program, _mesh, this.getWorldModelMatrix(), _texture);
+		RenderModelTask task = (RenderModelTask) RenderTaskPool.sharedInstance().newTask(RenderModelTask.class);
+		task.init(_program, _mesh, this.getWorldModelMatrix(), _texture);
 		
 		renderer.addRenderTask(task);
 	}

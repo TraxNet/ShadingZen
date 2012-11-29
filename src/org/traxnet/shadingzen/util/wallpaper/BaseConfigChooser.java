@@ -7,7 +7,7 @@ import javax.microedition.khronos.egl.EGLDisplay;
 
 
 
-public abstract class BaseConfigChooser implements EGLConfigChooser {
+public abstract class BaseConfigChooser implements org.traxnet.shadingzen.util.wallpaper.EGLConfigChooser {
         public BaseConfigChooser(int[] configSpec) {
                 mConfigSpec = configSpec;
         }

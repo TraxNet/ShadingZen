@@ -3,6 +3,7 @@ package org.traxnet.shadingzen.rendertask;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.math.Vector4;
+import org.traxnet.shadingzen.util.Poolable;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -15,7 +16,7 @@ import android.util.Log;
  *  thread will only render task that are from the current frame
  *  or newer (sure?)
  */
-public abstract class RenderTask {
+public abstract class RenderTask implements Poolable {
 	protected long _timeStamp;
 	protected Vector4 _diffuseColor;
 	protected Vector4 _ambientColor;
@@ -29,6 +30,11 @@ public abstract class RenderTask {
 		/** This render task contributes to any depth map */
 		public static final int CASTS_SHADOW = 0x0001;
 		public static final int IS_TRANSPARENT = 0x0002;
+	}
+	
+	public RenderTask(){
+		_diffuseColor = new Vector4(1.f, 1.f, 1.f, 1.f);
+		_ambientColor = new Vector4(1.f, 1.f, 1.f, 1.f);
 	}
 	
 	public int getRenderingFlags(){
