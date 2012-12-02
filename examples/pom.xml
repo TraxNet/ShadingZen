@@ -17,6 +17,7 @@
     </parent>
 
     <modules>
+        <module>helloWorld</module>
     </modules>
 
 </project>
