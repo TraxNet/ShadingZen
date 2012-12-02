@@ -1,6 +1,5 @@
 package org.traxnet.shadingzen.core.font;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Charset {
