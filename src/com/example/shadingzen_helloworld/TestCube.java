@@ -11,6 +11,7 @@ import org.traxnet.shadingzen.core.Renderer;
 import org.traxnet.shadingzen.core.ResourcesManager;
 import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.rendertask.RenderModelTask;
+import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 import android.util.FloatMath;
 
@@ -47,7 +48,9 @@ public class TestCube extends Actor {
 	@Override
 	public void onDraw(RenderService renderer) throws Exception {
 		// Send down a render task to the renderer. This RenderTask handles rendering of OBJMeshes
-		RenderModelTask task = RenderModelTask.buildTask(_program, _mesh, this.getWorldModelMatrix(), _texture);
+		RenderModelTask task = (RenderModelTask) RenderTaskPool.sharedInstance().newTask(RenderModelTask.class);
+
+		task.init(_program, _mesh, this.getWorldModelMatrix(), _texture);
 		
 		float r = FloatMath.cos(_time);
 		float g = FloatMath.sin(_time*0.4f);
