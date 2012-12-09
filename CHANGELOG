@@ -1,4 +1,6 @@
 version 1.0-beta2 (future release)
+    [NEW] Maven build added
+    [NEW] Project structure changed
 	[DOC] Added tons of new documentation lines. 
 	[NEW] Utility classes to easily create live wallpapers
 	
