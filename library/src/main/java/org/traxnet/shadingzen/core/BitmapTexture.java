@@ -123,7 +123,7 @@ public class BitmapTexture extends Resource implements Texture {
 	    opts.inScaled = false;
 		Bitmap textureBmp = BitmapFactory.decodeResource(context.getResources(), resource_id, opts);
 		
-		if(!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight())){
+		if(Engine.getSharedInstance().resizeTexturesToPowerOfTwo && (!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight()))){
 			int target_width = calculateUpperPowerOfTwo(textureBmp.getWidth());
 			int target_height = calculateUpperPowerOfTwo(textureBmp.getHeight());
 			

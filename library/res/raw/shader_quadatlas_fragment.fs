@@ -12,5 +12,5 @@ uniform vec3 node_color;
 
 void main(void){
 	vec4 tex_color = texture2D(tex_unit, var_uv);
-	gl_FragColor = vec4(tex_color.rgb, tex_color.a*node_alpha);
+	gl_FragColor = vec4(tex_color.rgb*node_color.rgb, tex_color.a*node_alpha);
 }

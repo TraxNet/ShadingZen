@@ -45,6 +45,8 @@ public final class Engine implements Runnable {
     private Vector<IShadowCaster> _cachedShadowCasters = null;
     private TextureRenderTarget _shadowMapRenderTarget = null;
     float [] _cached_model_matrix = new float[16];
+
+    public boolean resizeTexturesToPowerOfTwo = false;
     
     static Engine globalInstance = null;
     public static Engine getSharedInstance(){

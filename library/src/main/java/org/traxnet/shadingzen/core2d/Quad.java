@@ -16,9 +16,9 @@ public class Quad implements Comparable<Object>{
 	 * @param width Quad width
 	 * @param height Quad height
 	 * @param u1 Left U texture coordinate
-	 * @param v1 Top V texture coordinate
+	 * @param v1 Bottom V texture coordinate
 	 * @param u2 Right U texture coordinate
-	 * @param v2 Bottom V texture coordinate
+	 * @param v2 Up V texture coordinate
 	 */
 	public Quad(int id, float x, float y, float width, float height, float u1, float v1, float u2, float v2){
 		_x = x;

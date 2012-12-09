@@ -18,6 +18,7 @@
 
     <modules>
         <module>helloWorld</module>
-    </modules>
+    <module>animations2d</module>
+  </modules>
 
 </project>

@@ -8,6 +8,21 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.util.Log;
 
+/**
+ *  Manages the generation and usage of vertex and fragment shaders.
+ *  Once both shaders are compiled into a program, calling bindProgram sets its usage for the next rendering calls.
+ *
+ *  Usage:
+ *      _program = (ShadersProgram)ResourcesManager.getSharedInstance().factory(ShadersProgram.class, (Entity)this, "PieceShader1", 0);
+ *      if(!_program.isProgramDefined()){
+ *          _program.setName("PieceShader1");
+ *          _program.attachVertexShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_simple_vertex));
+ *          _program.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_simple_fragment));
+ *          _program.setProgramsDefined();
+ *      }
+ *
+ *      During onDraw call _program.bindProgram to use it.
+ */
 public final class ShadersProgram extends Resource {
 	private int _programId;
 	private ArrayList<String> _VertexShaderSources;
@@ -34,7 +49,7 @@ public final class ShadersProgram extends Resource {
 	}
 	
 	/** Creates the program using the attached shaders
-	 * Must be called after all shaders have been attaced to this program.
+	 * Must be called after all shaders have been attached to this program.
 	 * @return True if the program has been successfully created and compiled.
 	 */
 	private boolean createProgram(){
@@ -176,7 +191,13 @@ public final class ShadersProgram extends Resource {
               
         }
 	 }
-	
+
+    /**
+     * Given an attribute name, returns its OpenGL ID
+     * @param attrib_name The attribute name
+     * @return an OpenGL ID (integer > 1)
+     * @throws Exception
+     */
 	public int getVertexAttribLocation(String attrib_name) throws Exception {
 		Integer location = _attribLocations.get(attrib_name);
 		if(null == location){

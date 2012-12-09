@@ -22,7 +22,9 @@
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
             <version>4.0.1.2</version>
+            <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -40,6 +42,11 @@
                 <artifactId>android-maven-plugin</artifactId>
                 <version>3.4.1</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <sdk>
+                        <platform>16</platform>
+                    </sdk>
+                </configuration>
             </plugin>
         </plugins>
     </build>
