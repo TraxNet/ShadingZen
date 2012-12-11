@@ -3,72 +3,72 @@ package org.traxnet.shadingzen.math;
 import android.util.FloatMath;
 
 public class Vector4 {
-	private float _x, _y, _z, _w;
+	public float x, y, z, w;
 	public Vector4(float x, float y, float z, float w){
-		_x = x; _y = y; _z = z; _w = w;
+		this.x = x; this.y = y; this.z = z; this.w = w;
 	}
 	public Vector4(Vector4 v){
-		_x = v._x;
-		_y = v._y;
-		_z = v._z;
-		_w = v._w;
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		w = v.w;
 	}
 	public Vector4(Vector3 v, float w){
-		_x = v.getX();
-		_y = v.getY();
-		_z = v.getZ();
-		_w = w;
+		x = v.getX();
+		y = v.getY();
+		z = v.getZ();
+		this.w = w;
 	}
 	public Vector4(float v[]){
-		_x = v[0];
-		_y = v[1];
-		_z = v[2];
-		_w = v[3];
+		x = v[0];
+		y = v[1];
+		z = v[2];
+		w = v[3];
 	}
 
 	public void set(Vector4 v){
-		_x = v._x;
-		_y = v._y;
-		_z = v._z;
-		_w = v._w;
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		w = v.w;
 	}
 	
 	public void set(float x, float y, float z, float w){
-		_x = x;
-		_y = y;
-		_z = z;
-		_w = w;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
 	}
 	
 	public float [] getAsArray(){
 		float array[] = new float[4];
-		array[0] = _x;
-		array[1] = _y;
-		array[2] = _z;
-		array[3] = _w;
+		array[0] = x;
+		array[1] = y;
+		array[2] = z;
+		array[3] = w;
 		
 		return array;
 	}
 	
 	public float getX(){
-		return _x;
+		return x;
 	}
 	public float getY(){
-		return _y;
+		return y;
 	}
 	public float getZ(){
-		return _z;
+		return z;
 	}
 	public float getW(){
-		return _w;
+		return w;
 	}
 	
 	public Vector3 getAsVector3(){
-		return new Vector3(_x, _y, _z);
+		return new Vector3(x, y, z);
 	}
 	
 	public float length(){
-		return _x*_x + _y*_y + _z*_z + _w*_w;
+		return x * x + y * y + z * z + w * w;
 	}
 	
 	public float lengthSqrt(){
@@ -79,25 +79,25 @@ public class Vector4 {
 		float sqr_length =  FloatMath.sqrt(length());
 		if(sqr_length >= 0.0000001f){
 			float inv = 1/sqr_length;
-			return new Vector4(_x*inv, _y*inv, _z*inv, _w*inv);
+			return new Vector4(x *inv, y *inv, z *inv, w *inv);
 		}
 		return new Vector4(0.f, 0.f, 0.f, 0.f);
 	}
 	
 	public Vector4 sub(Vector4 b){
 		return new Vector4(
-				_x - b._x,
-				_y - b._y,
-				_z - b._z,
-				_w - b._w
+				x - b.x,
+				y - b.y,
+				z - b.z,
+				w - b.w
 				);
 	}
 	public Vector4 add(Vector4 b){
 		return new Vector4(
-				_x + b._x,
-				_y + b._y,
-				_z + b._z,
-				_w + b._w
+				x + b.x,
+				y + b.y,
+				z + b.z,
+				w + b.w
 				);
 	}
 	

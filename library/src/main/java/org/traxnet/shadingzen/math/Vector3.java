@@ -7,31 +7,31 @@ import android.util.FloatMath;
  * @author oscarblasco
  */
 public class Vector3 {
-	private float _x, _y, _z;
+	public float x, y, z;
 	public Vector3(){
-		_x = _y = _z = 0.f;
+		x = y = z = 0.f;
 	}
 	public Vector3(float x, float y, float z){
-		_x = x; _y = y; _z = z;
+		this.x = x; this.y = y; this.z = z;
 	}
 	public Vector3(Vector3 v){
-		_x = v._x; _y = v._y; _z = v._z;
+		x = v.x; y = v.y; z = v.z;
 	}
 	public Vector3(float v[]){
-		_x = v[0];
-		_y = v[1];
-		_z = v[2];
+		x = v[0];
+		y = v[1];
+		z = v[2];
 	}
 	
 	public float dot(Vector3 v){
-		return _x*v._x + _y*v._y + _z*v._z;
+		return x *v.x + y *v.y + z *v.z;
 	}
 	
 	public Vector3 cross(Vector3 v){
 		return new Vector3(
-			_y*v._z - _z*v._y,
-			_x*v._z - _z*v._x,
-			_x*v._y - _y*v._z
+			y *v.z - z *v.y,
+			x *v.z - z *v.x,
+			x *v.y - y *v.z
 		);
 	}
 	
@@ -41,16 +41,16 @@ public class Vector3 {
 	 */
 	public float [] getAsArray(){
 		float array[] = new float[3];
-		array[0] = _x;
-		array[1] = _y;
-		array[2] = _z;
+		array[0] = x;
+		array[1] = y;
+		array[2] = z;
 		
 		return array;
 	}
 	
 	/*** Lenght of this vector */
 	public float length(){
-		return _x*_x + _y*_y + _z*_z;
+		return x * x + y * y + z * z;
 	}
 	
 	/*** sqrt(Lenght) of this vector */
@@ -67,7 +67,7 @@ public class Vector3 {
 		float sqr_length =  FloatMath.sqrt(length());
 		if(sqr_length >= 0.0000001f){
 			float inv = 1/sqr_length;
-			return new Vector3(_x*inv, _y*inv, _z*inv);
+			return new Vector3(x *inv, y *inv, z *inv);
 		}
 		return new Vector3(0.f, 0.f, 0.f);
 	}
@@ -79,37 +79,37 @@ public class Vector3 {
 		float sqr_length =  FloatMath.sqrt(length());
 		if(sqr_length >= 0.0000001f){
 			float inv = 1/sqr_length;
-			_x *= inv;
-			_y *= inv;
-			_z *= inv;
+			x *= inv;
+			y *= inv;
+			z *= inv;
 		} else {
-			_x = 0.f;
-			_y = 0.f;
-			_z = 0.f;
+			x = 0.f;
+			y = 0.f;
+			z = 0.f;
 		}
 	}
 	
 	public float getX(){
-		return _x;
+		return x;
 	}
 	public float getY(){
-		return _y;
+		return y;
 	}
 	public float getZ(){
-		return _z;
+		return z;
 	}
 	public Vector2 getXY(){
-		return new Vector2(_x, _y);
+		return new Vector2(x, y);
 	}
 	
 	public void setX(float x){
-		_x = x;
+		this.x = x;
 	}
 	public void setY(float y){
-		_y = y;
+		this.y = y;
 	}
 	public void setZ(float z){
-		_z = z;
+		this.z = z;
 	}
 	
 	public void set(float x, float y, float z) {
@@ -119,51 +119,51 @@ public class Vector3 {
 	}
 	
 	public void set(Vector3 v){
-		setX(v._x);
-		setY(v._y);
-		setZ(v._z);
+		setX(v.x);
+		setY(v.y);
+		setZ(v.z);
 	}
 	
 	public Vector3 sub(Vector3 b){
 		return new Vector3(
-				_x - b._x,
-				_y - b._y,
-				_z - b._z
+				x - b.x,
+				y - b.y,
+				z - b.z
 				);
 	}
 	public void subNoCopy(Vector3 b){
-		_x -= b._x;
-		_y -= b._y;
-		_z -= b._z;
+		x -= b.x;
+		y -= b.y;
+		z -= b.z;
 	}
 	
 	public Vector3 add(Vector3 b){
 		return new Vector3(
-				_x + b._x,
-				_y + b._y,
-				_z + b._z
+				x + b.x,
+				y + b.y,
+				z + b.z
 				);
 	}
 	
 	public void addNoCopy(Vector3 b){
-		_x += b._x;
-		_y += b._y;
-		_z += b._z;
+		x += b.x;
+		y += b.y;
+		z += b.z;
 	}
 	
 	public Vector3 mul(float f){
 		return new Vector3(
-			_x*f,
-			_y*f,
-			_z*f
+			x *f,
+			y *f,
+			z *f
 		);
 	}
 	
 	public Vector3 negate(){
 		return new Vector3(
-			-_x,
-			-_y,
-			-_z
+			-x,
+			-y,
+			-z
 			);
 	}
 	

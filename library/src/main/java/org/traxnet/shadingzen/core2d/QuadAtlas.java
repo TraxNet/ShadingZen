@@ -186,20 +186,22 @@ public class QuadAtlas extends Node2d {
 			_blendSrc = GLES20.GL_SRC_ALPHA;
 			_blendDst = GLES20.GL_ONE_MINUS_SRC_ALPHA;
 			_matrix.set(owner.getWorldModelMatrix());
-			
+
+            int viewport_w = Engine.getSharedInstance().getViewWidth();
 			int viewport_h = Engine.getSharedInstance().getViewHeight();
-			int viewport_w = Engine.getSharedInstance().getViewWidth();
-			
+
 			float view_factor_x = (float)viewport_w/(float)480;
 			float view_factor_y = (float)viewport_h/(float)800;
-			
-			ortho_matrix[0] = view_factor_x*2.f/viewport_w;
+
+            //ortho_matrix[0] = view_factor_x*2.f/viewport_w;
+            ortho_matrix[0] = 2.f/viewport_w;
 			ortho_matrix[1] = 0.f;
 			ortho_matrix[2] = 0.f;
 			ortho_matrix[3] = 0.f;
 			
 			ortho_matrix[4] = 0.f;
-			ortho_matrix[5] = view_factor_y*2.f/viewport_h;
+            //ortho_matrix[5] = view_factor_y*2.f/viewport_h;
+            ortho_matrix[5] = 2.f/viewport_h;
 			ortho_matrix[6] = 0.f;
 			ortho_matrix[7] = 0.f;
 			
