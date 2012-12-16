@@ -106,7 +106,7 @@ public class BitmapTexture extends Resource implements Texture {
 	}
 	
 	boolean isPowerOfTwo(int i){
-		return (2 * i == (i ^( i - 1) + 1));
+		return ( i & (i - 1)) == 0;
 	}
 	
 	public boolean isCubemap(){
