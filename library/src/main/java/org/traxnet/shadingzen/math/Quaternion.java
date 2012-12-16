@@ -3,66 +3,93 @@ package org.traxnet.shadingzen.math;
 import android.util.FloatMath;
 
 public class Quaternion {
-	private float _x, _y, _z, _w;
-	private float[] _data = null;
+	public float x, y, z, w;
+	public float[] _data = null;
 	
 	public Quaternion(){
 		setIdentity();
 	}
 	public Quaternion(Quaternion q){
-		_x = q._x;
-		_y = q._y;
-		_z = q._z;
-		_w = q._w;
+		x = q.x;
+		y = q.y;
+		z = q.z;
+		w = q.w;
 	}
 	
 	public Quaternion(Vector3 v, float angle){
 		setRotation(v, angle);
 	}
+
+    public Quaternion(float x, float y, float z, float angle){
+        setRotation(x, y, z, angle);
+    }
 	
 	public void setIdentity(){
-		_x = _y = _z = 0;
-		_w = 1;
+		x = y = z = 0;
+		w = 1;
 	}
 	
 	public Quaternion conjugate(){
 		Quaternion conj = new Quaternion();
-		conj._x = -_x;
-		conj._y = -_y;
-		conj._z = -_z;
-		conj._w = _w;
+		conj.x = -x;
+		conj.y = -y;
+		conj.z = -z;
+		conj.w = w;
 		return conj;
 	}
 	
 	/** Sets this quaternion as the angle rotation around axis v */
 	public void setRotation(Vector3 v, float angle){
-		float half = angle*0.5f;
-		float s = FloatMath.sin(half);
-		_x = v.getX()*s;
-		_y = v.getY()*s;
-		_z = v.getZ()*s;
-		_w = FloatMath.cos(half);
+        float half = angle*0.5f;
+        float s = FloatMath.sin(half);
+        x = v.x*s;
+        y = v.y*s;
+        z = v.z*s;
+        w = FloatMath.cos(half);
 	}
+
+    /** Sets this quaternion as the angle rotation around axis v */
+    public void setRotation(float x, float y, float z, float angle){
+        float half = angle*0.5f;
+        float s = FloatMath.sin(half);
+        this.x = x*s;
+        this.y = y*s;
+        this.z = z*s;
+        this.w = FloatMath.cos(half);
+    }
 	
 	public void invert(){
 		Quaternion conj = this.conjugate();
-		float length = _x*_x + _y*_y + _z*_z + _w*_w;
+		float length = x * x + y * y + z * z + w * w;
 		length = 1.f/length;
-		conj._x *= length;
-		conj._y *= length;
-		conj._z *= length;
-		conj._w *= length;
+		conj.x *= length;
+		conj.y *= length;
+		conj.z *= length;
+		conj.w *= length;
 	}
 	
-	/** Multiply this quaternion by another quaternion */
+	/** Multiply this quaternion by another quaternion and returns a new one */
 	public Quaternion mul(Quaternion b) {
 		Quaternion ret = new Quaternion();
-		ret._x = + _x*b._w + _y*b._z - _z*b._y + _w*b._x;
-		ret._y = - _x*b._z + _y*b._w + _z*b._x + _w*b._y;
-		ret._z = + _x*b._y - _y*b._x + _z*b._w + _w*b._z;
-		ret._w = - _x*b._x - _y*b._y - _z*b._z + _w*b._w;
+		ret.x = +x *b.w + y *b.z - z *b.y + w *b.x;
+		ret.y = -x *b.z + y *b.w + z *b.x + w *b.y;
+		ret.z = +x *b.y - y *b.x + z *b.w + w *b.z;
+		ret.w = -x *b.x - y *b.y - z *b.z + w *b.w;
 		return ret;
 	}
+
+    /** Multiply this quaternion by another quaternion */
+    public void mulInplace(Quaternion b){
+        float xx = +this.x *b.w + this.y *b.z - this.z *b.y + this.w *b.x;
+        float yy = -this.x *b.z + this.y *b.w + this.z *b.x + this.w *b.y;
+        float zz = +this.x *b.y - this.y *b.x + this.z *b.w + this.w *b.z;
+        float ww = -this.x *b.x - this.y *b.y - this.z *b.z + this.w *b.w;
+
+        this.x = xx;
+        this.y = yy;
+        this.z = zz;
+        this.w = ww;
+    }
 	
 	/**
 	 * Converts a quaternion rotation operator into a matrix.
@@ -72,13 +99,13 @@ public class Quaternion {
 		if(null == _data)
 			_data = new float[16];
 		// calculate coefficients
-		x2 = _x + _x;
-		y2 = _y + _y;
-		z2 = _z + _z;
+		x2 = x + x;
+		y2 = y + y;
+		z2 = z + z;
 
-		xx = _x * x2;   xy = _x * y2;   xz = _x * z2;
-		yy = _y * y2;   yz = _y * z2;   zz = _z * z2;
-		wx = _w * x2;   wy = _w * y2;   wz = _w * z2;
+		xx = x * x2;   xy = x * y2;   xz = x * z2;
+		yy = y * y2;   yz = y * z2;   zz = z * z2;
+		wx = w * x2;   wy = w * y2;   wz = w * z2;
 
 		_data[0] = 1.0f - (yy + zz);
 		_data[1] = xy - wz;
@@ -104,10 +131,10 @@ public class Quaternion {
 	}
 	
 	public Quaternion set (float x, float y, float z, float w) {
-        this._x = x;
-        this._y = y;
-        this._z = z;
-        this._w = w;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
         return this;
 }
 	
@@ -148,10 +175,10 @@ public class Quaternion {
 
             // Calculate the x, y, z and w values for the quaternion by using a
             // special form of linear interpolation for quaternions.
-            final float x = (scale0 * this._x) + (scale1 * end._x);
-            final float y = (scale0 * this._y) + (scale1 * end._y);
-            final float z = (scale0 * this._z) + (scale1 * end._z);
-            final float w = (scale0 * this._w) + (scale1 * end._w);
+            final float x = (scale0 * this.x) + (scale1 * end.x);
+            final float y = (scale0 * this.y) + (scale1 * end.y);
+            final float z = (scale0 * this.z) + (scale1 * end.z);
+            final float w = (scale0 * this.w) + (scale1 * end.w);
             set(x, y, z, w);
 
             // Return the interpolated quaternion
@@ -166,7 +193,7 @@ public class Quaternion {
                     return false;
             }
             final Quaternion comp = (Quaternion)o;
-            return this._x == comp._x && this._y == comp._y && this._z == comp._z && this._w == comp._w;
+            return this.x == comp.x && this.y == comp.y && this.z == comp.z && this.w == comp.w;
 
     }
 
@@ -174,7 +201,7 @@ public class Quaternion {
      * @param other the other quaternion.
      * @return this quaternion for chaining. */
     public float dot (Quaternion other) {
-            return _x * other._x + _y * other._y + _z * other._z + _w * other._w;
+            return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
     /** Multiplies the components of this quaternion with the given scalar.
@@ -182,10 +209,10 @@ public class Quaternion {
      * @return this quaternion for chaining. */
     public Quaternion mul (float scalar) {
     	Quaternion ret = new Quaternion();
-    	ret._x = this._x * scalar;
-    	ret._y = this._y * scalar;
-    	ret._z = this._z * scalar;
-    	ret._w = this._w * scalar;
+    	ret.x = this.x * scalar;
+    	ret.y = this.y * scalar;
+    	ret.z = this.z * scalar;
+    	ret.w = this.w * scalar;
         return ret;
     }
 	

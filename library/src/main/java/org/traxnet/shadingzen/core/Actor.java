@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.traxnet.shadingzen.core.actions.Action;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Quaternion;
 import org.traxnet.shadingzen.math.Vector3;
@@ -192,6 +193,11 @@ public abstract class Actor extends Entity {
 	public void setPosition(Vector3 v){
 		_position = v;
 	}
+
+    /** Sets thee local position relative to parent actor */
+    public void setPosition(float x, float y, float z){
+        _position.set(x, y, z);
+    }
 	
 	public float getScale(){
 		return _scale;

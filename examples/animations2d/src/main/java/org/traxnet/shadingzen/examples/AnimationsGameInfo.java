@@ -108,13 +108,13 @@ public class AnimationsGameInfo extends GameInfo implements InputController {
 
 
     @Override
-    public void onTouchDrag(float posx, float posy, float deltax, float deltay) {
-
+    public boolean onTouchDrag(float posx, float posy, float deltax, float deltay) {
+        return true;
     }
 
     @Override
-    public void onTouchUp(float posx, float posy) {
-
+    public boolean onTouchUp(float posx, float posy) {
+        return true;
     }
 
     @Override

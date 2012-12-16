@@ -7,7 +7,6 @@ import org.traxnet.shadingzen.rendertask.RenderModelTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
 
-
 public class TestEntity extends Collider {
 	OBJMesh _mesh;
 	ShadersProgram _program;

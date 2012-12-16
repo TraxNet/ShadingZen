@@ -104,7 +104,7 @@ public abstract class Level extends Entity {
 		}
 		
 		public void load(){
-			_skydomeSphere = (Sphere)ResourcesManager.getSharedInstance().factory(Sphere.class, this, "SkyDome");
+			_skydomeSphere = (Sphere)ResourcesManager.getSharedInstance().factory(Sphere.class, this, "SkyDomeScene");
 			_skydomeProgram = (ShadersProgram)ResourcesManager.getSharedInstance().factory(ShadersProgram.class, this, "SkyDomeProgram");
 			_skydomeProgram.attachVertexShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_vertex));
 			_skydomeProgram.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_fragment));

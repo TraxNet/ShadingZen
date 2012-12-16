@@ -1,6 +1,6 @@
 package org.traxnet.shadingzen.core;
 
-public interface IShadowCaster{
+public interface ShadowCaster {
 	public boolean castsShadow();
 	
 	/** Draw this entity into a depth map 

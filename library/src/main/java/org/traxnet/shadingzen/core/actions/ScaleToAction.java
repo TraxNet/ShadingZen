@@ -1,6 +1,5 @@
-package org.traxnet.shadingzen.core;
+package org.traxnet.shadingzen.core.actions;
 
-import org.traxnet.shadingzen.core.Action;
 import org.traxnet.shadingzen.core.Actor;
 import org.traxnet.shadingzen.core.InvalidTargetActorException;
 

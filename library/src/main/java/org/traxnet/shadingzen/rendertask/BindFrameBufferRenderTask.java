@@ -35,10 +35,10 @@ public class BindFrameBufferRenderTask extends RenderTask {
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT|GLES20.GL_DEPTH_BUFFER_BIT);
 		}
 		
-		// Enable back-face culling and depth testing
-		// TODO: Ensure we are not changing this during the frame and move
-		// all this call to the setup-engine step
-		//GLES20.glCullFace(GLES20.GL_BACK);
+		// Enable back-face culling
+        GLES20.glEnable( GLES20.GL_CULL_FACE );
+
+        GLES20.glCullFace(GLES20.GL_BACK);
 	}
 
 	@Override

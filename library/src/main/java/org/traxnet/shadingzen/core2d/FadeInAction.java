@@ -1,6 +1,6 @@
 package org.traxnet.shadingzen.core2d;
 
-import org.traxnet.shadingzen.core.Action;
+import org.traxnet.shadingzen.core.actions.Action;
 import org.traxnet.shadingzen.core.InvalidTargetActorException;
 
 public class FadeInAction extends Action {

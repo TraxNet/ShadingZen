@@ -1,4 +1,6 @@
-package org.traxnet.shadingzen.core;
+package org.traxnet.shadingzen.core.actions;
+
+import org.traxnet.shadingzen.core.InvalidTargetActorException;
 
 import java.util.ArrayDeque;
 
@@ -23,7 +25,7 @@ public class SequenceAction extends Action {
 	}
 
 	@Override
-	public void step(float deltaTime) throws InvalidTargetActorException {	
+	public void step(float deltaTime) throws InvalidTargetActorException {
 		if(isDone())
 			return;
 		

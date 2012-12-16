@@ -1,12 +1,15 @@
-package org.traxnet.shadingzen.core;
+package org.traxnet.shadingzen.core.actors;
 
+import org.traxnet.shadingzen.core.Collider;
+import org.traxnet.shadingzen.core.Model;
+import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.math.Matrix4;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 public abstract class Pawn extends Collider {
-	protected Model _model; 
+	protected Model _model;
 	
 	public Pawn(){
 		

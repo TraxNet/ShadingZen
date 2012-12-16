@@ -37,10 +37,10 @@ public final class RenderTaskPool {
 		try {
 			return (RenderTask) pool.newObject(_class);
 		} catch (InstantiationException e) {
-			Log.e("ShadingZen", "Unable to create RenderTask from pool", e);
+			Log.e("ShadingZen", "Unable to create RenderTask from pool:" + e.getLocalizedMessage(), e);
 			return null;
 		} catch (IllegalAccessException e) {
-			Log.e("ShadingZen", "Unable to create RenderTask from pool", e);
+			Log.e("ShadingZen", "Unable to create RenderTask from pool:" + e.getLocalizedMessage(), e);
 			return null;
 		}
 	}

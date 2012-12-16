@@ -19,6 +19,8 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import org.traxnet.shadingzen.core.RenderService;
+import org.traxnet.shadingzen.core.Shape;
 import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 

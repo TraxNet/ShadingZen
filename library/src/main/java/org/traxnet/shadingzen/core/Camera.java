@@ -18,6 +18,7 @@ import org.traxnet.shadingzen.math.Vector4;
  */
 public class Camera extends Actor {
 	protected Vector3 _dir;
+    protected Vector3 _up = new Vector3(0.f, 1.f, 0.f);
 	
 	// Variables to calculate view frustum volume
 	protected float _fov, _aspect, _near, _far;
@@ -75,12 +76,25 @@ public class Camera extends Actor {
 	public Vector3 getDirection(){
 		return _dir;
 	}
+
+    /** Sets the camera view dir without performing a normalization */
+    public void setDirUnsafe(float x, float y, float z){
+        _dir.x = x;
+        _dir.y = y;
+        _dir.z = z;
+    }
 	public void setDirection(Vector3 dir){
 		_dir = dir.normalize();
 	}
 	public void setDirection(float x, float y, float z){
 		setDirection(new Vector3(x, y, z));
 	}
+
+    public void setCameraUp(float x, float y, float z){
+        _up.x = x;
+        _up.y = y;
+        _up.z = z;
+    }
 	
 	/***
 	 * Returns the View matrix for this camera.
@@ -88,7 +102,7 @@ public class Camera extends Actor {
 	 * @return View matrix for this camera.
 	 */
 	public Matrix4 getViewMatrix(){
-		Matrix.setLookAtM(_viewMatrix.getAsArray(), 0, _position.getX(), _position.getY(), _position.getZ(), _position.getX()+_dir.getX(), _position.getY()+_dir.getY(), _position.getZ()+_dir.getZ(), 0.f, 1.f, 0.f);
+		Matrix.setLookAtM(_viewMatrix.getAsArray(), 0, _position.getX(), _position.getY(), _position.getZ(), _position.getX()+_dir.getX(), _position.getY()+_dir.getY(), _position.getZ()+_dir.getZ(), _up.x, _up.y, _up.z);
 		return _viewMatrix;
 	}
 	
@@ -227,8 +241,8 @@ public class Camera extends Actor {
 	public void onUpdate(float deltaTime) {
 		
 		if(_isTrackingAnActor){
-			this._dir.set(this._trackedActor.getPosition());
-			this._dir.sub(_position);
+			this._dir.set(this._trackedActor.getPosition().sub(_position));
+			//this._dir.sub(_position);
 			this._dir.normalizeNoCopy();
 		}
 	}

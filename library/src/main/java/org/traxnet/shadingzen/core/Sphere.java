@@ -9,7 +9,10 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import org.traxnet.shadingzen.core.RenderService;
+import org.traxnet.shadingzen.core.Shape;
 
+@Deprecated // This class doesn't work
 public class Sphere extends Shape {
 
 	float sphere_parms[]=new float[3];

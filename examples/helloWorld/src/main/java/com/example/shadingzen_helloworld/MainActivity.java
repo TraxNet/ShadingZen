@@ -1,5 +1,6 @@
 package com.example.shadingzen_helloworld;
 
+import android.util.Log;
 import org.traxnet.shadingzen.core.EngineGLSurfaceView;
 import org.traxnet.shadingzen.core.Engine;
 import org.traxnet.shadingzen.core.GameInfo;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	protected void loadGameInfo(){
+	protected void loadGameInfo() throws Exception {
 		Engine engine = Engine.getSharedInstance(); // Singleton!
     	GameInfo gameInfo = new HelloWorldGameInfo();
 		
@@ -50,7 +51,11 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		
+
+        try{
 		loadGameInfo();
+        } catch (Exception ex){
+            Log.e("HelloWorld", "Unable to load game scene:" + ex.getMessage(), ex);
+        }
 	}
 }
