@@ -11,7 +11,7 @@ public class Sprite extends QuadAtlas {
 		
 	}
 	
-	public static Sprite spriteWithTexture(Node2d parent_node, BitmapTexture texture, String actor_name, short x, short y){
+	public static Sprite spriteWithTexture(Node2d parent_node, BitmapTexture texture, String actor_name){
 		Sprite node = (Sprite) parent_node.spawn(Sprite.class, actor_name);
 		node.init(1, texture);
 		
@@ -22,7 +22,7 @@ public class Sprite extends QuadAtlas {
 	}
 	
 	
-	public static Sprite spriteWithTexture(Node2d parent_node, int res_id, short x, short y){
+	public static Sprite spriteWithTexture(Node2d parent_node, int res_id){
 		Sprite node = (Sprite) parent_node.spawn(Sprite.class, UUID.randomUUID().toString());
 		
 		BitmapTexture texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)node, ""+res_id, res_id, new BitmapTexture.Parameters());

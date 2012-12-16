@@ -39,7 +39,7 @@ public class AnimationsGameInfo extends GameInfo implements InputController {
         label.setPositionInPixels(280, screen_height-30);
 
         // Create the maid face
-        Sprite maid = Sprite.spriteWithTexture(_animsLayer, R.raw.maidface01, (short)0, (short)0);
+        Sprite maid = Sprite.spriteWithTexture(_animsLayer, R.raw.maidface01);
         maid.setPositionInPixels(48, screen_height-48);
 
         // Create an animated (walking) maid sprite

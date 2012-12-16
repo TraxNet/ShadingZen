@@ -45,6 +45,7 @@ public final class Engine implements Runnable {
     private Vector<IShadowCaster> _cachedShadowCasters = null;
     private TextureRenderTarget _shadowMapRenderTarget = null;
     float [] _cached_model_matrix = new float[16];
+    private boolean _landscapeMode = false;
 
     public boolean resizeTexturesToPowerOfTwo = false;
     
@@ -106,6 +107,14 @@ public final class Engine implements Runnable {
 	public int getViewHeight(){
 		return _viewHeight;
 	}
+
+    public void setLandscapeMode(boolean value){
+        _landscapeMode = value;
+    }
+
+    public boolean getLandscapeMode(){
+        return _landscapeMode;
+    }
 	
 	public Texture getShadowMapTexture(){
 		return _shadowMapRenderTarget;

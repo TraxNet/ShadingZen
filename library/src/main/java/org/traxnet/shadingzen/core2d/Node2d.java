@@ -76,6 +76,14 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		
 		_nodeCachedModelMatrixIsDirty = true;
 	}
+
+    /** Set local position relative to parent actor */
+    public void setPosition(float x, float y){
+        _position.x = x;
+        _position.y = y;
+
+        _nodeCachedModelMatrixIsDirty = true;
+    }
 	
 	/**
 	 * Sets node position in current screen dimensions. This affects node's local position relative to parent actor.

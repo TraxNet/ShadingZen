@@ -3,30 +3,30 @@ package org.traxnet.shadingzen.math;
 import android.util.FloatMath;
 
 public class Vector2 {
-	private float _x, _y;
+	public float x, y;
 	public Vector2(){
-		_x = _y = 0.f;
+		x = y = 0.f;
 	}
 	public Vector2(float x, float y){
-		_x = x; _y = y;
+		this.x = x; this.y = y;
 	}
 	public Vector2(Vector2 v){
-		_x = v._x; _y = v._y; 
+		x = v.x; y = v.y;
 	}
 	public Vector2(float v[]){
-		_x = v[0];
-		_y = v[1];
+		x = v[0];
+		y = v[1];
 	}
 	
 	public float dot(Vector2 v){
-		return _x*v._x + _y*v._y;
+		return x *v.x + y *v.y;
 	}
 	
 	/*public Vector2 cross(Vector2 v){
 		return new Vector2(
-			_y*v._z - _z*v._y,
-			_x*v._z - _z*v._x,
-			_x*v._y - _y*v._z
+			y*v._z - _z*v.y,
+			x*v._z - _z*v.x,
+			x*v.y - y*v._z
 		);
 	}*/
 	
@@ -36,15 +36,15 @@ public class Vector2 {
 	 */
 	public float [] getAsArray(){
 		float array[] = new float[2];
-		array[0] = _x;
-		array[1] = _y;
+		array[0] = x;
+		array[1] = y;
 		
 		return array;
 	}
 	
 	/*** Lenght of this vector */
 	public float length(){
-		return _x*_x + _y*_y;
+		return x * x + y * y;
 	}
 	/*** Perform a normalization 
 	 * If sqrt(len) of this vector is greater than an EPSILON value (0,0000001)
@@ -56,61 +56,61 @@ public class Vector2 {
 		float sqr_length =  FloatMath.sqrt(length());
 		if(sqr_length >= 0.0000001f){
 			float inv = 1/sqr_length;
-			return new Vector2(_x*inv, _y*inv);
+			return new Vector2(x *inv, y *inv);
 		}
 		return new Vector2(0.f, 0.f);
 	}
 	
 	public float getX(){
-		return _x;
+		return x;
 	}
 	public float getY(){
-		return _y;
+		return y;
 	}
 
 	
 	public void setX(float x){
-		_x = x;
+		this.x = x;
 	}
 	public void setY(float y){
-		_y = y;
+		this.y = y;
 	}
 	
 	public void set(Vector2 v){
-		_x = v._x;
-		_y = v._y;
+		x = v.x;
+		y = v.y;
 	}
 	
 	public void set(float x, float y){
-		_x = x;
-		_y = y;
+		this.x = x;
+		this.y = y;
 	}
 
 	
 	public Vector2 sub(Vector2 b){
 		return new Vector2(
-				_x - b._x,
-				_y - b._y
+				x - b.x,
+				y - b.y
 				);
 	}
 	public Vector2 add(Vector2 b){
 		return new Vector2(
-				_x + b._x,
-				_y + b._y
+				x + b.x,
+				y + b.y
 				);
 	}
 	
 	public Vector2 mul(float f){
 		return new Vector2(
-			_x*f,
-			_y*f
+			x *f,
+			y *f
 		);
 	}
 	
 	public Vector2 negate(){
 		return new Vector2(
-			-_x,
-			-_y
+			-x,
+			-y
 			);
 	}
 
