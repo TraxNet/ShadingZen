@@ -1,4 +1,4 @@
-package org.traxnet.shadingzen.actors;
+package org.traxnet.shadingzen.core.actors;
 
 import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.Actor;
@@ -11,7 +11,7 @@ import org.traxnet.shadingzen.core.BitmapTexture.TextureType;
 import org.traxnet.shadingzen.exceptions.InvalidTextureType;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
-import org.traxnet.shadingzen.shapes.CubeShape;
+import org.traxnet.shadingzen.core.shapes.CubeShape;
 
 
 import android.content.Context;

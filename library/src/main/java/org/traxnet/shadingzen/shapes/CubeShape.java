@@ -1,4 +1,4 @@
-package org.traxnet.shadingzen.shapes;
+package org.traxnet.shadingzen.core.shapes;
 
 import org.traxnet.shadingzen.core.RenderBuffer;
 import org.traxnet.shadingzen.core.RenderService;
