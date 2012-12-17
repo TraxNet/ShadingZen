@@ -1,20 +1,25 @@
 package org.traxnet.shadingzen.core;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
 import android.content.Context;
 
-public class BitmapTexture extends Resource implements Texture {
+public class BitmapTexture extends CompressedResource implements Texture {
 	protected IntBuffer _textureIds;
 	protected int _width, _height;
 	protected boolean _driverDataDirty;
@@ -39,7 +44,7 @@ public class BitmapTexture extends Resource implements Texture {
 		int [] _cubemap;
 		TextureFilter _magFilter, _minFilter;
 		boolean _genMipmaps;
-		
+		public boolean resizeTexturesToPowerOfTwo = true;
 		
 		public Parameters(){
 			_type = TextureType.Texture2D;
@@ -114,16 +119,16 @@ public class BitmapTexture extends Resource implements Texture {
 	}
 	
 	
-	boolean loadAsTexture2D(Context context, String id, int resource_id, BitmapTexture.Parameters params){
+	boolean loadAsTexture2D(Context context, String id, InputStream resource_stream, BitmapTexture.Parameters params){
 		_bmps = new Bitmap[1];
 		Matrix flip = new Matrix();
 	    flip.postScale(1f, -1f);
 	    
 	    BitmapFactory.Options opts = new BitmapFactory.Options();
 	    opts.inScaled = false;
-		Bitmap textureBmp = BitmapFactory.decodeResource(context.getResources(), resource_id, opts);
+		Bitmap textureBmp = BitmapFactory.decodeStream(resource_stream);
 		
-		if(Engine.getSharedInstance().resizeTexturesToPowerOfTwo && (!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight()))){
+		if(params.resizeTexturesToPowerOfTwo && (!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight()))){
 			int target_width = calculateUpperPowerOfTwo(textureBmp.getWidth());
 			int target_height = calculateUpperPowerOfTwo(textureBmp.getHeight());
 			
@@ -147,7 +152,7 @@ public class BitmapTexture extends Resource implements Texture {
 		return true;
 	}
 	
-	boolean loadAsTextureCubeMap(Context context, String id, int resource_id, BitmapTexture.Parameters params){
+	boolean loadAsTextureCubeMap(Context context, String id, InputStream resource_stream, BitmapTexture.Parameters params){
 		_bmps  = new Bitmap[6];
 		Matrix flip = new Matrix();
 	    flip.postScale(1f, -1f);
@@ -172,21 +177,43 @@ public class BitmapTexture extends Resource implements Texture {
 	/// Resource implementations
 	@Override
 	public boolean onStorageLoad(Context context, String id, int resource_id, Object params) {
-		try{
-			if(null != params){
-				BitmapTexture.Parameters texparams = (BitmapTexture.Parameters)params;
-				if(texparams.getType() == TextureType.Texture2D)
-					return loadAsTexture2D(context, id, resource_id, texparams);
-				else
-					return loadAsTextureCubeMap(context, id, resource_id, texparams);
-					
-			}
-			
-			return loadAsTexture2D(context, id, resource_id, new BitmapTexture.Parameters());
-		} catch(Exception e){
-			return false;
-		}
-	}
+        InputStream input_stream = null;
+        if(resource_id > 0)
+            input_stream = context.getResources().openRawResource(resource_id);
+
+        return loadTextureFromInputStream(context, id, params, input_stream);
+    }
+
+    private boolean loadTextureFromInputStream(Context context, String id, Object params, InputStream input_stream) {
+        try{
+
+
+            if(null != params){
+                Parameters texparams = (Parameters)params;
+                if(texparams.getType() == TextureType.Texture2D)
+                    return loadAsTexture2D(context, id, input_stream, texparams);
+                else
+                    return loadAsTextureCubeMap(context, id, input_stream, texparams);
+
+            }
+
+            return loadAsTexture2D(context, id, input_stream, new Parameters());
+        } catch(Exception e){
+            Log.e("ShadingZen", "Error loading texture from input stream:" + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean onCompressedStorageLoad(Context context, String id, ZipFile zipfile, ZipEntry resource_entry, Object params)
+    {
+        try{
+            return loadTextureFromInputStream(context, id, params, zipfile.getInputStream(resource_entry));
+        } catch(IOException ex){
+            Log.e("ShadingZen", "Error getting input stream from zip file:" + ex.getMessage(), ex);
+            return false;
+        }
+    }
 
 	@Override
 	public boolean onDriverLoad(Context context) {

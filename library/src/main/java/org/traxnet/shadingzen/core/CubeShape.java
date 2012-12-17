@@ -128,6 +128,7 @@ public class CubeShape extends Shape {
 		//int index1 = _program.getVertexAttribLocation("v_uv");
 
         int index0 = 0;
+        GLES20.glDisable(GLES20.GL_BLEND);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
 
         service.checkGlError("drawSubBuffer post glGetAttribLocation index0="+index0);
@@ -147,6 +148,7 @@ public class CubeShape extends Shape {
 
         //GLES20.glEnable( GLES20.GL_CULL_FACE );
 
+        GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glCullFace(GLES20.GL_BACK);
 
 		// Revert back the state

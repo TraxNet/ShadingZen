@@ -284,34 +284,44 @@ public class OBJMesh extends Shape {
 
 	@Override
 	public boolean onStorageLoad(Context context, String id, int resource_id, Object params) {
-		try{
-			resourceId = resource_id;
-			_id = id;
-			
-			InputStream input_stream = context.getResources().openRawResource(resource_id);
-		
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input_stream));
-		
-			loadOBJ(reader, _scale);
-			
-			_mainb = FloatBuffer.wrap(_mainBuffer);
-			_ib = ShortBuffer.wrap(_indices);
-			
-			Log.i("ShadingZen", "----> OBJ Mesh data");
-			Log.i("ShadingZen", "		Loaded " + _mainBuffer.length/8 + " vertices");
-			Log.i("ShadingZen", "		Loaded " + _indices.length + " indices");
-			return true;
-		} catch(Exception e){
-			Log.e("ShadingZen", "Unable to read OBJ mesh with id " + _id + ":" + e.getLocalizedMessage());
-			StringWriter sw = new StringWriter();
-		    PrintWriter pw = new PrintWriter(sw);
-		    e.printStackTrace(pw);
-			Log.e("ShadingZen", sw.toString());
-			return false;
-		}
-	}
+        resourceId = resource_id;
+        _id = id;
+        BufferedReader reader;
 
-	@Override
+        try{
+            InputStream input_stream = context.getResources().openRawResource(resource_id);
+
+            reader = new BufferedReader(new InputStreamReader(input_stream));
+        } catch (Exception ex){
+            Log.e("ShadingZen", "Unable to load OBJMesh shape:" + ex.getMessage(), ex);
+            return false;
+        }
+
+        return readFromBufferedReader(reader);
+    }
+
+    private boolean readFromBufferedReader(BufferedReader reader) {
+        try{
+            loadOBJ(reader, _scale);
+
+            _mainb = FloatBuffer.wrap(_mainBuffer);
+            _ib = ShortBuffer.wrap(_indices);
+
+            Log.i("ShadingZen", "----> OBJ Mesh data");
+            Log.i("ShadingZen", "		Loaded " + _mainBuffer.length/8 + " vertices");
+            Log.i("ShadingZen", "		Loaded " + _indices.length + " indices");
+            return true;
+        } catch(Exception e){
+            Log.e("ShadingZen", "Unable to read OBJ mesh with id " + _id + ":" + e.getLocalizedMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            Log.e("ShadingZen", sw.toString());
+            return false;
+        }
+    }
+
+    @Override
 	public boolean onDriverLoad(Context context) {
 		// Store data into OpenGLES driver
 		_bufferIds = ByteBuffer.allocateDirect(2 * Integer.SIZE/8).asIntBuffer();

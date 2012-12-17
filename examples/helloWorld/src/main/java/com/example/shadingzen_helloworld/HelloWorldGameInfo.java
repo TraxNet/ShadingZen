@@ -30,7 +30,7 @@ public class HelloWorldGameInfo extends GameInfo implements InputController {
         _currentCamera.setViewportSize(Engine.getSharedInstance().getViewWidth(), Engine.getSharedInstance().getViewHeight());
         
     	Engine.getSharedInstance().setCurrentCamera(_currentCamera);
-    	Engine.getSharedInstance().getRenderService().setClearColor(new Vector4(0.0f, 0.0f, 0.0f, 0.f));
+    	Engine.getSharedInstance().getRenderService().setClearColor(new Vector4(0.0f, 0.0f, 0.3f, 0.f));
 	}
 	
 	@Override

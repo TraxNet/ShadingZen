@@ -14,8 +14,8 @@ public abstract class Resource {
 		_isMarkedForRelease = false;
 	}
 	
-	public abstract boolean onStorageLoad(Context context, String id, int resource_id, Object params); 
-	public abstract boolean onDriverLoad(Context context);
+	public abstract boolean onStorageLoad(Context context, String id, int resource_id, Object params);
+    public abstract boolean onDriverLoad(Context context);
 	public abstract boolean onResumed(Context context);
 	public abstract boolean onPaused(Context context);
 	public abstract void onRelease();
