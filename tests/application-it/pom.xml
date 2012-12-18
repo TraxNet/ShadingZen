@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.traxnet.shadingzen.tests</groupId>
+    <artifactId>shadingzen-tests-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.traxnet.shadingzen.tests</groupId>
+  <artifactId>shadingzen-tests-it</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>apk</packaging>
+  <name>shadingzen-tests - Integration tests</name>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.traxnet</groupId>
+          <artifactId>shadingzen</artifactId>
+          <version>1.0-beta2-SNAPSHOT</version>
+          <type>apklib</type>
+      </dependency>
+      <dependency>
+          <groupId>com.google.android</groupId>
+          <artifactId>android</artifactId>
+          <version>4.0.1.2</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.google.android</groupId>
+          <artifactId>support-v4</artifactId>
+          <version>r7</version>
+      </dependency>
+    <dependency>
+      <groupId>com.google.android</groupId>
+      <artifactId>android-test</artifactId>
+        <version>2.2.1</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.traxnet.shadingzen.tests</groupId>
+      <artifactId>shadingzen-tests</artifactId>
+      <type>apk</type>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.traxnet.shadingzen.tests</groupId>
+      <artifactId>shadingzen-tests</artifactId>
+      <type>jar</type>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <build>
+      <plugins>
+          <plugin>
+              <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+              <artifactId>android-maven-plugin</artifactId>
+              <version>3.1.1</version>
+
+              <configuration>
+                  <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+                  <assetsDirectory>${project.basedir}/assets</assetsDirectory>
+                  <resourceDirectory>${project.basedir}/res</resourceDirectory>
+                  <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+                  <sdk>
+                      <platform>16</platform>
+                  </sdk>
+
+                  <undeployBeforeDeploy>true</undeployBeforeDeploy>
+              </configuration>
+              <extensions>true</extensions>
+          </plugin>
+          <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>1.5</source>
+                  <target>1.5</target>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+</project>
