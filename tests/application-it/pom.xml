@@ -56,6 +56,51 @@
   <build>
       <plugins>
           <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>${ANDROID_HOME}/platform-tools/adb</executable>
+              <!-- optional -->
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>-shell</argument>
+                <argument>"mkdir /mnt/sdcard/shadingzen</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>${ANDROID_HOME}/platform-tools/adb</executable>
+              <!-- optional -->
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>push</argument>
+                <argument>./testfiles/resources.zip</argument>
+                <argument>/mnt/sdcard/shadingzen/resources.zip</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+          <plugin>
               <groupId>com.jayway.maven.plugins.android.generation2</groupId>
               <artifactId>android-maven-plugin</artifactId>
               <version>3.1.1</version>
