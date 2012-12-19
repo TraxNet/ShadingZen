@@ -1,16 +1,14 @@
 package org.traxnet.shadingzen.core;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Vector;
-
-import org.traxnet.shadingzen.core.actions.Action;
+import android.opengl.Matrix;
+import android.util.Log;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Quaternion;
 import org.traxnet.shadingzen.math.Vector3;
 
-import android.opengl.Matrix;
-import android.util.Log;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Vector;
 
 /** 
  * Actor is the base class for all objects within the scene that have position and rotation.

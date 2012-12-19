@@ -1,7 +1,4 @@
-package org.traxnet.shadingzen.core.actions;
-
-import org.traxnet.shadingzen.core.Actor;
-import org.traxnet.shadingzen.core.InvalidTargetActorException;
+package org.traxnet.shadingzen.core;
 
 public abstract class Action {
 	protected Actor _targetActor;
