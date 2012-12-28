@@ -1,10 +1,8 @@
 package org.traxnet.shadingzen.core;
 
 import android.opengl.Matrix;
-import java.lang.Math;
-
-
 import org.traxnet.shadingzen.math.Matrix4;
+import org.traxnet.shadingzen.math.Vector2;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 
@@ -27,9 +25,11 @@ public class Camera extends Actor {
 	protected Matrix4 _projectionMatrix = null;
 	protected Matrix4 _orthoProjectionMatrix = null;
 	protected Matrix4 _viewMatrix = null;
+    protected Matrix4 _cachedViewProjectionMatrix = null;
 	
 	protected boolean _isTrackingAnActor = false;
 	protected Actor _trackedActor = null;
+    protected boolean _mvpIsDirty = true;
 	
 	float [] viewmatrxi_data = new float[16];
 	
@@ -37,6 +37,7 @@ public class Camera extends Actor {
 		_viewMatrix = Matrix4.identity();
 		_position = new Vector3();
 		_dir = new Vector3();
+        _cachedViewProjectionMatrix = Matrix4.identity();
 	}
 	public void setValues(Vector3 position, float fov, float aspect, float near, float far){
 		float vfov = (float) ((float)2*Math.atan( Math.tan(fov/2.0)/(aspect) ));
@@ -71,6 +72,7 @@ public class Camera extends Actor {
 		// this is the real fov:
 		_fov = (float) ((float)2*Math.atan( Math.tan(vfov/2.0f)*aspect ));
 		_aspect = aspect;
+        _mvpIsDirty = true;
 	}
 	
 	public Vector3 getDirection(){
@@ -82,18 +84,22 @@ public class Camera extends Actor {
         _dir.x = x;
         _dir.y = y;
         _dir.z = z;
+        _mvpIsDirty = true;
     }
 	public void setDirection(Vector3 dir){
 		_dir = dir.normalize();
+        _mvpIsDirty = true;
 	}
 	public void setDirection(float x, float y, float z){
 		setDirection(new Vector3(x, y, z));
+
 	}
 
     public void setCameraUp(float x, float y, float z){
         _up.x = x;
         _up.y = y;
         _up.z = z;
+        _mvpIsDirty = true;
     }
 	
 	/***
@@ -119,6 +125,19 @@ public class Camera extends Actor {
 		return _projectionMatrix;
 		
 	}
+
+    public Matrix4 getViewProjectionMatrix(){
+        if(_mvpIsDirty){
+
+            Matrix4 projectionMatrix = getProjectionMatrix();
+            Matrix4 viewMatrix = getViewMatrix();
+
+            Matrix.multiplyMM(_cachedViewProjectionMatrix.getAsArray(), 0, projectionMatrix.getAsArray(), 0, viewMatrix.getAsArray(), 0);
+            _mvpIsDirty = false;
+        }
+
+        return _cachedViewProjectionMatrix;
+    }
 	
 	/*
 	 * Builds a projection matrix with the given parameters
@@ -163,8 +182,8 @@ public class Camera extends Actor {
 	}
 	
 	void buildOrthoProjectionMatrix(){
-		int viewport_h = Engine.getSharedInstance().getViewHeight();
-		int viewport_w = Engine.getSharedInstance().getViewWidth();
+		int viewport_h = (int)_viewportHeight;
+		int viewport_w = (int)_viewportWidth;
 		
 		// Calcuate view aspect factor to normalize everything to a 800x480 screen
 		float view_factor_x = (float)viewport_w/(float)480;
@@ -221,6 +240,39 @@ public class Camera extends Actor {
 		point.normalizeNoCopy();
 		return point;
 	}
+
+    /** Transform a point into screen space using the view and projection matrices
+     *
+     * @param x X coordinate of the point
+     * @param y Y coordinate of the point
+     * @param z Z coordinate of the point
+     * @return The x,y values of the point in screen space (-1,1)
+     */
+    public Vector2 projectPointScreenSpace(float x, float y, float z){
+        Matrix4 mvp = getViewProjectionMatrix();
+        Vector4 screen_space = mvp.mul(new Vector4(x, y, z, 1.f));
+        return new Vector2(screen_space.x/screen_space.w, screen_space.y/screen_space.w);
+    }
+
+    /** Transform a point into screen space using the view and projection matrices.
+     * The point is then further transformed by the VIEWPORT matrix as follow:
+     *
+     * [w/2   0   w/2+x]
+     * [ 0   h/2  h/2+y]
+     * [ 0    0     1  ]
+     *
+     * @param x X coordinate of the point
+     * @param y Y coordinate of the point
+     * @param z Z coordinate of the point
+     * @return The x,y values of the point in viewport space (0,width)x(0,height)
+     */
+    public Vector2 projectPointViewportSpace(float x, float y, float z){
+        Vector2 pos = projectPointScreenSpace(x, y, z);
+        pos.x = (pos.x+1)*_viewportWidth*0.5f;
+        pos.y = (pos.y+1)*_viewportHeight*0.5f;
+
+        return pos;
+    }
 	
 	@Override
 	public void onDraw(RenderService renderer) {
@@ -244,6 +296,7 @@ public class Camera extends Actor {
 			this._dir.set(this._trackedActor.getPosition().sub(_position));
 			//this._dir.sub(_position);
 			this._dir.normalizeNoCopy();
+            _mvpIsDirty = true;
 		}
 	}
 	

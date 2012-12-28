@@ -2,38 +2,13 @@ package org.traxnet.shadingzen.tests.test;
 
 import android.test.ActivityInstrumentationTestCase2;
 import org.traxnet.shadingzen.core.Action;
-import org.traxnet.shadingzen.core.Actor;
 import org.traxnet.shadingzen.core.InvalidTargetActorException;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.tests.HelloAndroidActivity;
+import org.traxnet.shadingzen.tests.DummyTestActivity;
 
 /**
  *
  */
-public class ActionTests  extends ActivityInstrumentationTestCase2<HelloAndroidActivity> {
-
-    class MockActor extends Actor{
-
-        @Override
-        protected void onUpdate(float deltaTime) {
-
-        }
-
-        @Override
-        public void onDraw(RenderService renderer) throws Exception {
-
-        }
-
-        @Override
-        public void onLoad() {
-
-        }
-
-        @Override
-        public void onUnload() {
-
-        }
-    }
+public class ActionTests  extends ActivityInstrumentationTestCase2<DummyTestActivity> {
 
     class MockAction extends Action {
         public int _timesCalledSteps = 0;
@@ -66,7 +41,7 @@ public class ActionTests  extends ActivityInstrumentationTestCase2<HelloAndroidA
     }
 
     public ActionTests() {
-        super(HelloAndroidActivity.class);
+        super(DummyTestActivity.class);
     }
 
 
@@ -78,7 +53,12 @@ public class ActionTests  extends ActivityInstrumentationTestCase2<HelloAndroidA
         assertTrue(action.isRegistered);
         assertFalse(action.isCancelled());
         assertEquals(actor, action.getTarget());
+        assertEquals(0, action.timesCalledStep());
 
+        actor.onTick(0.0f);
+        assertEquals(1, action.timesCalledStep());
 
+        actor.onDestroy();
+        assertTrue(action.isCancelled());
     }
 }

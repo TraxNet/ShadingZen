@@ -73,7 +73,7 @@
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
                 <argument>-shell</argument>
-                <argument>"mkdir /mnt/sdcard/shadingzen</argument>
+                <argument>"mkdir /mnt/sdcard/shadingzen"</argument>
               </arguments>
             </configuration>
           </plugin>
@@ -96,7 +96,7 @@
               <arguments>
                 <argument>push</argument>
                 <argument>./testfiles/resources.zip</argument>
-                <argument>/mnt/sdcard/shadingzen/resources.zip</argument>
+                <argument>/mnt/sdcard/shadingzen/org.traxnet.shadingzen.tests.resources.zip</argument>
               </arguments>
             </configuration>
           </plugin>

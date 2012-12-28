@@ -1,16 +1,10 @@
 package org.traxnet.shadingzen.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.LinkedList;
-
 import android.content.Context;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-import org.traxnet.shadingzen.core.Engine;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Vector4;
 import org.traxnet.shadingzen.rendertask.ChangeClearColorRenderTask;
@@ -18,10 +12,12 @@ import org.traxnet.shadingzen.rendertask.RenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskBatch;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-import android.opengl.GLSurfaceView;
-import android.util.Log;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Android GLSurfaceView.Renderer implementation.
@@ -123,7 +119,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			
 			_yaw += 0.5*3.14/360;
 			
-			this.computeMVPMatricesForCurrentCamera();
+			computeMVPMatricesForCurrentCamera();
 	
 			/*
 			// Clean our drawing buffers

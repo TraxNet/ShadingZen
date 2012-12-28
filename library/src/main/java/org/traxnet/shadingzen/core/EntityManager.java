@@ -1,15 +1,10 @@
 package org.traxnet.shadingzen.core;
 
+import android.util.Log;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Vector;
-
-import org.traxnet.shadingzen.core2d.Node2d;
-import org.traxnet.shadingzen.math.Matrix4;
-
-import android.opengl.Matrix;
-import android.util.Log;
 
 public final class EntityManager {
 	//private static EntityManager _global_instance;
@@ -107,6 +102,8 @@ public final class EntityManager {
 			entity.register(nameId);
 			
 			_entities.put(entity, new EntityHolder(entity));
+
+            entity.onLoad();
 	
 		} catch (Exception e){
 			Log.e("ShadingZen", "Error spawning class <" + _class.toString() + ">:" + e.getLocalizedMessage());

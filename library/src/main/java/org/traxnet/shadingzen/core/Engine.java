@@ -1,10 +1,12 @@
 package org.traxnet.shadingzen.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Stack;
-import java.util.Vector;
-
+import android.content.Context;
+import android.content.res.Configuration;
+import android.opengl.Matrix;
+import android.os.Handler;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.EntityManager.EntityHolder;
 import org.traxnet.shadingzen.core2d.Node2d;
@@ -13,13 +15,10 @@ import org.traxnet.shadingzen.rendertask.BindTextureRenderTargetTask;
 import org.traxnet.shadingzen.rendertask.RenderSceneRenderBatch;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
-import android.content.Context;
-import android.content.res.Configuration;
-import android.opengl.Matrix;
-import android.os.Handler;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Stack;
+import java.util.Vector;
 
 public final class Engine implements Runnable {
 	private Renderer _openglRenderer;
@@ -98,6 +97,8 @@ public final class Engine implements Runnable {
 	public void setGameInfo(GameInfo game_info){
 		_currentGameInfo = game_info;
 	}
+
+    public GameInfo getGameInfo(){ return _currentGameInfo; }
 	
 	public int getViewWidth(){
 		return _viewWidth;
@@ -379,6 +380,10 @@ public final class Engine implements Runnable {
 	public void setCurrentCamera(Camera camera){
 		_openglRenderer.setCamera(camera);
 	}
+
+    public Camera getCurrentCamera(){
+        return _openglRenderer.getCamera();
+    }
   
     public boolean onTouchEvent(MotionEvent event)  
     {  

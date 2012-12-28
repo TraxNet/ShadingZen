@@ -3,13 +3,13 @@ package org.traxnet.shadingzen.simulation;
 import org.traxnet.shadingzen.core.Actor;
 
 /**
- * ActionsDrivenBehaviourState represent an actor state that controls or drives the actor during the time the behaviour is
+ * ActionsDrivenBehaviouralState represent an actor state that controls or drives the actor during the time the behaviour is
  * active. An actor may have more than one available behaviour and each one should decide if it should take
  * over the control of the actor if the takeOver method returns true.
  */
-public interface BehaviourState {
+public interface BehaviouralState {
     /**
-     * Called once the BehaviourState has been attached to an Actor
+     * Called once the BehaviouralState has been attached to an Actor
      * @param target the target actor receiving this behaviour
      */
     public void register(Actor target);
@@ -22,7 +22,7 @@ public interface BehaviourState {
 
     /**
      * If returns true, the behaviour state wants to take control of the simulation
-     * @return whenever this BehaviourState want to take control
+     * @return whenever this BehaviouralState want to take control
      */
     public boolean takeOver();
 

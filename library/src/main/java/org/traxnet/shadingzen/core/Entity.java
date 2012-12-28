@@ -1,8 +1,9 @@
 package org.traxnet.shadingzen.core;
 
-import java.util.ArrayList;
-import org.traxnet.shadingzen.R;
 import android.util.Log;
+import org.traxnet.shadingzen.R;
+
+import java.util.ArrayList;
 
 /** 
  * Root class from which all objects, from 2D sprites to 3D dinos are derived.
@@ -129,7 +130,7 @@ public abstract class Entity {
 	
 	/** Called when loading entity's data */
 	public abstract void onLoad();
-	
+
 	/** Called when unloading entity's data */
 	public abstract void onUnload();
 	

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
-public class HelloAndroidActivity extends Activity {
+public class DummyTestActivity extends Activity {
 
     private static String TAG = "shadingzen-tests";
 

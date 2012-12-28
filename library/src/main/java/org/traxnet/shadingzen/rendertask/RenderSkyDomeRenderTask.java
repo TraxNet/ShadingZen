@@ -33,13 +33,14 @@ public class RenderSkyDomeRenderTask extends RenderTask {
     @Override
     public void onDraw(RenderService service) throws Exception {
         bindDepthTestIfSet();
-
+        checkGlError("RenderSkyDomeRenderTask onDraw 0");
         service.setProgram(_program);
-
+        checkGlError("RenderSkyDomeRenderTask onDraw 1");
         setProgramUniforms(service);
 
         if(null != _texture)
             _texture.bindTexture(0);
+        checkGlError("RenderSkyDomeRenderTask onDraw 2");
 
         _shape.onDraw(service);
 
@@ -72,9 +73,10 @@ public class RenderSkyDomeRenderTask extends RenderTask {
         Matrix.multiplyMM(_mvp, 0, service.getProjectionMatrix(), 0, _mv, 0);
         // Move to the shaders as an uniform
         //GLES20.glUniformMatrix4fv(_program.getUniformLocation("p_matrix"), 1, false, service.getProjectionMatrix(), 0);
-        GLES20.glUniformMatrix4fv(_program.getUniformLocationNoCheck("mvp_matrix"), 0, false, _mvp, 0);
+        GLES20.glUniformMatrix4fv(_program.getUniformLocationNoCheck("mvp_matrix"), 1, false, _mvp, 0);
+        checkGlError("RenderSkyDomeRenderTask setProgramUniforms 1");
         GLES20.glUniform1i(_program.getUniformLocationNoCheck("tex_skydome"), 0);
-
+        checkGlError("RenderSkyDomeRenderTask setProgramUniforms 2");
     }
 
     @Override

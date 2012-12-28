@@ -154,8 +154,8 @@ public abstract class Actor extends Entity {
 		for(Object child : children){
 			removeChildren((Actor)child);
 		}
-		
-		_activeActions.clear();
+
+        removeAllActions();
 		
 	}
 	
@@ -266,4 +266,12 @@ public abstract class Actor extends Entity {
 			action.cancel();
 		}
 	}
+
+    private void removeAllActions(){
+        for(Action action : _activeActions){
+            action.cancel();
+        }
+
+        _activeActions.clear();
+    }
 }

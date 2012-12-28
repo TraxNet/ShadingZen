@@ -4,14 +4,14 @@ import android.test.ActivityInstrumentationTestCase2;
 import org.traxnet.shadingzen.tests.*;
 import org.traxnet.shadingzen.core.*;
 
-public class ResourcesManagerTest extends ActivityInstrumentationTestCase2<HelloAndroidActivity> {
+public class ResourcesManagerTest extends ActivityInstrumentationTestCase2<DummyTestActivity> {
 
     public ResourcesManagerTest() {
-        super(HelloAndroidActivity.class);
+        super(DummyTestActivity.class);
     }
 
     public void testManagerInit() {
-        HelloAndroidActivity activity = getActivity();
+        DummyTestActivity activity = getActivity();
         assertNotNull(activity);
 
         ResourcesManager res_manager = new ResourcesManager();
@@ -28,7 +28,7 @@ public class ResourcesManagerTest extends ActivityInstrumentationTestCase2<Hello
         assertNotNull(res_manager);
 
         try{
-            res_manager.setExpansionPack("/mnt/sdcard/shadingzen/resources.zip");
+            res_manager.setExpansionPack("/mnt/sdcard/shadingzen/org.traxnet.shadingzen.tests.resources.zip");
             res_manager.setContext(getActivity().getApplicationContext());
         } catch (Exception ex){
             assertTrue("Exception trown:" + ex.getMessage(), false);

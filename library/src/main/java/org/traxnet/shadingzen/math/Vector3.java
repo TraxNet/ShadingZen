@@ -7,6 +7,13 @@ import android.util.FloatMath;
  * @author oscarblasco
  */
 public class Vector3 {
+
+    // Global ShadingZen's axis vectors
+    public static Vector3 vectorRight = new Vector3(1.f, 0.f, 0.f);
+    public static Vector3 vectorUp = new Vector3(0.f, 1.f, 0.f);
+    public static Vector3 vectorFront = new Vector3(0.f, 0.f, 1.f);
+    public static Vector3 zero = new Vector3();
+
 	public float x, y, z;
 	public Vector3(){
 		x = y = z = 0.f;
@@ -30,8 +37,8 @@ public class Vector3 {
 	public Vector3 cross(Vector3 v){
 		return new Vector3(
 			y *v.z - z *v.y,
-			x *v.z - z *v.x,
-			x *v.y - y *v.z
+			z *v.x - x *v.z,
+			x *v.y - y *v.x
 		);
 	}
 	
@@ -166,5 +173,11 @@ public class Vector3 {
 			-z
 			);
 	}
+
+    public void negateNoCopy(){
+        x = -x;
+        y = -y;
+        z = -z;
+    }
 	
 }
