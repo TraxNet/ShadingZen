@@ -17,6 +17,7 @@ import org.traxnet.shadingzen.math.Vector4;
 public class Camera extends Actor {
 	protected Vector3 _dir;
     protected Vector3 _up = new Vector3(0.f, 1.f, 0.f);
+    protected Vector3 _right  = new Vector3(1.f, 0.f, 0.f);;
 	
 	// Variables to calculate view frustum volume
 	protected float _fov, _aspect, _near, _far;
@@ -101,6 +102,10 @@ public class Camera extends Actor {
         _up.z = z;
         _mvpIsDirty = true;
     }
+
+    public Vector3 getCameraUp(){ return _up; }
+
+    public Vector3 getCameraRight(){ return _up.cross(_dir).normalize(); }
 	
 	/***
 	 * Returns the View matrix for this camera.

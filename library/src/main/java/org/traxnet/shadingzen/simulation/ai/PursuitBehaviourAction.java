@@ -32,7 +32,7 @@ public class PursuitBehaviourAction extends ApproachBehaviourAction {
 
             if(calculateTargetVelocityVector()){
                 calculateCurrentSteering(deltaTime);
-                setZeroVelocityIfTargetIsBehind();
+                setMinimumVelocityIfTargetIsBehind();
             }
 
             _vehicle.setAccelerateState(VehicleActor.AccelerateState.AUTO);

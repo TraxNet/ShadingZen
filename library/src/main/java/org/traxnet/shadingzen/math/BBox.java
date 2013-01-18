@@ -1,8 +1,8 @@
 package org.traxnet.shadingzen.math;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import android.util.FloatMath;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class BBox {
 	Vector3 _mins, _maxs;
@@ -23,12 +23,17 @@ public class BBox {
 	}
 	
 	public Vector3 getMins(){
-		return new Vector3(_mins);
+		return _mins;
 	}
 	
 	public Vector3 getMaxs(){
-		return new Vector3(_maxs);
+		return _maxs;
 	}
+
+    public void setMinMax(float max_x, float max_y, float max_z, float min_x, float min_y, float min_z){
+        _mins.set(min_x, min_y, min_z);
+        _maxs.set(max_x, max_y, max_z);
+    }
 	
 	public void setFromRadius(Vector3 center, float radius){
 		_mins = new Vector3();

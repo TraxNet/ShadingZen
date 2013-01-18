@@ -108,7 +108,7 @@ public abstract class Level extends Entity {
 			_skydomeProgram = (ShadersProgram)ResourcesManager.getSharedInstance().factory(ShadersProgram.class, this, "SkyDomeProgram");
 			_skydomeProgram.attachVertexShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_vertex));
 			_skydomeProgram.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_skydome_fragment));
-			_skydomeSphere.attachProgram(_skydomeProgram);
+
 			BitmapTexture.Parameters params = new BitmapTexture.Parameters();
 			params.setType(TextureType.TextureCubeMap);
 			params.setCubeMapImage(0, R.raw.skydome1);

@@ -1,19 +1,11 @@
 package com.example.shadingzen_helloworld;
 
-import java.util.UUID;
-
-import org.traxnet.shadingzen.core.Actor;
-import org.traxnet.shadingzen.core.BitmapTexture;
-import org.traxnet.shadingzen.core.Entity;
-import org.traxnet.shadingzen.core.OBJMesh;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.Renderer;
-import org.traxnet.shadingzen.core.ResourcesManager;
-import org.traxnet.shadingzen.core.ShadersProgram;
+import android.util.FloatMath;
+import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.rendertask.RenderModelTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
-import android.util.FloatMath;
+import java.util.UUID;
 
 
 public class TestCube extends Actor {
@@ -34,7 +26,7 @@ public class TestCube extends Actor {
         	_program.attachFragmentShader(ResourcesManager.getSharedInstance().loadResourceString(R.raw.shader_simple_fragment));
         	_program.setProgramsDefined();
 		}
-        _mesh.attachProgram(_program);
+        //_mesh.attachProgram(_program);
         BitmapTexture.Parameters params = new BitmapTexture.Parameters();
         _texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, "cubletableTexture_"+UUID.randomUUID().toString(), R.raw.cubetext02, params);
 	}

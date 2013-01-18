@@ -246,7 +246,10 @@ public abstract class Actor extends Entity {
 		Vector<Action> list = (Vector<Action>) _activeActions.clone();
 		for(Action action : list){
 			try{
-				action.step(deltaTime);
+                if(action.isDone())
+                    _activeActions.remove(action);
+                else
+				    action.step(deltaTime);
 			} catch(InvalidTargetActorException e){
 				Log.e("ShadingZen", "Registered action cannot be executed for the current type of actor", e);
 			}

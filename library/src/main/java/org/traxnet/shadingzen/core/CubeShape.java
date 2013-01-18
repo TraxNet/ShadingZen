@@ -1,16 +1,10 @@
 package org.traxnet.shadingzen.core;
 
-import android.util.Log;
-import org.traxnet.shadingzen.core.RenderBuffer;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.ShadersProgram;
-import org.traxnet.shadingzen.core.Shape;
-import org.traxnet.shadingzen.exceptions.ShadersProgramNotFoundException;
-
 import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
-public class CubeShape extends Shape {
+public class CubeShape extends Resource implements Shape {
 	RenderBuffer _renderBuffer;
 	
 	public static int VertexDataSize = 5;
@@ -27,10 +21,7 @@ public class CubeShape extends Shape {
 	public void initWithRaidus(float radius, ShadersProgram program) throws Exception {
 		_renderBuffer = new RenderBuffer();
         _renderBuffer.setId(_id+"_renderbuffer");
-		_program = program;
-		
-		if(null == _program)
-			throw new ShadersProgramNotFoundException();
+
 		
 		_renderBuffer.init(8*VertexDataSize, GLES20.GL_STATIC_DRAW, 14, GLES20.GL_STATIC_DRAW);
 		

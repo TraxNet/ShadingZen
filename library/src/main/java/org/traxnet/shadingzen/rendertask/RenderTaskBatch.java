@@ -1,14 +1,13 @@
 package org.traxnet.shadingzen.rendertask;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.LinkedList;
-
+import android.content.Context;
+import android.util.Log;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.util.Poolable;
 
-import android.content.Context;
-import android.util.Log;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.LinkedList;
 
 public abstract class RenderTaskBatch implements Poolable {
 	LinkedList<RenderTask> _renderTaskCmdBuffer;
@@ -33,7 +32,7 @@ public abstract class RenderTaskBatch implements Poolable {
 			// Let the shape draw itself
 			try {
 				task.onDraw(service);
-				service.checkGlError("Task Draw");
+				service.checkGlError("Task Draw: " + task.getClass().getName());
 				RenderTaskPool.sharedInstance().freeTask(task);
 			} catch (Exception e) {
 				Log.e("ShadingZen", "Error rendering task of type [" + task.getClass().getName() + "]:" + e.getLocalizedMessage());

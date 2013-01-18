@@ -1,19 +1,18 @@
 package org.traxnet.shadingzen.core.shapes;
 
+import android.content.Context;
+import android.opengl.GLES20;
+import org.traxnet.shadingzen.core.RenderService;
+import org.traxnet.shadingzen.core.Resource;
+import org.traxnet.shadingzen.core.Shape;
+
+import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import javax.microedition.khronos.opengles.GL10;
-
-
-import android.content.Context;
-import android.opengl.GLES20;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.Shape;
-
 @Deprecated // This class doesn't work
-public class Sphere extends Shape {
+public class Sphere extends Resource implements Shape {
 
 	float sphere_parms[]=new float[3];
 	

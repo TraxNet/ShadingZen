@@ -11,6 +11,7 @@ import org.traxnet.shadingzen.simulation.ActionsDrivenBehaviouralState;
  */
 public class IdleOrbitState extends ActionsDrivenBehaviouralState {
 
+
     @Override
     public void step(float deltaTime) {
 
@@ -19,5 +20,10 @@ public class IdleOrbitState extends ActionsDrivenBehaviouralState {
     @Override
     public boolean takeOver() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void start() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

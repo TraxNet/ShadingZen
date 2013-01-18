@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
-import org.traxnet.shadingzen.core.font.BMFont;
-
 public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotificationsDelegate {
 	private org.traxnet.shadingzen.core.Renderer _openglRenderer;
 	private Context _context;
@@ -25,8 +23,8 @@ public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotifica
 		setEGLContextClientVersion(2); // Pick an OpenGL ES 2.0 context.
 		//setDebugFlags(DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS);
 		_openglRenderer.setDelegate(this);
-		this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-		//setEGLConfigChooser(new MultisampleConfigChooser());
+		//this.setEGLConfigChooser(5, 6, 5, 0, 24, 8);
+		setEGLConfigChooser(new MultisampleConfigChooser());
 		setRenderer(_openglRenderer);
 		setRenderMode(RENDERMODE_CONTINUOUSLY);
 		

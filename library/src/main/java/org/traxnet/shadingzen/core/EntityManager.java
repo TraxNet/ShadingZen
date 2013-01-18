@@ -1,10 +1,14 @@
 package org.traxnet.shadingzen.core;
 
 import android.util.Log;
+import org.traxnet.shadingzen.math.Vector3;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Vector;
 
 public final class EntityManager {
 	//private static EntityManager _global_instance;
@@ -30,7 +34,8 @@ public final class EntityManager {
 		}
 		
 	}
-	
+
+    protected LinkedList<LightEmitter> _lightEmitters;
 	HashMap<Entity, EntityHolder> _entities;
 	
 	/*
@@ -48,7 +53,8 @@ public final class EntityManager {
 	
 	public EntityManager(Scene owner){
 		_entities = new HashMap<Entity, EntityHolder>();
-		
+
+        _lightEmitters = new LinkedList<LightEmitter>();
 		//_ownerScene = owner;
 	}
 	
@@ -94,6 +100,73 @@ public final class EntityManager {
 			return actor;
 		}
 	}
+
+    protected void addLightEmitter(Entity entity){
+        if(LightEmitter.class.isAssignableFrom(entity.getClass()))
+            _lightEmitters.add((LightEmitter)entity);
+    }
+
+    protected void removeLightEmitter(Entity entity){
+        if(LightEmitter.class.isAssignableFrom(entity.getClass()))
+            _lightEmitters.remove(entity);
+    }
+
+    public LightEmitter getFirstLightEmitter(){
+        return _lightEmitters.get(0);
+    }
+
+    Vector<LightEmitterSortingWarper> createLightEmitterSortingWarpersList(Vector3 point){
+        Vector<LightEmitterSortingWarper> warpers = new Vector<LightEmitterSortingWarper>(_lightEmitters.size());
+
+        for(LightEmitter emitter : _lightEmitters){
+            LightEmitterSortingWarper warper = new LightEmitterSortingWarper();
+            warper._emitter = emitter;
+            warper._point = point;
+            warpers.add(warper);
+        }
+
+        return warpers;
+    }
+
+    class LightEmitterSortingWarper implements Comparable<LightEmitterSortingWarper>{
+        public LightEmitter _emitter;
+        public Vector3 _point;
+
+        boolean cached = false;
+        float cached_value = 0.f;
+
+        public float getCachedIntesityValue(){
+            if(!cached)
+                cached_value = _emitter.computeContributionAtWorldPoint(_point.x, _point.y, _point.z);
+            return cached_value;
+        }
+
+        @Override
+        public int compareTo(LightEmitterSortingWarper emitter) {
+
+
+            if(cached_value < emitter.getCachedIntesityValue()) return -1;
+            if(cached_value > emitter.getCachedIntesityValue()) return 1;
+            return 0;
+        }
+    }
+
+
+
+    public LightEmitter[] getLightEmittersByContrubtionAtPoint(Vector3 point){
+        LightEmitter[] list = new LightEmitter[_lightEmitters.size()];
+        int count = 0;
+        Vector<LightEmitterSortingWarper> warpers = createLightEmitterSortingWarpersList(point);
+
+        Collections.sort(warpers);
+
+        int index = 0;
+        for(index = 0; index < warpers.size(); index++){
+            list[index] = warpers.get(index)._emitter;
+        }
+
+        return list;
+    }
 	
 	public synchronized Entity newEntity(Class<? extends Entity> _class, String nameId){
 		Entity entity = null;
@@ -102,6 +175,8 @@ public final class EntityManager {
 			entity.register(nameId);
 			
 			_entities.put(entity, new EntityHolder(entity));
+
+            addLightEmitter(entity);
 
             entity.onLoad();
 	
@@ -117,8 +192,10 @@ public final class EntityManager {
 	}
 	
 	public Object[] getCurrentEntityHolders(){
-		Object [] holders = _entities.values().toArray();
-		return holders;
+        synchronized(this._entities){
+            Object [] holders = _entities.values().toArray();
+            return holders;
+        }
 	}
 	
 	/*
@@ -152,6 +229,7 @@ public final class EntityManager {
 				if(holder.getEntity().isPendingDestroy()){
 					Log.v("ShadingZen", "Removing entity " + holder.getEntity().getNameId());
 					_entities.remove(holder.getEntity());
+                    removeLightEmitter(holder.getEntity());
 					holder.getEntity().onDestroy();
 				}
 			}

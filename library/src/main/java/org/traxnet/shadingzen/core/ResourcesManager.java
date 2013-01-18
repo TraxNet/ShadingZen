@@ -1,22 +1,21 @@
 package org.traxnet.shadingzen.core;
 
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.HashMap;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.SoundPool;
-import android.util.Log;
 
 /** 
  * The ResourceManager is singleton object that tracks resources and references from those using those resources. 
@@ -91,7 +90,7 @@ public class ResourcesManager {
 	 * @return a new instance of the given resource type
 	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner){
-		return factory(proto, owner, null, 0, null);
+		return factory(proto, owner, null, -1, null);
 	}
 	
 	/**
@@ -103,7 +102,7 @@ public class ResourcesManager {
 	 * @return a new instance of the given resource type
 	 */
 	public Resource factory(Class<? extends Resource> proto, Entity owner, String id){
-		return factory(proto, owner, id, 0, null);
+		return factory(proto, owner, id, -1, null);
 	}
 	
 	/**
@@ -273,11 +272,9 @@ public class ResourcesManager {
 			this._dataIsPaused = false;
 			Collection<Resource> values = _resourcesCache.values();
 			//Log.i("ShadingZen", "Rendering " + values.size() + " shapes");
-			Iterator<Resource> iter = values.iterator();
-	
-			while(iter.hasNext()){
-				Resource next = iter.next();
-				if(!next.onResumed(_context)){
+            for(Resource res : values){
+
+				if(!res.onResumed(_context)){
 					Log.v("ShadingZen", "ResourcesManager error calling onResumed for resource");
 				}
 			}
@@ -290,11 +287,10 @@ public class ResourcesManager {
 			this._dataIsPaused = true;
 			Collection<Resource> values = _resourcesCache.values();
 			//Log.i("ShadingZen", "Rendering " + values.size() + " shapes");
-			Iterator<Resource> iter = values.iterator();
-	
-			while(iter.hasNext()){
+
+			for(Resource res : values){
 				Log.v("ShadingZen", "Pausing resource in driver...");
-				if(!iter.next().onPaused(_context)){
+				if(!res.onPaused(_context)){
 					
 				}
 			}
@@ -312,11 +308,11 @@ public class ResourcesManager {
 			//Log.i("ShadingZen", "loadAllToRenderer: checking " + values.size() + " resources");
 			Iterator<Resource> iter = values.iterator();
 	
-			while(iter.hasNext()){
+			for(Resource res: values){
 				
-				Resource res = iter.next();
+				//Resource res = iter.next();
 				if(res.isDriverDataDirty()){
-					Log.i("ShadingZen", "loading resource of type: " + res.getClass().getName() + " with name: " + res.getId());
+					//Log.i("ShadingZen", "loading resource of type: " + res.getClass().getName() + " with name: " + res.getId());
 					res.onDriverLoad(_context);
 				}
 

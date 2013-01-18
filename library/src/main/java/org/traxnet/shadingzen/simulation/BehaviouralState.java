@@ -1,6 +1,6 @@
 package org.traxnet.shadingzen.simulation;
 
-import org.traxnet.shadingzen.core.Actor;
+import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 
 /**
  * ActionsDrivenBehaviouralState represent an actor state that controls or drives the actor during the time the behaviour is
@@ -12,7 +12,7 @@ public interface BehaviouralState {
      * Called once the BehaviouralState has been attached to an Actor
      * @param target the target actor receiving this behaviour
      */
-    public void register(Actor target);
+    public void register(VehicleActor target);
 
     /**
      * Called for each engine tick to run the simulation
@@ -31,4 +31,10 @@ public interface BehaviouralState {
      * behaviour state will go on hold.
      */
     public void suppress();
+
+    /**
+     * Called by the arbitrator before this behaviour takes over. This may be called several times during simulation,
+     * each time the behaviour takes control again.
+     */
+    public void start();
 }

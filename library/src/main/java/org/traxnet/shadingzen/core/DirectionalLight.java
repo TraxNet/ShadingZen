@@ -2,13 +2,11 @@ package org.traxnet.shadingzen.core;
 
 import org.traxnet.shadingzen.math.Vector3;
 
-import android.util.FloatMath;
-
 public class DirectionalLight extends Actor implements LightEmitter {
 	protected ShadowCastingType _shadowCastingType = ShadowCastingType.HARD_SHADOWMAP;
 	protected float _lightingRange = 1.f;
 	protected float _lightingIntesity = 1.f;
-	protected Vector3 _lightingColor = new Vector3(1.f, 1.f, 1.f);
+	protected float[] _lightingColor = new float[4];
 	protected Vector3 _lightingDirection = new Vector3(1.f, 1.f, 1.f);
 	protected float _lightingFov = 0.f;
 	
@@ -23,7 +21,10 @@ public class DirectionalLight extends Actor implements LightEmitter {
 	}
 	
 	public void setColor(float r, float g, float b){
-		_lightingColor.set(r, g, b);
+		_lightingColor[0] = r;
+        _lightingColor[1] = g;
+        _lightingColor[2] = b;
+        _lightingColor[3] = 1.f;
 	}
 
 	@Override
@@ -50,7 +51,17 @@ public class DirectionalLight extends Actor implements LightEmitter {
 		return ret;
 	}
 
-	@Override
+    @Override
+    public float[] getLightColor() {
+        return _lightingColor;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public float[] getLightPosition() {
+        return _position.getAsArray();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
 	protected void onUpdate(float deltaTime) {
 		// Put your animated lighting effect here 
 		

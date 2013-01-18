@@ -7,11 +7,16 @@
 
 package org.traxnet.shadingzen.core.shapes;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import android.content.Context;
+import android.opengl.GLES20;
+import android.util.Log;
+import org.traxnet.shadingzen.core.RenderService;
+import org.traxnet.shadingzen.core.Resource;
+import org.traxnet.shadingzen.core.Shape;
+import org.traxnet.shadingzen.math.BBox;
+import org.traxnet.shadingzen.math.Vector3;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -19,18 +24,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.Shape;
-import org.traxnet.shadingzen.math.BBox;
-import org.traxnet.shadingzen.math.Vector3;
-
-import android.content.Context;
-
-
-import android.opengl.GLES20;
-import android.util.Log;
-
-public class OBJMesh extends Shape {
+public class OBJMesh extends Resource implements Shape {
 	private int resourceId;
 	private String _id;
 	private boolean _isDataDirty = true;

@@ -1,17 +1,15 @@
 package org.traxnet.shadingzen.core;
 
+import android.content.Context;
+import android.opengl.GLES20;
+
+import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import javax.microedition.khronos.opengles.GL10;
-
-
-import android.content.Context;
-import android.opengl.GLES20;
-
-public class Particles extends Shape {
+public class Particles extends Resource implements Shape {
 	protected Parameters _params;
 	protected boolean _isDriverDataDirty;
 	protected int _num_vertices;

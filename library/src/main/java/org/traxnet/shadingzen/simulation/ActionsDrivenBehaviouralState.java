@@ -1,6 +1,7 @@
 package org.traxnet.shadingzen.simulation;
 
 import org.traxnet.shadingzen.core.Actor;
+import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 
 import java.util.LinkedList;
 
@@ -16,7 +17,7 @@ public abstract class ActionsDrivenBehaviouralState implements BehaviouralState 
         _currentActions = new LinkedList<BehaviourAction>();
     }
 
-    public void register(Actor target){
+    public void register(VehicleActor target){
         _targetActor = target;
     }
 
@@ -46,6 +47,7 @@ public abstract class ActionsDrivenBehaviouralState implements BehaviouralState 
 
         _currentActions.clear();
     }
+
 
 
 

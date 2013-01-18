@@ -1,24 +1,17 @@
 package org.traxnet.shadingzen.core2d;
 
-import java.util.Iterator;
-import java.util.TreeSet;
-import java.util.UUID;
-
+import android.content.Context;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
 import org.traxnet.shadingzen.R;
-import org.traxnet.shadingzen.core.Engine;
-import org.traxnet.shadingzen.core.Entity;
-import org.traxnet.shadingzen.core.RenderBuffer;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.ResourcesManager;
-import org.traxnet.shadingzen.core.ShadersProgram;
-import org.traxnet.shadingzen.core.BitmapTexture;
+import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
-import android.content.Context;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.UUID;
 
 /**
  * A QuadAtlas is a more optimized version of an sprite/quad as it packs many quads sharing 
@@ -292,7 +285,7 @@ public class QuadAtlas extends Node2d {
 			
 			// Draw the elements
 			_buffer.bindElementBuffer();
-			GLES20.glDrawElements(mode, elements_num, GLES20.GL_UNSIGNED_SHORT, elements_offset);
+                GLES20.glDrawElements(mode, elements_num, GLES20.GL_UNSIGNED_SHORT, elements_offset);
 			
 			
 			// Revert back the state

@@ -1,12 +1,12 @@
 package org.traxnet.shadingzen.core;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import android.content.Context;
 import android.opengl.GLES20;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  *  Manages the generation and usage of vertex and fragment shaders.
@@ -74,10 +74,12 @@ public final class ShadersProgram extends Resource {
         			Log.i("ShadingZen", "ShadersProgram.createProgram: " + "Skipping shader.");
         		checkGlError("create program.attachFragmentShader");
         	}
-        	
+
         	GLES20.glBindAttribLocation(_programId, 0, "v_position");
         	GLES20.glBindAttribLocation(_programId, 1, "v_normal");
         	GLES20.glBindAttribLocation(_programId, 2, "v_uv");
+            GLES20.glBindAttribLocation(_programId, 3, "v_color");
+            GLES20.glBindAttribLocation(_programId, 4, "v_tangent");
             //checkGlError("glAttachShader PS");
             GLES20.glLinkProgram(_programId);
             int[] linkStatus = new int[1];

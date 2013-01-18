@@ -1,23 +1,24 @@
 package org.traxnet.shadingzen.core;
 
+import org.traxnet.shadingzen.math.BBox;
+import org.traxnet.shadingzen.math.Vector3;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.traxnet.shadingzen.math.BBox;
-import org.traxnet.shadingzen.math.Vector3;
-
 public class Scene extends Actor{
 	protected EntityManager _entityManager;
 	//protected GameInfo _currentGameInfo;
 	protected HashMap<String, Collider> _colliders;
-	
+
 	
 	
 	public Scene(){
 		_entityManager = new EntityManager(this);
 		_colliders = new HashMap<String, Collider>();
+
 	}
 	
 	public EntityManager getEntityManager(){
@@ -50,12 +51,19 @@ public class Scene extends Actor{
 	
 	public void processColliders(){
 		ArrayList<Collider> processed = new ArrayList<Collider>();
-		for(Collider collider : _colliders.values()){
+        Object[] array = _colliders.values().toArray();
+		for(Object obj : array){
+            Collider collider = (Collider) obj;
 			processed.add(collider);
+            if(collider.isPendingDestroy())
+                continue;
 			
-			for(Collider target : _colliders.values()){
+			for(Object obj_target : array){
+                Collider target = (Collider) obj_target;
 				if(processed.contains(target))
 					continue;
+                if(target.isPendingDestroy())
+                    continue;
 				if(collider.getBoundingBox().overlap(target.getBoundingBox())){
 					// They both may collide. 
 					// TODO: for now we only test bbox for speed and simplicity
@@ -126,6 +134,7 @@ public class Scene extends Actor{
 	public void onTick(float delta) {
 		super.onTick(delta);
 		_entityManager.updateTick(delta);
+        processColliders();
 	}
 
 	@Override

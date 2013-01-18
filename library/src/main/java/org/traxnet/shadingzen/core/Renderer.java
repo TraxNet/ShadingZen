@@ -189,7 +189,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		
 		GLES20.glViewport(0, 0, (int)_width, (int)_height);
 		GLES20.glClearColor(_clearColor.getX(), _clearColor.getY(), _clearColor.getZ(), _clearColor.getW());
-
+        GLES20.glEnable(GLES20.GL_DITHER);
 		
 		
 		if(null != _currentCamera){
@@ -326,6 +326,10 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		//}
 		checkGlError("bind program");
 	}
+
+    public ShadersProgram getCurrentProgram(){
+        return _lastProgram;
+    }
 	
 	@Override
 	public float[] getViewMatrix()

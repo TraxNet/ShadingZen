@@ -7,11 +7,13 @@
 
 package org.traxnet.shadingzen.core;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import android.content.Context;
+import android.opengl.GLES20;
+import android.util.Log;
+import org.traxnet.shadingzen.math.BBox;
+import org.traxnet.shadingzen.math.Vector3;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -19,18 +21,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.Shape;
-import org.traxnet.shadingzen.math.BBox;
-import org.traxnet.shadingzen.math.Vector3;
-
-import android.content.Context;
-
-
-import android.opengl.GLES20;
-import android.util.Log;
-
-public class OBJMesh extends Shape {
+public class OBJMesh extends Resource implements Shape {
 	private int resourceId;
 	private String _id;
 	private boolean _isDataDirty = true;
@@ -328,39 +319,37 @@ public class OBJMesh extends Shape {
                 Log.e("ShadingZen", "OBJMesh driver load" + ": glError " + error);
                 //throw new RuntimeException(op + ": glError " + error);
         }
-		
-		synchronized(_lock){
-			_isDataDirty = false;
-		}
+
+		_isDataDirty = false;
+
 		return true;
 	}
 
-	@Override
+    @Override
 	public boolean onResumed(Context context) {
 		return true;
 	}
 
-	@Override
+    @Override
 	public boolean onPaused(Context context) {
-		synchronized(_lock)
-		{
-			_isDataDirty = true;
-			GLES20.glDeleteBuffers(2, _bufferIds);
-			return true;
-		}
+        _isDataDirty = true;
+        GLES20.glDeleteBuffers(2, _bufferIds);
+        return true;
+
 	}
-	
+
+    @Override
 	public boolean isDriverDataDirty()
-	{
-		synchronized(_lock){
-			return _isDataDirty;
-		}
+    {
+		return _isDataDirty;
+
 	}
 	
 	/** Release all memory from this resource 
 	 * This will be called by the OpenGL thread when the resource is no longer needed
 	 * by the logic thread and the OpenGL thread
 	 */
+    @Override
 	public void onRelease(){
 	    // TODO: remove data from OpenGL driver
 	    _ib.clear();

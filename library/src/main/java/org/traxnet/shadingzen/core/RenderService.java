@@ -8,6 +8,7 @@ import android.content.Context;
 
 public interface RenderService {
 	public void setProgram(ShadersProgram program);
+    public ShadersProgram getCurrentProgram();
 	public float[] getViewMatrix();
 	public float[] getProjectionMatrix();
 	public float[] getOrthoProjectionMatrix();

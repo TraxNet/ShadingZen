@@ -17,4 +17,6 @@ public interface LightEmitter {
 	
 	public ShadowCastingType getShadowCastingType();
 	public float computeContributionAtWorldPoint(float x, float y, float z);
+    public float[] getLightColor();
+    public float[] getLightPosition();
 }

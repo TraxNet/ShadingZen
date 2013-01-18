@@ -1,23 +1,20 @@
 package org.traxnet.shadingzen.rendertask;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.opengl.GLES20;
+import android.util.Log;
 import org.traxnet.shadingzen.core.Engine;
 import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 
-import android.content.Context;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-import android.util.Log;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 public class RenderBBoxTask extends RenderTask {
 	BBox _bbox;
@@ -217,17 +214,23 @@ public class RenderBBoxTask extends RenderTask {
 		
 			
 		// Calculate model-view-projection matrix
-		Matrix.multiplyMM(_mv, 0, service.getViewMatrix(), 0, _modelMatrix.getAsArray(), 0);
+		/*Matrix.multiplyMM(_mv, 0, service.getViewMatrix(), 0, _modelMatrix.getAsArray(), 0);
 		GLES20.glUniformMatrix4fv(_program.getUniformLocation("mv_matrix"), 1, false, _mv, 0);
 		
 		Matrix.multiplyMM(_mvp, 0, service.getProjectionMatrix(), 0, _mv, 0);
 		// Move to the shaders as an uniform
 		GLES20.glUniformMatrix4fv(_program.getUniformLocation("mvp_matrix"), 1, false, _mvp, 0);
 		
-		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, _modelMatrix.getAsArray3x3(), 0);
+		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, _modelMatrix.getAsArray3x3(), 0);  */
 		
 		//GLES20.glUniform3fv(_program.getUniformLocation("eye_point"), 1, service.getCameraPosition().getAsArray(), 0);
 		GLES20.glUniform4f(_program.getUniformLocation("color"), _color.getX(), _color.getY(), _color.getZ(), _color.getW());
+
+        Vector4 pos = _modelMatrix.mul(Vector4.zero());
+
+        //GLES20.glUniform3f(_program.getUniformLocation("position"), pos.getX(), pos.getY(), pos.getZ());
+
+        GLES20.glUniformMatrix4fv(_program.getUniformLocation("projection"), 1, false, service.getCamera().getViewProjectionMatrix().getAsArray(), 0);
 		
 		//checkGlError("RenderModelTask.setGlobalUniformVariables");
 	}

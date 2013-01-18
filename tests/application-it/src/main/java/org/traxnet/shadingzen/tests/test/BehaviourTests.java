@@ -6,6 +6,7 @@ import org.traxnet.shadingzen.core.InvalidTargetActorException;
 import org.traxnet.shadingzen.simulation.ActionsDrivenBehaviouralState;
 import org.traxnet.shadingzen.simulation.BehaviourAction;
 import org.traxnet.shadingzen.simulation.BehaviourArbitrator;
+import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 import org.traxnet.shadingzen.tests.DummyTestActivity;
 
 /**
@@ -26,6 +27,10 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
         public Actor getTargetActor(){ return _targetActor; }
 
 
+        public void register(VehicleActor target) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
         public void step(float deltaTime) {
             timesCalledStep++;
 
@@ -44,6 +49,10 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
             super.suppress();
 
             suppressIsCalled = true;
+        }
+
+        public void start() {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 

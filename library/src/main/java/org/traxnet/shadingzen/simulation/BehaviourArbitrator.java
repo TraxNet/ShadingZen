@@ -2,6 +2,7 @@ package org.traxnet.shadingzen.simulation;
 
 import org.traxnet.shadingzen.core.InvalidTargetActorException;
 import org.traxnet.shadingzen.core.Action;
+import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 
 import java.util.LinkedList;
 
@@ -48,6 +49,7 @@ public class BehaviourArbitrator extends Action {
                 _currentRunningState.getState().suppress();
 
             _currentRunningState = new_state;
+            _currentRunningState.getState().start();
         }
     }
 
@@ -91,7 +93,7 @@ public class BehaviourArbitrator extends Action {
     @Override
     protected void onRegisterTarget() {
         for(BehaviourStatePrioritizer holder : _behaviours){
-            holder.getState().register(_targetActor);
+            holder.getState().register((VehicleActor)_targetActor);
         }
     }
 

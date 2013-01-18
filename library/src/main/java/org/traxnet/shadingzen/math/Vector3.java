@@ -41,6 +41,16 @@ public class Vector3 {
 			x *v.y - y *v.x
 		);
 	}
+
+    public void crossNoCopy(Vector3 v){
+
+        float _x = y *v.z - z *v.y;
+        float _y = z *v.x - x *v.z;
+        z = x *v.y - y *v.x;
+        x = _x;
+        y = _y;
+
+    }
 	
 	/*** Return a float [3] 
 	 * 

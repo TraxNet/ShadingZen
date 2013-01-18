@@ -1,27 +1,22 @@
 package org.traxnet.shadingzen.rendertask;
 
-import org.traxnet.shadingzen.core.Model;
-import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.core.ShadersProgram;
-import org.traxnet.shadingzen.core.Shape;
-import org.traxnet.shadingzen.core.BitmapTexture;
-import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Vector4;
-
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import org.traxnet.shadingzen.core.*;
+import org.traxnet.shadingzen.math.Matrix4;
+import org.traxnet.shadingzen.math.Vector4;
 
 public class RenderModelTask extends RenderTask {
 	Shape _shape;
 	Matrix4 _modelMatrix = new Matrix4();
-	BitmapTexture _texture;
+	Texture _texture;
 	float [] _mvp = new float[16];
 	float [] _mv = new float[16];
 	boolean _isDepthOnly = false;
 	
 	
-	public void init(ShadersProgram program, Shape shape, Matrix4 model_matrix, BitmapTexture texture){
+	public void init(ShadersProgram program, Shape shape, Matrix4 model_matrix, Texture texture){
 		_program = program;
 		_shape = shape;
 		_modelMatrix.set(model_matrix);
@@ -107,10 +102,17 @@ public class RenderModelTask extends RenderTask {
 		Matrix.multiplyMM(_mvp, 0, renderer.getProjectionMatrix(), 0, _mv, 0);
 		// Move to the shaders as an uniform
 		GLES20.glUniformMatrix4fv(_program.getUniformLocation("mvp_matrix"), 1, false, _mvp, 0);
-		
-		GLES20.glUniformMatrix3fv(_program.getUniformLocation("normal_matrix"), 1, false, _modelMatrix.getAsArray3x3(), 0);
-		
-		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("eye_point"), 1, renderer.getCamera().getPosition().getAsArray(), 0);
+
+        Matrix.invertM(_mv, 0,  _modelMatrix.getAsArray(), 0);
+        Matrix4 normal_matrix = new Matrix4(_mv);
+        //Matrix.transposeM(normal_matrix.getAsArray(), 0, _mv, 0);
+
+
+        //GLES20.glUniformMatrix4fv(_program.getUniformLocation("invm_matrix"), 1, false, normal_matrix.getAsArray(), 0);
+
+        Vector4 eLight =  renderer.getCamera().getViewMatrix().mul(new Vector4(400.f, 200.f, 0.f, 1.f));
+
+		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("light_pos"), 1, (new Vector4(400.f, 200.f, 0.f, 1.f)).getAsArray(), 0);
 		
 		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("diffuse_color"), 1, _diffuseColor.getAsArray(), 0);
 		

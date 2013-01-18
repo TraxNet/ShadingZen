@@ -22,11 +22,22 @@ public class ApproachBehaviourAction extends BehaviourAction {
     protected float currentSteerVelocityX = 0.f;
     protected float currentSteerVelocityY = 0.f;
     protected boolean fleeFromTarget = false;
+    protected float _minimunVelocityFactorWhileSteering = 0.f;
 
     public ApproachBehaviourAction(Actor navpoint_actor, float meet_distance, boolean flee){
         _navpoint = navpoint_actor;
         _meetDistance = meet_distance;
         fleeFromTarget = flee;
+    }
+
+    /** A positive number between 0.0 and 1.0 with the minimum velocity during steering
+     * The default is to 0.0 which makes the ship stop and rotate before accelerating again once
+     * the vehicle is heading the correct direction.
+     *
+     * @param value
+     */
+    public void setMinimunVelocityFactorWhileSteering(float value){
+        _minimunVelocityFactorWhileSteering = Math.max(0.f,Math.min(1.f,value));
     }
 
     protected boolean calculateTargetVelocityVector(){
@@ -66,7 +77,7 @@ public class ApproachBehaviourAction extends BehaviourAction {
 
             if(calculateTargetVelocityVector()){
                 calculateCurrentSteering(deltaTime);
-                setZeroVelocityIfTargetIsBehind();
+                setMinimumVelocityIfTargetIsBehind();
             }
 
             _vehicle.setAccelerateState(VehicleActor.AccelerateState.AUTO);
@@ -89,10 +100,10 @@ public class ApproachBehaviourAction extends BehaviourAction {
         }
     }
 
-    protected void setZeroVelocityIfTargetIsBehind() {
+    protected void setMinimumVelocityIfTargetIsBehind() {
         float cosine = _vehicle.getLocalFrontAxis().dot(currentDesiredVelocityVectorNormalize);
         if(cosine <= 0.f){
-            currentTargetFrontVelocity = 0.f;
+            currentTargetFrontVelocity *= _minimunVelocityFactorWhileSteering;
         }
     }
 
