@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.CyclicBarrier;
 
 public final class Engine implements Runnable {
 	private Renderer _openglRenderer;
@@ -44,6 +45,8 @@ public final class Engine implements Runnable {
     private TextureRenderTarget _shadowMapRenderTarget = null;
     float [] _cached_model_matrix = new float[16];
     private boolean _landscapeMode = false;
+    private RenderingQuality _renderingQuality = RenderingQuality.HIGH;
+    CyclicBarrier _barrier = null;
 
     public boolean resizeTexturesToPowerOfTwo = false;
     
@@ -51,6 +54,21 @@ public final class Engine implements Runnable {
     public static Engine getSharedInstance(){
     	return globalInstance;
     }
+
+    public enum RenderingQuality{
+        HIGH,
+        MEDIUM,
+        LOW
+    }
+
+    public void setRenderingQuality(RenderingQuality quality){
+        _renderingQuality = quality;
+
+        if(_renderingQuality != RenderingQuality.HIGH){
+            ResourcesManager.getSharedInstance().setDefaultMipmapLevel(1);
+        }
+    }
+
     
     public Engine(int viewWidth, int viewHeight){
     	_viewWidth = viewWidth;
@@ -65,14 +83,27 @@ public final class Engine implements Runnable {
         globalInstance = this;
         
         Log.i("ShadingZen", "Engine started with surface size: " + viewWidth + "x" + viewHeight);
+
+        _barrier = new CyclicBarrier(2);
+    }
+
+    public void fenceWait(){
+
+        try{
+            _barrier.await();
+        } catch (Exception e){
+            Log.e("ShadingZen", "fenceWait -> fence wait error:" + e.getLocalizedMessage());
+        }
     }
 	
 	public void Init(Context context, Renderer renderer){
 		_openglRenderer = renderer;
 		_context = context;
+
+        ResourcesManager res_man = new ResourcesManager();
 		
 		try {
-			ResourcesManager.setSharedInstance(new ResourcesManager());
+			ResourcesManager.setSharedInstance(res_man);
 			TaskManager.setSharedInstance(new TaskManager());
 			//EntityManager.setSharedInstance(new EntityManager(_openglRenderer));
 			_inputControllerStack = new Stack<InputController>();
@@ -83,13 +114,15 @@ public final class Engine implements Runnable {
 		    e.printStackTrace(pw);
 			Log.e("ShadingZen", sw.toString());
 		}
-		ResourcesManager.getSharedInstance().setContext(_context);
+        res_man.setContext(_context);
+
+
 		
 		_mainHandler = new Handler();
 		TaskManager.getSharedInstance().registerHandler(_mainHandler);
 		
 		loadDebugShaders();
-		//_logicThread.start();
+		_logicThread.start();
 		
 		_currentDeviceConfig = this._context.getResources().getConfiguration();
 	}
@@ -154,14 +187,31 @@ public final class Engine implements Runnable {
 	
 	public void updateTick(){
 		//Log.i("ShadingZen", "updateTick");
+        try{
+            _barrier.await();
+        } catch (Exception e){
+            Log.e("ShadingZen", "updateTick fence wait error:" + e.getLocalizedMessage());
+        }
 		
 		long nanotime = System.nanoTime();
 		long delta_time = nanotime - _frameTime;
 		
 		if(delta_time > 1000000000)
 			delta_time = 0;
-		
+
 		float deltaf = delta_time/1000000000.f;
+        /*
+       // Log.i("ShadingZen", "delta_time " + delta_time);
+        if(delta_time < 33*1000000)              {
+            try{
+                //Log.i("ShadingZen", "Waiting " + (33*1000000-delta_time)/1000000);
+                Thread.sleep((33*1000000-delta_time)/1000000, 0);
+               // Thread.sleep(0, (int)(33*1000000-delta_time));
+
+            } catch (Exception e){
+
+            }
+        } */
 		
 		if(null != _currentGameInfo){
 			_currentGameInfo.onTick(deltaf);
@@ -247,21 +297,25 @@ public final class Engine implements Runnable {
 			
 		}
 	}
+
+    Vector<EntityHolder> ordered_list = new Vector<EntityHolder>();
+    Vector<EntityHolder> node2d_ordered_list = new Vector<EntityHolder>();
+    Vector<EntityHolder> node2d_background_ordered_list = new Vector<EntityHolder>();
 	
 	public void drawHierarchy(RenderService renderer, EntityManager entity_manager, float[] scene_model_matrix){
 		_currentFrameId += 1;
-		
-		Vector<EntityHolder> ordered_list = new Vector<EntityHolder>();
-		Vector<EntityHolder> node2d_ordered_list = new Vector<EntityHolder>();
-		Vector<EntityHolder> node2d_background_ordered_list = new Vector<EntityHolder>();
+
+        ordered_list.clear();
+        node2d_ordered_list.clear();
+        node2d_background_ordered_list.clear();
 		
 		Object[] holders = entity_manager.getCurrentEntityHolders();
 		
 		//synchronized(this._entities){
 		
 			// Create an ordered render list of entities or actors without parent. Actor with parent are rendered hierarchically below
-			for(Object uncasted_holder : holders){
-				EntityHolder holder = (EntityHolder)uncasted_holder;
+			for(int index = 0; index < holders.length; index++){
+				EntityHolder holder = (EntityHolder)holders[index];
 				
 				Entity entity = holder.getEntity();
 				if(entity.isPendingDestroy())
@@ -288,16 +342,17 @@ public final class Engine implements Runnable {
 			}
 			
 			
-			for(EntityHolder holder : node2d_background_ordered_list){
-				drawActor(renderer, (Actor)holder.getEntity(), scene_model_matrix);
+			for(int index = 0; index < node2d_background_ordered_list.size(); index++){
+
+				drawActor(renderer, (Actor)node2d_background_ordered_list.get(index).getEntity(), scene_model_matrix);
 			}
 			
-			for(EntityHolder holder : ordered_list){
-				drawEntity(renderer, holder, scene_model_matrix);
+			for(int index = 0; index < ordered_list.size(); index++){
+				drawEntity(renderer, ordered_list.get(index), scene_model_matrix);
 			}
 			
-			for(EntityHolder holder : node2d_ordered_list){
-				drawActor(renderer, (Actor)holder.getEntity(), scene_model_matrix);
+			for(int index = 0; index < node2d_ordered_list.size(); index++){
+				drawActor(renderer, (Actor)node2d_ordered_list.get(index).getEntity(), scene_model_matrix);
 			}
 		//}
 	}
@@ -331,26 +386,18 @@ public final class Engine implements Runnable {
 		try{
 			if(actor.getFrameId() == _currentFrameId)
 				return;
-			
-			
-			/*float[] parent_model = null;
-			if(null != actor.getParent()){
-				parent_model = actor.getParent().getWorldModelMatrix().getAsArray();
-			} else{
-				//parent_model = Matrix4.identity().getAsArray();
-				
-				// The scene is the world itself so we call getLocalModelMatrix (convention)
-				parent_model = _ownerScene.getLocalModelMatrix().getAsArray();
-			}*/
-			
-			
-			
+
 			Matrix.multiplyMM(actor.getWorldModelMatrix().getAsArray(), 0, parent_model_matrix, 0, actor.getLocalModelMatrix().getAsArray(), 0);
-			//actor.setWorldModelMatrix(new Matrix4(_cached_model_matrix));
+			Matrix.invertM(actor.getInverseWorldModelMatrix().getAsArray(), 0, actor.getWorldModelMatrix().getAsArray(), 0);
+
 			
 			actor.onDraw(renderer);
-				
-			for(Actor child : actor.getChildren()){
+
+
+            Object [] children = actor.getChildren();
+            int size = actor.getNumChildren();
+			for(int index=0; index < size; index++){
+                Actor child = ((Actor) children[index]);
 				drawActor(renderer, child, actor.getWorldModelMatrix().getAsArray());
 				child.setFrameId(_currentFrameId);
 			}
@@ -389,8 +436,9 @@ public final class Engine implements Runnable {
     {  
     	if(_inputControllerStack.empty())
     		return false;
-    	
 
+        int index = event.getActionIndex();
+        int pointerId = event.getPointerId(index);
     	
         //when user touches the screen  
         if(event.getAction() == MotionEvent.ACTION_DOWN)  
@@ -400,7 +448,8 @@ public final class Engine implements Runnable {
   
             //get initial positions  
             initialX = event.getRawX();  
-            initialY = event.getRawY();  
+            initialY = event.getRawY();
+
         }  
        
         //when screen is released  
@@ -412,16 +461,21 @@ public final class Engine implements Runnable {
          	//if(Math.abs(deltaY) < 15 && Math.abs(deltaX) < 15)
          	{
                 for (InputController controller : _inputControllerStack){
-                    if(controller.onTouchDrag(event.getRawX(), event.getRawY(), deltaX, deltaY))
+                    if(controller.onTouchDrag(pointerId, event.getRawX(), event.getRawY(), deltaX, deltaY))
                         break;
                 }
          		
          	}
   
          	return true;  
+        } else if(event.getAction() == MotionEvent.ACTION_DOWN){
+            for (InputController controller : _inputControllerStack){
+                if(controller.onTouchDown(pointerId, event.getRawX(), event.getRawY()))
+                    break;
+            }
         } else if(event.getAction() == MotionEvent.ACTION_UP){
             for (InputController controller : _inputControllerStack){
-                if(controller.onTouchUp(event.getRawX(), event.getRawY()))
+                if(controller.onTouchUp(pointerId, event.getRawX(), event.getRawY()))
                     break;
             }
         }
@@ -476,8 +530,9 @@ public final class Engine implements Runnable {
     /** Main logic loop */
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		//this.UpdateTick();
+        while(true){
+		    this.updateTick();
+        }
 	}
 	
 	public Context getContext(){

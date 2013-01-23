@@ -5,7 +5,6 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Vector4;
 
 public class RenderModelTask extends RenderTask {
 	Shape _shape;
@@ -32,7 +31,7 @@ public class RenderModelTask extends RenderTask {
 	protected void init(Model model, Matrix4 model_matrix){
 		_program = model.getShadersProgram();
 		_shape = model.getShape();
-		_modelMatrix = model_matrix;
+		_modelMatrix.set(model_matrix);
 		_texture = model.getTexture();
 		_depthTest = true;
 		_blend = false;
@@ -73,7 +72,7 @@ public class RenderModelTask extends RenderTask {
 		if(null != _texture)
 			_texture.unbindTexture(0);
 		
-		_program.unbindProgram();
+		//_program.unbindProgram();
 	}
 	
 	@Override
@@ -93,7 +92,9 @@ public class RenderModelTask extends RenderTask {
 		return true;
 	}
 	
-	
+	float [] fake_light =  {400.f, 200.f, 0, 0};
+    float [] color = {1.f, 1.f, 1.f, 1.f};
+
 	private void setGlobalUniformVariables(RenderService renderer) throws Exception {	
 		// Calculate model-view-projection matrix
 		Matrix.multiplyMM(_mv, 0, renderer.getViewMatrix(), 0, _modelMatrix.getAsArray(), 0);
@@ -110,15 +111,15 @@ public class RenderModelTask extends RenderTask {
 
         //GLES20.glUniformMatrix4fv(_program.getUniformLocation("invm_matrix"), 1, false, normal_matrix.getAsArray(), 0);
 
-        Vector4 eLight =  renderer.getCamera().getViewMatrix().mul(new Vector4(400.f, 200.f, 0.f, 1.f));
+       // Vector4 eLight =  renderer.getCamera().getViewMatrix().mul(new Vector4(400.f, 200.f, 0.f, 1.f));
 
-		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("light_pos"), 1, (new Vector4(400.f, 200.f, 0.f, 1.f)).getAsArray(), 0);
+		GLES20.glUniform3fv(_program.getUniformLocationNoCheck("light_pos"), 1, fake_light, 0);
 		
-		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("diffuse_color"), 1, _diffuseColor.getAsArray(), 0);
+		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("diffuse_color"), 1,color, 0);
 		
-		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("ambient_color"), 1, _ambientColor.getAsArray(), 0);
+		GLES20.glUniform4fv(_program.getUniformLocationNoCheck("ambient_color"), 1, color, 0);
 		
-		checkGlError("RenderModelTask.setGlobalUniformVariables");
+		//checkGlError("RenderModelTask.setGlobalUniformVariables");
 	}
 
 	@Override

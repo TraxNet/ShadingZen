@@ -26,8 +26,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
                 EGL10.EGL_DEPTH_SIZE, 16,
                 // Requires that setEGLContextClientVersion(2) is called on the view.
                 EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
-                EGL10.EGL_SAMPLE_BUFFERS, 1 /* true */,
-                EGL10.EGL_SAMPLES, 2,
+                //EGL10.EGL_SAMPLE_BUFFERS, 1 /* true */,
+                //EGL10.EGL_SAMPLES, 2,
                 EGL10.EGL_NONE
         };
 
@@ -50,8 +50,8 @@ public class MultisampleConfigChooser implements GLSurfaceView.EGLConfigChooser 
                     EGL10.EGL_BLUE_SIZE, 5,
                     EGL10.EGL_DEPTH_SIZE, 16,
                     EGL10.EGL_RENDERABLE_TYPE, 4 /* EGL_OPENGL_ES2_BIT */,
-                    EGL_COVERAGE_BUFFERS_NV, 1 /* true */,
-                    EGL_COVERAGE_SAMPLES_NV, 2,  // always 5 in practice on tegra 2
+                    //EGL_COVERAGE_BUFFERS_NV, 1 /* true */,
+                    //EGL_COVERAGE_SAMPLES_NV, 2,  // always 5 in practice on tegra 2
                     EGL10.EGL_NONE
             };
 

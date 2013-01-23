@@ -8,6 +8,7 @@ import org.traxnet.shadingzen.math.Vector3;
  */
 public class PursuitBehaviourAction extends ApproachBehaviourAction {
     VehicleActor _pursedActor;
+    Vector3 to_target = new Vector3();
 
     public PursuitBehaviourAction(VehicleActor navpoint_actor, float meet_distance, boolean flee){
         super(navpoint_actor, meet_distance, flee);
@@ -18,7 +19,9 @@ public class PursuitBehaviourAction extends ApproachBehaviourAction {
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            Vector3 to_target = _navpoint.getPosition().sub(_targetActor.getPosition());
+            to_target.set(_navpoint.getPosition());
+            to_target.subNoCopy(_targetActor.getPosition());
+
             float t = calculateTimeToIntercept(to_target);
 
             Vector3 displacement = _pursedActor.getLocalFrontAxis().mul(_pursedActor.getCurrentVelocity()*t);

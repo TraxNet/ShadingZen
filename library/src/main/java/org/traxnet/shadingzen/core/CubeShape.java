@@ -114,7 +114,7 @@ public class CubeShape extends Resource implements Shape {
 	
 	void drawSubBuffer(RenderService service, int elements_offset, int elements_num, int mode) throws Exception{
 
-        service.checkGlError("drawSubBuffer pre glGetAttribLocation");
+
 		//int index0 = _program.getVertexAttribLocation("v_position");
 		//int index1 = _program.getVertexAttribLocation("v_uv");
 
@@ -122,10 +122,10 @@ public class CubeShape extends Resource implements Shape {
         GLES20.glDisable(GLES20.GL_BLEND);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
 
-        service.checkGlError("drawSubBuffer post glGetAttribLocation index0="+index0);
+
 					
 		GLES20.glEnableVertexAttribArray(index0);
-        service.checkGlError("drawSubBuffer post glEnableVertexAttribArray index0="+index0);
+
 		//GLES20.glEnableVertexAttribArray(index1);
         //service.checkGlError("drawSubBuffer post glEnableVertexAttribArray index1="+index1);
 		
@@ -146,7 +146,7 @@ public class CubeShape extends Resource implements Shape {
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		GLES20.glDisableVertexAttribArray(index0);
-        service.checkGlError("drawSubBuffer post glDisableVertexAttribArray index0="+index0);
+
 		//GLES20.glDisableVertexAttribArray(index1);
         //service.checkGlError("drawSubBuffer post glDisableVertexAttribArray index1="+index1);
 		

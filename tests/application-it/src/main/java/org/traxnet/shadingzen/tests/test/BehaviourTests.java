@@ -28,7 +28,7 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
 
 
         public void register(VehicleActor target) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            _targetActor = target;
         }
 
         public void step(float deltaTime) {
@@ -83,7 +83,7 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
 
 
     public void testBehaviourArbitrator(){
-        MockActor actor = new MockActor();
+        MockVehicleActor actor = new MockVehicleActor();
         MockBehaviouralState state = new MockBehaviouralState();
 
         BehaviourArbitrator arbitrator = new BehaviourArbitrator(2);
@@ -101,7 +101,7 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
     }
 
     public void testActionsDrivenBehaviourState(){
-        MockActor actor = new MockActor();
+        MockVehicleActor actor = new MockVehicleActor();
         MockBehaviouralState state01 = new MockBehaviouralState();
 
         BehaviourArbitrator arbitrator = new BehaviourArbitrator(2);
@@ -121,7 +121,7 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
     }
 
     public void testBehaviourArbitratorDecisorCode(){
-        MockActor actor = new MockActor();
+        MockVehicleActor actor = new MockVehicleActor();
         MockBehaviouralState state01 = new MockBehaviouralState();
         MockBehaviouralState state02 = new MockBehaviouralState();
         MockBehaviouralState state03 = new MockBehaviouralState();

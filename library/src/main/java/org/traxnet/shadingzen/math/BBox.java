@@ -6,20 +6,27 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class BBox {
 	Vector3 _mins, _maxs;
+    float []_minsArray, _maxsArray;
 	
 	public BBox(){
 		_mins = new Vector3();
 		_maxs = new Vector3();
+
+        updateCachedArrays();
 	}
 	
 	public BBox(Vector3 mins, Vector3 maxs){
 		_mins = new Vector3(mins);
 		_maxs = new Vector3(maxs);
+
+        updateCachedArrays();
 	}
 	
 	public BBox(final BBox b){
 		_mins = new Vector3(b._mins);
 		_maxs = new Vector3(b._maxs);
+
+        updateCachedArrays();
 	}
 	
 	public Vector3 getMins(){
@@ -33,6 +40,8 @@ public class BBox {
     public void setMinMax(float max_x, float max_y, float max_z, float min_x, float min_y, float min_z){
         _mins.set(min_x, min_y, min_z);
         _maxs.set(max_x, max_y, max_z);
+
+        updateCachedArrays();
     }
 	
 	public void setFromRadius(Vector3 center, float radius){
@@ -45,12 +54,21 @@ public class BBox {
 		_maxs.setX(center.getX() + radius);
 		_maxs.setY(center.getY() + radius);
 		_maxs.setZ(center.getZ() + radius);
+
+        updateCachedArrays();
 	}
 	
 	public void setCenterExtents(Vector3 center, Vector3 extents){
 		_mins = center.sub(extents);
 		_maxs = center.add(extents);
+
+        updateCachedArrays();
 	}
+
+    public void updateCachedArrays(){
+        _maxsArray = _maxs.getAsArray();
+        _minsArray = _mins.getAsArray();
+    }
 	
 	public Vector3 getExtents(){
 		Vector3 v = new Vector3(_maxs.getX() - _mins.getX(), _maxs.getY() - _mins.getY(), _maxs.getZ() - _mins.getZ());
@@ -77,6 +95,12 @@ public class BBox {
 				_maxs.getX() > p.getX() && _maxs.getY() > p.getY() && _maxs.getZ() > p.getZ() ) return true;
 		return false;
 	}
+
+    public boolean isPointInside( Vector3 p, float radius ){
+        if( _mins.x - radius < p.x && _mins.y - radius < p.y && _mins.z - radius < p.z &&
+                _maxs.x + radius > p.x && _maxs.y + radius > p.y && _maxs.z + radius > p.z ) return true;
+        return false;
+    }
 	
 	public boolean overlap(BBox b ){
 		if(_mins.getX()>=b._maxs.getX() || _maxs.getX()<=b._mins.getX() ) return false;
@@ -84,6 +108,7 @@ public class BBox {
 		if(_mins.getZ()>=b._maxs.getZ() || _maxs.getZ()<=b._mins.getZ() ) return false;
 		return true;
 	}
+
 	
 	public Vector3 getCenter(){
 		return _mins.add(_maxs);
@@ -145,13 +170,15 @@ public class BBox {
 		        return true;
 		    }
 	}
+
+    float[] coord = new float[3];
 	
-	public boolean testRay(Vector3 orig, Vector3 d, AtomicReference<Vector3> coordinates){
-		float[] coord = new float[3];
-		float[] origin = orig.getAsArray();
-		float[] dir = d.getAsArray();
-		float[] Mins = _mins.getAsArray();
-		float[] Maxs = _maxs.getAsArray();
+	public boolean testRay(float[] origin, float[] dir, float radius, AtomicReference<Vector3> coordinates){
+
+		//float[] origin = orig.getAsArray();
+		//float[] dir = d.getAsArray();
+		float[] Mins = _minsArray;
+		float[] Maxs = _maxsArray;
 		int i = 0;
 		
 		boolean Inside = true;
@@ -159,7 +186,9 @@ public class BBox {
 
 		// Find candidate planes.
 		for( i=0; i<3; i++ ) {
-		
+		    Mins[i] -= radius;
+            Maxs[i] += radius;
+
 			if( origin[i] < Mins[i] ) {
 				coord[i] = Mins[i];
 				Inside = false;

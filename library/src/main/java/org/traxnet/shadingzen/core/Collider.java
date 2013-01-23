@@ -1,13 +1,25 @@
 package org.traxnet.shadingzen.core;
 
-import android.util.Log;
-import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 
 public abstract class Collider extends Actor {
 	protected Vector3 _extends;
+    protected CollidableStatus _collidableStatus = CollidableStatus.FULL_COLLIDABLE;
+
+    public enum CollidableStatus{
+        FULL_COLLIDABLE,
+        COLLIDABLE_BY_OTHERS,
+        DISABLED
+    }
 
 
+    public CollidableStatus getCollidableStatus(){
+        return _collidableStatus;
+    }
+
+    public void setCollidableStatus(CollidableStatus status){
+        _collidableStatus = status;
+    }
 
 	public Collider(){
 
@@ -31,25 +43,29 @@ public abstract class Collider extends Actor {
 		super.unregister();
 	}
 
-    public BBox getBoundingBox(){
-        if(null == _extends){
-            Log.e("ShadingZen", "ba");
-        }
-        Vector3 half_pos = _extends.mul(0.5f);
-        Vector3 half_neg = half_pos.negate();
+    public abstract float getBoundingRadius();
 
-        return new BBox(_position.add(half_neg), _position.add(half_pos));
-	}
+    /**
+     * Should check whenever the given ray (origin, dir, radius, length) intersects this actor
+     * If an intersection is found a CollisionInfo object is returned. If no collision is found
+     * a null object must be returned
+     * @param info Collision info. It may contain previous info, must be returned filled if an intersection is found
+     * @param orig Ray origin
+     * @param dir Ray direction
+     * @param radius Ray simulated radius
+     * @param length Ray length
+     * @return A collisionInfo object if the ray intersects, or null otherwise
+     *
+     */
+    public abstract CollisionInfo checkForRayIntersection(CollisionInfo info, float [] orig, float [] dir, float radius, float length);
+
+    /**
+     * The engine's runtime will call this method whenever a collision with other actor occurs.
+     *
+     * @param info
+     * @return If returns is false, the engine will continue probing for more collisions
+     */
+	public abstract boolean onTouch(CollisionInfo info);
 
 
-
-    public float getOuterRadius(){
-        return _extends.lengthSqrt();
-    }
-
-    public float getInnerRadius(){
-        return Math.min(_extends.x, Math.min(_extends.y, _extends.z));
-    }
-
-	public abstract void onTouch(Collider other);
 }

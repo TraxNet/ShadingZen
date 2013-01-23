@@ -12,6 +12,9 @@ public class Vector3 {
     public static Vector3 vectorRight = new Vector3(1.f, 0.f, 0.f);
     public static Vector3 vectorUp = new Vector3(0.f, 1.f, 0.f);
     public static Vector3 vectorFront = new Vector3(0.f, 0.f, 1.f);
+    public static float[] vectorRightArray = {1.f, 0.f, 0.f, 0.f};
+    public static float[] vectorUpArray = {0.f, 1.f, 0.f, 0.f};
+    public static float[] vectorFrontArray = {0.f, 0.f, 1.f, 0.f};
     public static Vector3 zero = new Vector3();
 
 	public float x, y, z;
@@ -140,6 +143,12 @@ public class Vector3 {
 		setY(v.y);
 		setZ(v.z);
 	}
+
+    public void set(float [] vec){
+        x = vec[0];
+        y = vec[1];
+        z = vec[2];
+    }
 	
 	public Vector3 sub(Vector3 b){
 		return new Vector3(
@@ -175,6 +184,12 @@ public class Vector3 {
 			z *f
 		);
 	}
+
+    public void mulInplace(float f){
+        x *= f;
+        y *= f;
+        z *= f;
+    }
 	
 	public Vector3 negate(){
 		return new Vector3(

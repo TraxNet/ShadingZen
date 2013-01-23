@@ -11,6 +11,7 @@ import org.traxnet.shadingzen.rendertask.RenderSkyDomeRenderTask;
 public class SkyDomeScene extends Scene {
     CubeShape _cubeShape;
     BitmapTexture _texture;
+    float [] identity = Matrix4.identity().getAsArray();
 
     public void init(float dome_size, int cubemap_res0, int cubemap_res1, int cubemap_res2,
                      int cubemap_res3, int cubemap_res4, int cubemap_res5) throws Exception {
@@ -68,7 +69,7 @@ public class SkyDomeScene extends Scene {
     public void onDraw(RenderService renderer){
         RenderSkyDomeRenderTask task = (RenderSkyDomeRenderTask) RenderTaskPool.sharedInstance().newTask(RenderSkyDomeRenderTask.class);
 
-        task.initWithCubemapTexture(_texture, _program, _cubeShape, Matrix4.identity().getAsArray());
+        task.initWithCubemapTexture(_texture, _program, _cubeShape, identity);
         renderer.addRenderTask(task);
     }
 

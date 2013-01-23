@@ -22,7 +22,13 @@ public class BindFrameBufferRenderTask extends RenderTask {
 	
 	public BindFrameBufferRenderTask(){}
 
-	@Override
+    @Override
+    public int getRenderingOrder() {
+        return -10000; // Make it be among the firsts to be called
+    }
+
+
+    @Override
 	public void onDraw(RenderService service) throws Exception {
 		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, _frameBufferId);
 

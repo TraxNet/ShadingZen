@@ -129,6 +129,40 @@ public class Quaternion {
 		
 		return new Matrix4(_data);
 	}
+
+    public void toMatrix(Matrix4 matrix){
+        float x2, y2, z2, xx, xy, xz, yy, yz, zz, wx, wy, wz;
+
+        float [] data = matrix.getAsArray();
+        // calculate coefficients
+        x2 = x + x;
+        y2 = y + y;
+        z2 = z + z;
+
+        xx = x * x2;   xy = x * y2;   xz = x * z2;
+        yy = y * y2;   yz = y * z2;   zz = z * z2;
+        wx = w * x2;   wy = w * y2;   wz = w * z2;
+
+        data[0] = 1.0f - (yy + zz);
+        data[1] = xy - wz;
+        data[2] = xz + wy;
+        data[3] = 0.0f;
+
+        data[4] = xy + wz;
+        data[5] = 1.0f - (xx + zz);
+        data[6] = yz - wx;
+        data[7] = 0.0f;
+
+        data[8] = xz - wy;
+        data[9] = yz + wx;
+        data[10] = 1.0f - (xx + yy);
+        data[11] = 0.0f;
+
+        data[12] = 0.0f;
+        data[13] = 0.0f;
+        data[14] = 0.0f;
+        data[15] = 1.0f;
+    }
 	
 	public Quaternion set (float x, float y, float z, float w) {
         this.x = x;

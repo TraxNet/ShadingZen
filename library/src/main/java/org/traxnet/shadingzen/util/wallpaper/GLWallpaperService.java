@@ -5,7 +5,7 @@ import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
- 
+
 public class GLWallpaperService extends WallpaperService {
         private static final String TAG = "GLWallpaperService";
         private org.traxnet.shadingzen.core.Engine _engine = null;

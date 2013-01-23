@@ -7,13 +7,14 @@ import org.traxnet.shadingzen.util.Poolable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Vector;
 
 public abstract class RenderTaskBatch implements Poolable {
-	LinkedList<RenderTask> _renderTaskCmdBuffer;
+	Vector<RenderTask> _renderTaskCmdBuffer;
 	
 	RenderTaskBatch(){
-		_renderTaskCmdBuffer = new LinkedList<RenderTask>();
+		_renderTaskCmdBuffer = new Vector<RenderTask>();
 	}
 	
 	public void AddTask(RenderTask task){
@@ -22,6 +23,7 @@ public abstract class RenderTaskBatch implements Poolable {
 	
 	protected void traverseCmdBufferAndExecute(RenderService service){
 		int num_tasks = _renderTaskCmdBuffer.size();
+        Collections.sort(_renderTaskCmdBuffer, Collections.reverseOrder());
 		for(int i = 0; i < num_tasks; i++){
 			
 			RenderTask task = _renderTaskCmdBuffer.get(i);
@@ -32,7 +34,7 @@ public abstract class RenderTaskBatch implements Poolable {
 			// Let the shape draw itself
 			try {
 				task.onDraw(service);
-				service.checkGlError("Task Draw: " + task.getClass().getName());
+
 				RenderTaskPool.sharedInstance().freeTask(task);
 			} catch (Exception e) {
 				Log.e("ShadingZen", "Error rendering task of type [" + task.getClass().getName() + "]:" + e.getLocalizedMessage());

@@ -82,16 +82,17 @@ public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotifica
     public boolean onTouchEvent(MotionEvent event)  
     {  
         //This avoids touchscreen events flooding the main thread  
-        synchronized (event)  
-        {  
+        //synchronized (event)
+        {
+            return _engine.onTouchEvent(event);
         	//Waits 16ms.  
-            try {
+            /*try {
 				event.wait(16);
 				
 				return _engine.onTouchEvent(event);
 			} catch (InterruptedException e) {
 				  return true;  
-			}    
+			}     */
         	
         }
     }

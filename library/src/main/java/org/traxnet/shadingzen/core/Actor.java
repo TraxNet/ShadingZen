@@ -2,11 +2,11 @@ package org.traxnet.shadingzen.core;
 
 import android.opengl.Matrix;
 import android.util.Log;
+import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.math.Quaternion;
 import org.traxnet.shadingzen.math.Vector3;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -21,27 +21,33 @@ import java.util.Vector;
  * To create your own Actor subclass, extend from it and implement onUpdate.
  */
 public abstract class Actor extends Entity {
-	protected Vector3 _position;
+	protected Vector3 _position, _previousPosition;
 	protected Quaternion _rotation;
 	protected float _scale;
-	protected Matrix4 _worldMatrix, _localMatrix, _scalingMatrix;
+	protected Matrix4 _worldMatrix, _localMatrix, _scalingMatrix, _inverseWorldMatrix;
 	protected HashMap<String, Actor> _childrenActors;
 	protected Vector<Action> _activeActions;
+    protected Object [] _cachedChildren;
 	
 	protected Shape _mesh;
 	protected ShadersProgram _program;
 	protected BitmapTexture _texture;
 	protected Actor _parent;
+
+    protected BBox _boundingBox;
 	
 	public Actor(){
 		_rotation = new Quaternion();
 		_position = new Vector3();
+        _previousPosition = new Vector3();
 		_childrenActors = new HashMap<String, Actor>();
 		_worldMatrix = Matrix4.identity();
 		_localMatrix = Matrix4.identity();
 		_scalingMatrix = Matrix4.identity();
+        _inverseWorldMatrix = Matrix4.identity();
 		_activeActions = new Vector<Action>();
 		_scale = 1.f;
+        _boundingBox = new BBox();
 	}
 	
 	@Override
@@ -53,10 +59,11 @@ public abstract class Actor extends Entity {
 	
 	@Override
 	public void unregister(){
-		for(Actor child : _childrenActors.values()){
-			child.unregister();
+		for(int index = 0; index < _cachedChildren.length; index++){
+            ((Actor)_cachedChildren[index]).unregister();
 		}
-		
+
+        _cachedChildren = null;
 		_childrenActors.clear();
 		
 		for(Action action: _activeActions){
@@ -94,6 +101,11 @@ public abstract class Actor extends Entity {
 	public Actor getParent(){
 		return _parent;
 	}
+
+
+    public int getNumChildren(){
+        return _childrenActors.size();
+    }
 	
 	/** 
 	 * Adds a new children actor to the hierarchy 
@@ -102,6 +114,7 @@ public abstract class Actor extends Entity {
 	 */
 	public void addChildren(Actor child){
 		_childrenActors.put(child._nameId, child);
+        _cachedChildren = _childrenActors.values().toArray();
 	}
 	
 	/**
@@ -111,12 +124,7 @@ public abstract class Actor extends Entity {
 	 * @param child child actor to be removed.
 	 */
 	public void removeChildren(Actor child){
-		//child.setParent(null);
-		child.markForDestroy();
-		
-		for(Actor inner_child : child.getChildren()){
-			child.removeChildren(inner_child);
-		}
+		removeChildren(child.getNameId());
 	}
 	
 	/**
@@ -127,16 +135,18 @@ public abstract class Actor extends Entity {
 	 */
 	public void removeChildren(String childId){
 		Actor child = _childrenActors.get(childId);
+        child._childrenActors.remove(childId);
 		//child.setParent(null);
 		child.markForDestroy();
+        _cachedChildren = _childrenActors.values().toArray();
 	}
 	
 	/**
 	 * Retuns the collection of children actors. May be empty.
 	 * @return the children collection.
 	 */
-	public Collection<Actor> getChildren(){
-		return _childrenActors.values();
+	public Object [] getChildren(){
+		return _cachedChildren;
 	}
 	
 	/*
@@ -148,12 +158,15 @@ public abstract class Actor extends Entity {
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		
-		Object [] children = this._childrenActors.values().toArray();
-		
-		for(Object child : children){
-			removeChildren((Actor)child);
-		}
+
+		if(null != _cachedChildren){
+            for(int index=0; index < _cachedChildren.length; index++){
+                removeChildren((Actor)_cachedChildren[index]);
+            }
+        }
+
+        _cachedChildren =  null;
+
 
         removeAllActions();
 		
@@ -192,6 +205,10 @@ public abstract class Actor extends Entity {
 		_position = v;
 	}
 
+    public Vector3 getPreviousPosition(){
+        return _previousPosition;
+    }
+
     /** Sets thee local position relative to parent actor */
     public void setPosition(float x, float y, float z){
         _position.set(x, y, z);
@@ -211,10 +228,15 @@ public abstract class Actor extends Entity {
 	public Matrix4 getWorldModelMatrix(){
 		return _worldMatrix;
 	}
+    public Matrix4 getInverseWorldModelMatrix(){
+        return _inverseWorldMatrix;
+    }
+
+    Matrix4 local_matrix = Matrix4.identity();
 	
 	public Matrix4 getLocalModelMatrix(){
-		Matrix4 local_matrix;
-		local_matrix = getRotationMatrix();
+        _rotation.toMatrix(local_matrix);
+		//local_matrix = getRotationMatrix();
 		local_matrix.setTranslation(getPosition());
 		
 		_scalingMatrix.setScalingRow(getScale());
@@ -222,9 +244,25 @@ public abstract class Actor extends Entity {
 		Matrix.multiplyMM(_localMatrix.getAsArray(), 0, local_matrix.getAsArray(), 0, _scalingMatrix.getAsArray(), 0);
 		return _localMatrix;
 	}
+
+    /**
+     * Returns an object oriented bounding box which can be used to quickly discard
+     * out of view-frustum actors and for collision purposes. Note: The bounding box must be
+     * in object space, not in world space.
+     *
+     * NOTE: Actor class implementation returns a zero size oobb centered at object origin. If other
+     * behaviour is required, this method should be overriden.
+     *
+     * @return an Object Oriented Bounding Box (OOBB)
+     */
+    public BBox getBoundingBox(){
+       return _boundingBox;
+    }
+
 	
 	@Override
 	public void onTick(float delta){
+        _previousPosition.set(_position);
 		runActiveActions(delta);
 		
 		onUpdate(delta);
@@ -242,18 +280,32 @@ public abstract class Actor extends Entity {
 	
 	/** Steps one delta-time for each action registered for this actor */
 	private void runActiveActions(float deltaTime){
-		@SuppressWarnings("unchecked")
-		Vector<Action> list = (Vector<Action>) _activeActions.clone();
-		for(Action action : list){
+		//@SuppressWarnings("unchecked")
+		//Vector<Action> list = (Vector<Action>) _activeActions.clone();
+        int num_toremove = 0;
+		for(int index=0; index < _activeActions.size(); index++){
+            Action action = _activeActions.get(index);
 			try{
                 if(action.isDone())
-                    _activeActions.remove(action);
+                    num_toremove++;
                 else
 				    action.step(deltaTime);
 			} catch(InvalidTargetActorException e){
 				Log.e("ShadingZen", "Registered action cannot be executed for the current type of actor", e);
 			}
 		}
+
+        while(num_toremove > 0){
+            for(int index=0; index < _activeActions.size(); index++){
+                Action action = _activeActions.get(index);
+
+                if(action.isDone()){
+                    _activeActions.remove(action);
+                    num_toremove--;
+                    break;
+                }
+            }
+        }
 	}
 	
 	/** Schedules the action to be executed at the next frame */
@@ -271,8 +323,8 @@ public abstract class Actor extends Entity {
 	}
 
     private void removeAllActions(){
-        for(Action action : _activeActions){
-            action.cancel();
+        for(int index=0; index < _activeActions.size(); index++){
+            _activeActions.get(index).cancel();
         }
 
         _activeActions.clear();

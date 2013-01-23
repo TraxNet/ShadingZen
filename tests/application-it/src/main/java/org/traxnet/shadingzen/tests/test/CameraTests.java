@@ -54,6 +54,18 @@ public class CameraTests extends ActivityInstrumentationTestCase2<DummyTestActiv
         assertEquals(0.6f, cos, 0.01f);
     }
 
+    Vector2 projectPointViewportSpace(Camera cam, float x, float y, float z){
+        float [] ret = new float[4], _point = new float[4];
+        _point[0] = x;
+        _point[1] = y;
+        _point[2] = z;
+        _point[3] = 1.f;
+
+        cam.projectPointViewportSpace(ret, _point);
+
+         return new Vector2(ret[0], ret[1]);
+    }
+
     public void testProjectPoint(){
         Camera cam = new Camera();
         cam.setValues(new Vector3(0.f, 0.f, 0.f), MathUtil.HALF_PI, 4.0f/3.0f, 1.f, 2600.0f);
@@ -61,24 +73,27 @@ public class CameraTests extends ActivityInstrumentationTestCase2<DummyTestActiv
         cam.setCameraUp(0.f, 1.f, 0.f);
         cam.setViewportSize(800, 480);
 
-        Vector2 point = cam.projectPointViewportSpace(0.f, 0.f, 100.f);
+
+
+
+        Vector2 point = projectPointViewportSpace(cam, 0.f, 0.f, 100.f);
         assertEquals(new Vector2(400, 240), point, 0.1f);
-        point = cam.projectPointViewportSpace(0.f, 0.f, 10.f);
+        point = projectPointViewportSpace(cam, 0.f, 0.f, 10.f);
         assertEquals(new Vector2(400, 240), point, 0.1f);
 
         Vector3 point3 = new Vector3((float)Math.sqrt(2.f)/2.f, 0.f,(float) Math.sqrt(2.f)/2.f);
         point3 = point3.mul(10.f);
-        point = cam.projectPointViewportSpace(point3.x, point3.y, point3.z);
+        point = projectPointViewportSpace(cam, point3.x, point3.y, point3.z);
         assertEquals(new Vector2(0, 240), point, 0.1f);
 
         point3 = new Vector3(-(float)Math.sqrt(2.f)/2.f, 0.f,(float) Math.sqrt(2.f)/2.f);
         point3 = point3.mul(10.f);
-        point = cam.projectPointViewportSpace(point3.x, point3.y, point3.z);
+        point = projectPointViewportSpace(cam, point3.x, point3.y, point3.z);
         assertEquals(new Vector2(800, 240), point, 0.1f);
 
         point3 = new Vector3(0.f, (float)Math.sqrt(2.f)/2.f*3.f/4.f,(float) Math.sqrt(2.f)/2.f);
         point3 = point3.mul(10.f);
-        point = cam.projectPointViewportSpace(point3.x, point3.y, point3.z);
+        point = projectPointViewportSpace(cam, point3.x, point3.y, point3.z);
         assertEquals(new Vector2(400, 480), point, 0.1f);
     }
 }

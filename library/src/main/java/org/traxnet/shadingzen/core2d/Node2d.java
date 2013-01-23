@@ -37,6 +37,12 @@ public class Node2d extends Actor /*implements Comparable*/ {
 	protected boolean _nodeDrawInBackground = false;
 	
 	//private TreeSet<Node2d> _zorderedChildNodes;
+    float translate_matrix[],
+            anchor_matrix[],
+            model_matrix[],
+            scale_matrix[],
+            scale_rot[] = new float[16],
+            scale_step[] = new float[16];
 
 	
 	public Node2d(){
@@ -47,6 +53,14 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_contentSize = new Vector2();
 		_nodeAlpha = 1.f;
 		//_zorderedChildNodes = new TreeSet<Node2d>();
+
+        _nodeCachedModelMatrix = Matrix4.identity();
+        translate_matrix = Matrix4.identity().getAsArray();
+        anchor_matrix = Matrix4.identity().getAsArray();
+        model_matrix = Matrix4.identity().getAsArray();
+        scale_matrix = Matrix4.identity().getAsArray();
+
+
 	}
 	
 	/** If true, this node and children will be drawn first during the background rendering step. */
@@ -149,51 +163,68 @@ public class Node2d extends Actor /*implements Comparable*/ {
 		_scale = scale;
 		_nodeCachedModelMatrixIsDirty = true;
 	}
+
+
+
 	
 	@Override
 	public Matrix4 getLocalModelMatrix(){
 		if(!_nodeCachedModelMatrixIsDirty)
 			return _nodeCachedModelMatrix;
-		
-		float [] translate_matrix = {
-				1.f, 0.f, 0.f, 0.f,
-				0.f, 1.f, 0.f, 0.f,
-				0.f, 0.f, 1.f, 0.f,
-				_position.getX(), _position.getY(), 0.f, 1.f,
-		};
-		
-		float [] anchor_matrix = {
-				1.f, 0.f, 0.f, 0.f,
-				0.f, 1.f, 0.f, 0.f,
-				0.f, 0.f, 1.f, 0.f,
-				-_nodeAnchorPoint.getX()*_contentSize.getX(), -_nodeAnchorPoint.getY()*_contentSize.getY(), 0.f, 1.f
-				
-		};
-		
-		float [] model_matrix = {
-				_nodeRotationCos, _nodeRotationSin, 0.f, 0.f,
-				-_nodeRotationSin,  _nodeRotationCos, 0.f, 0.f,
-							 0.f,				0.f, 1.f, 0.f,
-							 0.f,				0.f, 0.f, 1.f,
-		};
-		
-		float [] scale_matrix = {
-				_scale, 0.f, 0.f, 0.f,
-				0.f, _scale, 0.f, 0.f,
-				0.f, 0.f, 1.f, 0.f, 
-				0.f, 0.f, 0.f, 1.f, 
-		};
-		
+
+        translate_matrix[12] = _position.x;
+        translate_matrix[13] = _position.y;
+
+        anchor_matrix[12] =  -_nodeAnchorPoint.getX()*_contentSize.getX();
+        anchor_matrix[13] = -_nodeAnchorPoint.getY()*_contentSize.getY();
+        model_matrix[0] = _nodeRotationCos;
+        model_matrix[1] = _nodeRotationSin;
+        model_matrix[4] = -_nodeRotationSin;
+        model_matrix[5] = _nodeRotationCos;
+        scale_matrix[0] = _scale;
+        scale_matrix[5] = _scale;
+
+
+        /*
+        float [] translate_matrix = {
+                1.f, 0.f, 0.f, 0.f,
+                0.f, 1.f, 0.f, 0.f,
+                0.f, 0.f, 1.f, 0.f,
+                _position.getX(), _position.getY(), 0.f, 1.f,
+        };
+
+        float [] anchor_matrix = {
+                1.f, 0.f, 0.f, 0.f,
+                0.f, 1.f, 0.f, 0.f,
+                0.f, 0.f, 1.f, 0.f,
+                -_nodeAnchorPoint.getX()*_contentSize.getX(), -_nodeAnchorPoint.getY()*_contentSize.getY(), 0.f, 1.f
+
+        };
+
+        float [] model_matrix = {
+                _nodeRotationCos, _nodeRotationSin, 0.f, 0.f,
+                -_nodeRotationSin,  _nodeRotationCos, 0.f, 0.f,
+                0.f,				0.f, 1.f, 0.f,
+                0.f,				0.f, 0.f, 1.f,
+        };
+
+        float [] scale_matrix = {
+                _scale, 0.f, 0.f, 0.f,
+                0.f, _scale, 0.f, 0.f,
+                0.f, 0.f, 1.f, 0.f,
+                0.f, 0.f, 0.f, 1.f,
+        };*/
+		/*
 		float [] scale_rot = new float[16];
 		float [] scale_step = new float[16];
-		float [] ret = new float[16];
+		float [] ret = new float[16]; */
 	
 		
 		Matrix.multiplyMM(scale_rot, 0, scale_matrix, 0,anchor_matrix, 0);
 		Matrix.multiplyMM(scale_step, 0, model_matrix, 0,scale_rot, 0);
-		Matrix.multiplyMM(ret, 0, translate_matrix, 0,scale_step, 0);
+		Matrix.multiplyMM(_nodeCachedModelMatrix.getAsArray(), 0, translate_matrix, 0,scale_step, 0);
 		
-		_nodeCachedModelMatrix = new Matrix4(ret);
+		//_nodeCachedModelMatrix.set(ret);
 		
 		_nodeCachedModelMatrixIsDirty = false;
 		return _nodeCachedModelMatrix;

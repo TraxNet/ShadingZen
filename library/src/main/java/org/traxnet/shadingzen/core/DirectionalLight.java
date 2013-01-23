@@ -1,5 +1,6 @@
 package org.traxnet.shadingzen.core;
 
+import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 
 public class DirectionalLight extends Actor implements LightEmitter {
@@ -9,12 +10,13 @@ public class DirectionalLight extends Actor implements LightEmitter {
 	protected float[] _lightingColor = new float[4];
 	protected Vector3 _lightingDirection = new Vector3(1.f, 1.f, 1.f);
 	protected float _lightingFov = 0.f;
-	
+
 	public DirectionalLight(){
 		
 	}
-	
-	public void setValues(float dir_x, float dir_y, float dir_z, float fov, float intensity){
+
+
+    public void setValues(float dir_x, float dir_y, float dir_z, float fov, float intensity){
 		_lightingDirection.set(dir_x, dir_y, dir_z);
 		_lightingFov = fov;
 		_lightingIntesity = intensity;

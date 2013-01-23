@@ -16,12 +16,6 @@ public abstract class Pawn extends Collider {
 	}
 
 	@Override
-	public void onTouch(Collider other) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void onLoad() {
 		// TODO Auto-generated method stub
 

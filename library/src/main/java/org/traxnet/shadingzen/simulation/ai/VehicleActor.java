@@ -18,12 +18,18 @@ public abstract class VehicleActor extends Collider {
     protected Vector3 currentLocalRightAxis = new Vector3(1.f, 0.f, 0.f);
     protected Vector3 currentLocalUpAxis = new Vector3(0.f, 1.f, 0.f);
     protected Vector3 currentLocalFrontAxis = new Vector3(0.f, 0.f, 1.f);
+    private float [] _vec_currentLocalRightAxis = new float[4];
+    private float [] _vec_currentLocalUpAxis = new float[4];
+    private float [] _vec_currentLocalFrontAxis = new float[4];
+
     protected float currentTargetFrontVelocity = 0.f;
     protected float currentSteerVelocityX = 0.f;
     protected float currentSteerVelocityY = 0.f;
     protected float currentVelocity = 0.f;
-    protected Matrix4 _currentMatrixRotation;
+    protected Matrix4 _currentMatrixRotation = new Matrix4();
     protected Quaternion _currentStepAngularRotation = new Quaternion();
+
+    private Quaternion _right_axis_quaternion = new Quaternion();
 
     public enum AccelerateState{
         MAINTAIN_VELOCITY,
@@ -55,9 +61,9 @@ public abstract class VehicleActor extends Collider {
 
 
     private void rotateUsingCurrentSteerVelocity(float deltatime){
-        Quaternion right_axis_quaternion = new Quaternion(currentLocalUpAxis, -currentSteerVelocityX *deltatime);
+        _right_axis_quaternion.setRotation(currentLocalUpAxis, -currentSteerVelocityX *deltatime);
         _currentStepAngularRotation.setRotation(currentLocalRightAxis, currentSteerVelocityY *deltatime);
-        _currentStepAngularRotation.mulInplace(right_axis_quaternion);
+        _currentStepAngularRotation.mulInplace(_right_axis_quaternion);
        /* Log.i("ShadingZen", "currentSteerVelocityX=" + currentSteerVelocityX);
         Log.i("ShadingZen", "currentSteerVelocityY=" + currentSteerVelocityY);
         Log.i("ShadingZen", "currentTargetFrontVelocity=" + currentTargetFrontVelocity);
@@ -73,11 +79,17 @@ public abstract class VehicleActor extends Collider {
         rotateUsingCurrentSteerVelocity(deltaTime);
 
         _rotation.mulInplace(_currentStepAngularRotation);
-        _currentMatrixRotation = _rotation.toMatrix();
+        _rotation.toMatrix(_currentMatrixRotation);
 
-        currentLocalRightAxis = _currentMatrixRotation.mul(Vector3.vectorRight);
+        _currentMatrixRotation.mul(_vec_currentLocalRightAxis, Vector3.vectorRightArray);
+        _currentMatrixRotation.mul(_vec_currentLocalUpAxis, Vector3.vectorUpArray);
+        _currentMatrixRotation.mul(_vec_currentLocalFrontAxis, Vector3.vectorFrontArray);
+        /*currentLocalRightAxis = _currentMatrixRotation.mul(Vector3.vectorRight);
         currentLocalUpAxis = _currentMatrixRotation.mul(Vector3.vectorUp);
-        currentLocalFrontAxis = _currentMatrixRotation.mul(Vector3.vectorFront);
+        currentLocalFrontAxis = _currentMatrixRotation.mul(Vector3.vectorFront);  */
+        currentLocalRightAxis.set(_vec_currentLocalRightAxis);
+        currentLocalUpAxis.set(_vec_currentLocalUpAxis);
+        currentLocalFrontAxis.set(_vec_currentLocalFrontAxis);
 
         updateVelocity(deltaTime);
 

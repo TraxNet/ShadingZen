@@ -34,18 +34,23 @@ public class HelloWorldGameInfo extends GameInfo implements InputController {
 	}
 	
 	@Override
-	public boolean onTouchDrag(float posx, float posy, float deltax, float deltay) {
+	public boolean onTouchDrag(int pointer_id,float posx, float posy, float deltax, float deltay) {
 		return true;
 	}
 
 	@Override
-	public boolean onTouchUp(float posx, float posy) {
+	public boolean onTouchUp(int pointer_id,float posx, float posy) {
 		return true;
 	}
 
-	@Override
+    @Override
+    public boolean onTouchDown(int pointer_id, float posx, float posy) {
+        return true;
+    }
+
+    @Override
 	public boolean onScaleGesture(float scale_factor) {
-		return false;
+		return true;
 	}
 
 	@Override

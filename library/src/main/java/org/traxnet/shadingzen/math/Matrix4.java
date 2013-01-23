@@ -51,12 +51,11 @@ public class Matrix4 {
 		
 		return new Vector3(result);
 	}
-	/*** Multiply two 4x4 matrices
-	 * Data is converted back to a pack of float and multiplied
-	 * using the Android helper functions (which I assume are optimized...)
-	 * @param b Right side matrix in this operation
-	 * @return A new matrix (this*b)
-	 */
+
+    public void mul(float [] result, float [] vec){
+        Matrix.multiplyMV(result, 0, _m, 0, vec, 0);
+    }
+
 	/*
 	public Matrix4 mul(Matrix4 b){
 		float [] result = new float[16];
@@ -148,4 +147,26 @@ public class Matrix4 {
 		_m[14] = other._m[14];
 		_m[15] = other._m[15];
 	}
+
+    public void set(float [] other){
+        _m[0] = other[0];
+        _m[1] = other[1];
+        _m[2] = other[2];
+        _m[3] = other[3];
+
+        _m[4] = other[4];
+        _m[5] = other[5];
+        _m[6] = other[6];
+        _m[7] = other[7];
+
+        _m[8] = other[8];
+        _m[9] = other[9];
+        _m[10] = other[10];
+        _m[11] = other[11];
+
+        _m[12] = other[12];
+        _m[13] = other[13];
+        _m[14] = other[14];
+        _m[15] = other[15];
+    }
 }

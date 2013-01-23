@@ -1,13 +1,13 @@
 package org.traxnet.shadingzen.core;
 
+import android.os.Handler;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-
-import android.os.Handler;
 
 public final class TaskManager {
 	static private TaskManager _global_taskManager = null;
@@ -76,6 +76,13 @@ public final class TaskManager {
 			});
 		}
 	}
+
+    public synchronized void debugExecuteSync(final long deltatime){
+        while(_currentTasks.size() > 0){
+            Task task = _currentTasks.poll();
+            task.run(deltatime);
+        }
+    }
 	
 	public boolean synchronizeTasks(){
 		try {

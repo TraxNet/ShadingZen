@@ -1,5 +1,13 @@
 package org.traxnet.shadingzen.core;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -7,17 +15,6 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Rect;
-import android.opengl.GLES20;
-import android.opengl.GLUtils;
-import android.util.Log;
-
-import android.content.Context;
 
 public class BitmapTexture extends CompressedResource implements Texture {
 	protected IntBuffer _textureIds;
@@ -119,7 +116,7 @@ public class BitmapTexture extends CompressedResource implements Texture {
 	}
 	
 	
-	boolean loadAsTexture2D(Context context, String id, InputStream resource_stream, BitmapTexture.Parameters params){
+	boolean loadAsTexture2D(Context context, ResourcesManager manager, String id, InputStream resource_stream, BitmapTexture.Parameters params){
 		_bmps = new Bitmap[1];
 		Matrix flip = new Matrix();
 	    flip.postScale(1f, -1f);
@@ -127,10 +124,18 @@ public class BitmapTexture extends CompressedResource implements Texture {
 	    BitmapFactory.Options opts = new BitmapFactory.Options();
 	    opts.inScaled = false;
 		Bitmap textureBmp = BitmapFactory.decodeStream(resource_stream);
+
+        int level = manager.getDefaultMimapLevel()+1;
 		
-		if(params.resizeTexturesToPowerOfTwo && (!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight()))){
+		if(level>0 || params.resizeTexturesToPowerOfTwo && (!isPowerOfTwo(textureBmp.getWidth()) || !isPowerOfTwo(textureBmp.getHeight()))){
 			int target_width = calculateUpperPowerOfTwo(textureBmp.getWidth());
 			int target_height = calculateUpperPowerOfTwo(textureBmp.getHeight());
+
+            _width = target_width;
+            _height = target_height;
+
+            target_width /= level+1;
+            target_height /= level+1;
 			
 			Log.i("ShadingZen", "Texture id=" + id + " has no power of two dimesions " + textureBmp.getWidth() + "x" + textureBmp.getHeight() + " adjusting to " + target_width + "x" + target_height);
 			
@@ -139,13 +144,14 @@ public class BitmapTexture extends CompressedResource implements Texture {
 			temp.recycle();
 		} else{
 			_bmps[0]  = Bitmap.createBitmap(textureBmp, 0, 0, textureBmp.getWidth(), textureBmp.getHeight(), flip, false);
-		}
+            _width = _bmps[0].getWidth();
+            _height = _bmps[0].getHeight();
+        }
 		
 	    textureBmp.recycle();
 		
 		_hasAlpha = textureBmp.hasAlpha();
-		_width = _bmps[0].getWidth();
-		_height = _bmps[0].getHeight();
+
 		_driverDataDirty = true;
 		_params = params;
 		_target = GLES20.GL_TEXTURE_2D;
@@ -181,23 +187,23 @@ public class BitmapTexture extends CompressedResource implements Texture {
         if(resource_id > 0)
             input_stream = context.getResources().openRawResource(resource_id);
 
-        return loadTextureFromInputStream(context, id, params, input_stream);
+        return loadTextureFromInputStream(context, ResourcesManager.getSharedInstance(), id, params, input_stream);
     }
 
-    private boolean loadTextureFromInputStream(Context context, String id, Object params, InputStream input_stream) {
+    private boolean loadTextureFromInputStream(Context context, ResourcesManager manager, String id, Object params, InputStream input_stream) {
         try{
 
 
             if(null != params){
                 Parameters texparams = (Parameters)params;
                 if(texparams.getType() == TextureType.Texture2D)
-                    return loadAsTexture2D(context, id, input_stream, texparams);
+                    return loadAsTexture2D(context, manager, id, input_stream, texparams);
                 else
                     return loadAsTextureCubeMap(context, id, input_stream, texparams);
 
             }
 
-            return loadAsTexture2D(context, id, input_stream, new Parameters());
+            return loadAsTexture2D(context, manager, id, input_stream, new Parameters());
         } catch(Exception e){
             Log.e("ShadingZen", "Error loading texture from input stream:" + e.getMessage(), e);
             return false;
@@ -205,10 +211,16 @@ public class BitmapTexture extends CompressedResource implements Texture {
     }
 
     @Override
-    public boolean onCompressedStorageLoad(Context context, String id, ZipFile zipfile, ZipEntry resource_entry, Object params)
+    public boolean onCompressedStorageLoad(Context context, ResourcesManager manager, String id, ZipFile zipfile, String location, Object params)
     {
         try{
-            return loadTextureFromInputStream(context, id, params, zipfile.getInputStream(resource_entry));
+            ZipEntry entry = zipfile.getEntry(location);
+            if(null == entry){
+                Log.e("ShadingZen", "Given compressed resource location was not found:" + location);
+                return false;
+            }
+
+            return loadTextureFromInputStream(context, manager, id, params, zipfile.getInputStream(entry));
         } catch(IOException ex){
             Log.e("ShadingZen", "Error getting input stream from zip file:" + ex.getMessage(), ex);
             return false;

@@ -9,8 +9,13 @@ public class BindTextureRenderTargetTask extends RenderTask {
 	protected TextureRenderTarget _target;
 	
 	public BindTextureRenderTargetTask(){}
-	
-	public void init(TextureRenderTarget target){
+
+        @Override
+    public int getRenderingOrder() {
+        return -10000; // Make it be among the firsts to be called
+    }
+
+    public void init(TextureRenderTarget target){
 		_target = target;
 	}
 	

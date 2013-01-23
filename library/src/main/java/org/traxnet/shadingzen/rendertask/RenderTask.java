@@ -1,13 +1,12 @@
 package org.traxnet.shadingzen.rendertask;
 
+import android.content.Context;
+import android.opengl.GLES20;
+import android.util.Log;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.core.ShadersProgram;
 import org.traxnet.shadingzen.math.Vector4;
 import org.traxnet.shadingzen.util.Poolable;
-
-import android.content.Context;
-import android.opengl.GLES20;
-import android.util.Log;
 
 /** A render task sent to the rendering thread 
  * 
@@ -16,7 +15,7 @@ import android.util.Log;
  *  thread will only render task that are from the current frame
  *  or newer (sure?)
  */
-public abstract class RenderTask implements Poolable {
+public abstract class RenderTask implements Poolable, Comparable {
 	protected long _timeStamp;
 	protected Vector4 _diffuseColor;
 	protected Vector4 _ambientColor;
@@ -24,8 +23,26 @@ public abstract class RenderTask implements Poolable {
 	protected boolean _blend = false, _depthTest = false;
 	protected ShadersProgram _program;
 	protected int _renderingFlags = RenderingFlags.NONE;
-	
-	public class RenderingFlags {
+
+    @Override
+    public int compareTo(Object o) {
+
+        RenderTask task = (RenderTask)o;
+        if(task.getRenderingOrder() > getRenderingOrder())
+            return 1;
+        else if(task.getRenderingOrder() < getRenderingOrder())
+            return -1;
+
+        return 0;
+    }
+
+    public int getRenderingOrder(){
+        if(null == _program)
+            return 0;
+        return _program.getProgramId();
+    }
+
+    public class RenderingFlags {
 		public static final int NONE = 0x0000;
 		/** This render task contributes to any depth map */
 		public static final int CASTS_SHADOW = 0x0001;

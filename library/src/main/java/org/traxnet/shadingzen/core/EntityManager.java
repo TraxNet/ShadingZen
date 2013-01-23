@@ -37,6 +37,9 @@ public final class EntityManager {
 
     protected LinkedList<LightEmitter> _lightEmitters;
 	HashMap<Entity, EntityHolder> _entities;
+    Object [] _entitiesCache;
+    int _numEntitiesCached = 0;
+    boolean _needCacheUpdate = false;
 	
 	/*
 	public static void setSharedInstance(EntityManager manager) throws IllegalAccessException{
@@ -96,6 +99,7 @@ public final class EntityManager {
 				parent.addChildren(actor);
 				actor.setParent(parent);
 			}
+
 			
 			return actor;
 		}
@@ -176,6 +180,8 @@ public final class EntityManager {
 			
 			_entities.put(entity, new EntityHolder(entity));
 
+            _needCacheUpdate = true;
+
             addLightEmitter(entity);
 
             entity.onLoad();
@@ -193,8 +199,12 @@ public final class EntityManager {
 	
 	public Object[] getCurrentEntityHolders(){
         synchronized(this._entities){
-            Object [] holders = _entities.values().toArray();
-            return holders;
+            if(_needCacheUpdate){
+                _entitiesCache = _entities.values().toArray();
+                _needCacheUpdate = false;
+                _numEntitiesCached = _entities.size();
+            }
+            return _entitiesCache;
         }
 	}
 	
@@ -206,10 +216,11 @@ public final class EntityManager {
 	public void updateTick(float deltatime){
 		deletePendingEntities();
 		
-		synchronized(this._entities){
-			Object [] holders = _entities.values().toArray();
-			for(Object obj : holders){
-				EntityHolder holder = (EntityHolder)obj;
+		//synchronized(this._entities){
+			Object [] holders = getCurrentEntityHolders();
+			for(int index=0; index < _numEntitiesCached; index++){
+
+				EntityHolder holder = (EntityHolder)_entitiesCache[index];
 				if(!holder.getEntity().isPendingDestroy())
 					holder.getEntity().onTick(deltatime);
 				/*else{
@@ -218,19 +229,21 @@ public final class EntityManager {
 					holder.getEntity().onDestroy();
 				}*/
 			}
-		}
+		//}
 	}
 	
 	public void deletePendingEntities(){
 		synchronized(this._entities){
-			Object [] holders = _entities.values().toArray();
-			for(Object obj : holders){
-				EntityHolder holder = (EntityHolder)obj;
+
+            for(int index=0; index < _numEntitiesCached; index++){
+				EntityHolder holder = (EntityHolder)_entitiesCache[index];
 				if(holder.getEntity().isPendingDestroy()){
 					Log.v("ShadingZen", "Removing entity " + holder.getEntity().getNameId());
 					_entities.remove(holder.getEntity());
                     removeLightEmitter(holder.getEntity());
 					holder.getEntity().onDestroy();
+
+                    _needCacheUpdate = true;
 				}
 			}
 		}

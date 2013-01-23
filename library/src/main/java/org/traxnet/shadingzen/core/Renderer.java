@@ -96,16 +96,21 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		try{
 			int num_batches = 0;
 			long delta_time = System.nanoTime() - _frameTime;
-			
-			TaskManager.getSharedInstance().synchronizeTasks();
+
+            TaskManager.getSharedInstance().debugExecuteSync(delta_time);
+			//TaskManager.getSharedInstance().synchronizeTasks();
+
+            Engine.getSharedInstance().fenceWait();
 			
 			synchronized(_renderTasksLock){
 				_tasksArray = _renderBatchesBuffer.toArray(_tasksArray);
 				num_batches = _renderBatchesBuffer.size();
 				_renderBatchesBuffer.clear();
 			}
-			
-			TaskManager.getSharedInstance().distributeTasks(delta_time);
+
+
+
+			//TaskManager.getSharedInstance().distributeTasks(delta_time);
 			
 			
 			if(_forceReload){
@@ -162,11 +167,10 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			// which ensure the commands are going to be rendered properly to the
 			// back buffer. 
 			
-			Engine.getSharedInstance().updateTick();
-			
-			Engine.getSharedInstance().drawFrame(this);
-			
-			// TODO: Perform data release here 
+			//Engine.getSharedInstance().updateTick();
+
+            Engine.getSharedInstance().drawFrame(this);
+
 		} catch(Exception e){
 			Log.e("ShadingZen", "Error rendering frame:" + e.getLocalizedMessage());
 			StringWriter sw = new StringWriter();
@@ -316,15 +320,15 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	@Override
 	public void setProgram(ShadersProgram program) {
 		
-		//if(null != _lastProgram && _lastProgram.getProgramId() != program.getProgramId()){
+		if(null == _lastProgram || _lastProgram.getProgramId() != program.getProgramId()){
 			_lastProgram = program;
 			Resource as_resource = (Resource)program;
 			if(as_resource.isDriverDataDirty())
 				as_resource.onDriverLoad(_context);
-			
+
 			program.bindProgram();
-		//}
-		checkGlError("bind program");
+		}
+		//checkGlError("bind program");
 	}
 
     public ShadersProgram getCurrentProgram(){

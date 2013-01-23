@@ -9,9 +9,8 @@ import org.traxnet.shadingzen.math.Matrix4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
-import java.util.Iterator;
-import java.util.TreeSet;
 import java.util.UUID;
+import java.util.Vector;
 
 /**
  * A QuadAtlas is a more optimized version of an sprite/quad as it packs many quads sharing 
@@ -23,7 +22,7 @@ import java.util.UUID;
 public class QuadAtlas extends Node2d {
 	RenderBuffer _renderBuffer;
 	ShadersProgram _program;
-	TreeSet<Quad> _orderedQuads;
+	Vector<Quad> _orderedQuads;
 	int _maxQuads;
 	boolean _needsBufferUpdate = false;
 	BitmapTexture _texture;
@@ -74,7 +73,7 @@ public class QuadAtlas extends Node2d {
 		}
 		
 		
-		_orderedQuads = new TreeSet<Quad>();
+		_orderedQuads = new Vector<Quad>();
 	}
 	
 	public void AddQuad(Quad quad){
@@ -97,7 +96,6 @@ public class QuadAtlas extends Node2d {
 
 	@Override
 	public void onDraw(RenderService renderer) {
-		Iterator<Quad> iterator = _orderedQuads.descendingIterator();
 		QuadRenderTask current_task = null;
 		short verts_offset = 0, faces_offset = 0;
 		
@@ -109,12 +107,9 @@ public class QuadAtlas extends Node2d {
 		current_task.disableDepthTest();
 		current_task.setProgram(_program);
 		
-		while(true){
-			if(!iterator.hasNext())
-				break;
-			
+		for(int index=0; index < _orderedQuads.size(); index++){
 			// Iterate over all quads and create a render task for each run of quads with the same texture ID
-			Quad next = iterator.next();
+			Quad next = _orderedQuads.get(index);
 				
 			// Increase counter for current task
 			current_task.addQuad();
@@ -225,7 +220,12 @@ public class QuadAtlas extends Node2d {
 			_needsBufferUpdate = value;
 		}
 
-		@Override
+        @Override
+        public int getRenderingOrder() {
+            return super.getRenderingOrder()+500;
+        }
+
+        @Override
 		public void onDraw(RenderService service)  throws Exception {
 			this.bindBlendingIfSet();
 			this.bindDepthTestIfSet();
@@ -242,7 +242,7 @@ public class QuadAtlas extends Node2d {
 			if(null != _texture)
 				_texture.unbindTexture(0);
 			
-			_program.unbindProgram();
+			//_program.unbindProgram();
 			
 			unbindBlendingIfSet();
 			this.unbindDepthTestIfSet();

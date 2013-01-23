@@ -44,7 +44,9 @@ public class ApproachBehaviourAction extends BehaviourAction {
         float lengthSqrt = currentDesiredVelocityVector.lengthSqrt();
         if(lengthSqrt < 0.0001f)
             return false;
-        currentDesiredVelocityVectorNormalize = currentDesiredVelocityVector.mul(1.f/lengthSqrt);
+        currentDesiredVelocityVectorNormalize.set(currentDesiredVelocityVector);
+        currentDesiredVelocityVectorNormalize.mulInplace(1.f/lengthSqrt);
+        //currentDesiredVelocityVectorNormalize = currentDesiredVelocityVector.mul(1.f/lengthSqrt);
         if(fleeFromTarget)
             currentDesiredVelocityVectorNormalize.negateNoCopy();
 
@@ -69,7 +71,9 @@ public class ApproachBehaviourAction extends BehaviourAction {
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            currentDesiredVelocityVector = _navpoint.getPosition().sub(_targetActor.getPosition());
+            currentDesiredVelocityVector.set(_navpoint.getPosition());
+            currentDesiredVelocityVector.subNoCopy(_targetActor.getPosition());
+
             if(!fleeFromTarget && currentDesiredVelocityVector.lengthSqrt() <= _meetDistance){
                 _done = true;
                 return;

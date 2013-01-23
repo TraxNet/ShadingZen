@@ -10,8 +10,13 @@ public class ChangeClearColorRenderTask extends RenderTask {
 	Vector4 _clearColor = Vector4.zero();
 	
 	public ChangeClearColorRenderTask(){}
-	
-	public void setColor(float r, float g, float b, float a){
+
+    @Override
+    public int getRenderingOrder() {
+        return -9000; // Make it be among the firsts to be executed
+    }
+
+    public void setColor(float r, float g, float b, float a){
 		_clearColor.set(r, g, b, a);
 	}
 

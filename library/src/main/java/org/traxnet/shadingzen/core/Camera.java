@@ -2,7 +2,6 @@ package org.traxnet.shadingzen.core;
 
 import android.opengl.Matrix;
 import org.traxnet.shadingzen.math.Matrix4;
-import org.traxnet.shadingzen.math.Vector2;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 
@@ -17,7 +16,9 @@ import org.traxnet.shadingzen.math.Vector4;
 public class Camera extends Actor {
 	protected Vector3 _dir;
     protected Vector3 _up = new Vector3(0.f, 1.f, 0.f);
-    protected Vector3 _right  = new Vector3(1.f, 0.f, 0.f);;
+    protected Vector3 _right  = new Vector3(1.f, 0.f, 0.f);
+
+    float [] frustum = new float[16];
 	
 	// Variables to calculate view frustum volume
 	protected float _fov, _aspect, _near, _far;
@@ -125,7 +126,7 @@ public class Camera extends Actor {
 	 */
 	public Matrix4 getProjectionMatrix(){
 		if(null == _projectionMatrix)
-			_projectionMatrix = buildProjectionMatrix();
+			_projectionMatrix = buildProjectionMatrix(_projectionMatrix);
 		
 		return _projectionMatrix;
 		
@@ -149,10 +150,10 @@ public class Camera extends Actor {
 	 * 
 	 * See Eq 3.78 at Real-Time Rendering by Tomas Moller and Eric Haines
 	 */
-	private Matrix4 buildProjectionMatrix(){
+	private Matrix4 buildProjectionMatrix(Matrix4 matrix){
 		
 		float xmin, xmax, ymin, ymax;
-		float [] frustum = new float[16];
+
 		float doublenear, one_deltay, one_deltaz, one_deltax;
 		
 		xmax = _near * (float)Math.tan(_fov*0.5f);
@@ -182,8 +183,13 @@ public class Camera extends Actor {
 		frustum[13] = 0.f;
 		frustum[14] = -(_far * doublenear) * one_deltaz;
 		frustum[15] = 0.f;
+
+        if(null == matrix)
+            return new Matrix4(frustum);
+
+        matrix.set(frustum);
 		
-		return new Matrix4(frustum);
+		return matrix;
 	}
 	
 	void buildOrthoProjectionMatrix(){
@@ -248,15 +254,18 @@ public class Camera extends Actor {
 
     /** Transform a point into screen space using the view and projection matrices
      *
-     * @param x X coordinate of the point
-     * @param y Y coordinate of the point
-     * @param z Z coordinate of the point
      * @return The x,y values of the point in screen space (-1,1)
      */
-    public Vector2 projectPointScreenSpace(float x, float y, float z){
+    public void projectPointScreenSpace(float [] ret, float [] point){
         Matrix4 mvp = getViewProjectionMatrix();
-        Vector4 screen_space = mvp.mul(new Vector4(x, y, z, 1.f));
-        return new Vector2(screen_space.x/screen_space.w, screen_space.y/screen_space.w);
+
+        point[3] = 1.f;
+        Matrix.multiplyMV(ret, 0, mvp.getAsArray(), 0, point, 0);
+        ret[0] /= ret[3];
+        ret[1] /= ret[3];
+
+        //Vector4 screen_space = mvp.mul(new Vector4(x, y, z, 1.f));
+        //return new Vector2(screen_space.x/screen_space.w, screen_space.y/screen_space.w);
     }
 
     /** Transform a point into screen space using the view and projection matrices.
@@ -266,17 +275,12 @@ public class Camera extends Actor {
      * [ 0   h/2  h/2+y]
      * [ 0    0     1  ]
      *
-     * @param x X coordinate of the point
-     * @param y Y coordinate of the point
-     * @param z Z coordinate of the point
      * @return The x,y values of the point in viewport space (0,width)x(0,height)
      */
-    public Vector2 projectPointViewportSpace(float x, float y, float z){
-        Vector2 pos = projectPointScreenSpace(x, y, z);
-        pos.x = (pos.x+1)*_viewportWidth*0.5f;
-        pos.y = (pos.y+1)*_viewportHeight*0.5f;
-
-        return pos;
+    public void projectPointViewportSpace(float [] ret, float[] point){
+         projectPointScreenSpace(ret, point);
+        ret[0] = (ret[0]+1)*_viewportWidth*0.5f;
+        ret[1] = (ret[1]+1)*_viewportHeight*0.5f;
     }
 	
 	@Override

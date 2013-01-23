@@ -13,10 +13,13 @@ public class RenderOrthoQuads extends RenderTask {
 	public RenderOrthoQuads(){
 		
 	}
-	
 
+    @Override
+    public int getRenderingOrder() {
+        return super.getRenderingOrder()+1000;
+    }
 
-	@Override
+    @Override
 	public void onDraw(RenderService service) {
 		
 

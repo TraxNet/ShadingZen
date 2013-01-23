@@ -21,6 +21,11 @@ public class RenderSkyDomeRenderTask extends RenderTask {
 
     public RenderSkyDomeRenderTask(){}
 
+    @Override
+    public int getRenderingOrder() {
+        return super.getRenderingOrder()-500;
+    }
+
     public void initWithCubemapTexture(BitmapTexture cubemap_texture, ShadersProgram program, CubeShape shape, float [] model_matrix) {
         _shape = shape;
         _program = program;

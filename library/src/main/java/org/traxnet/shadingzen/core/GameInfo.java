@@ -1,9 +1,8 @@
 package org.traxnet.shadingzen.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.content.res.Configuration;
+
+import java.util.HashMap;
 
 public abstract class GameInfo extends Actor {
 	protected HashMap<String, Collider> _colliders;
@@ -13,38 +12,6 @@ public abstract class GameInfo extends Actor {
 	
 	public GameInfo(){
 		_colliders = new HashMap<String, Collider>();
-	}
-	
-	public  void registerCollider(Collider reg){
-		synchronized(_colliders){
-			_colliders.put(reg.getNameId(), reg);
-		}
-	}
-	
-	public synchronized void unregisterCollider(Collider reg){
-		synchronized(_colliders){
-			if(_colliders.containsKey(reg.getNameId()))
-				_colliders.remove(reg.getNameId());
-		}
-	}
-	
-	public void processColliders(){
-		ArrayList<Collider> processed = new ArrayList<Collider>();
-		for(Collider collider : _colliders.values()){
-			processed.add(collider);
-			
-			for(Collider target : _colliders.values()){
-				if(processed.contains(target))
-					continue;
-				if(collider.getBoundingBox().overlap(target.getBoundingBox())){
-					// They both may collide. 
-					// TODO: for now we only test bbox for speed and simplicity
-					collider.onTouch(target);
-					target.onTouch(collider);
-				}
-						
-			}
-		}
 	}
 	
 	public void onPreDraw(RenderService renderer){}

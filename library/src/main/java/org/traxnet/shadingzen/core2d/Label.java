@@ -1,20 +1,15 @@
 package org.traxnet.shadingzen.core2d;
 
-import java.util.TreeSet;
-import java.util.UUID;
-
+import android.opengl.GLES20;
+import android.util.Log;
 import org.traxnet.shadingzen.R;
-import org.traxnet.shadingzen.core.Engine;
-import org.traxnet.shadingzen.core.Entity;
-import org.traxnet.shadingzen.core.RenderBuffer;
-import org.traxnet.shadingzen.core.ResourcesManager;
-import org.traxnet.shadingzen.core.ShadersProgram;
+import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.core.font.BMFont;
 import org.traxnet.shadingzen.core.font.CharDescriptor;
 import org.traxnet.shadingzen.math.Vector4;
 
-import android.opengl.GLES20;
-import android.util.Log;
+import java.util.UUID;
+import java.util.Vector;
 
 /**
  * Label can render a text string with the given BMFont file (http://www.angelcode.com/products/bmfont/). 
@@ -73,7 +68,7 @@ public class Label extends QuadAtlas {
 		}
 		
 		
-		_orderedQuads = new TreeSet<Quad>();
+		_orderedQuads = new Vector<Quad>();
 		
 		loadFont(resource_id, texture_res);	
 		
