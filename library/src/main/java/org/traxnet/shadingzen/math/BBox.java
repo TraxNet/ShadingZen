@@ -2,8 +2,6 @@ package org.traxnet.shadingzen.math;
 
 import android.util.FloatMath;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class BBox {
 	Vector3 _mins, _maxs;
     float []_minsArray, _maxsArray;
@@ -173,7 +171,7 @@ public class BBox {
 
     float[] coord = new float[3];
 	
-	public boolean testRay(float[] origin, float[] dir, float radius, AtomicReference<Vector3> coordinates){
+	public boolean testRay(float[] origin, float[] dir, float radius, Vector3 coordinates){
 
 		//float[] origin = orig.getAsArray();
 		//float[] dir = d.getAsArray();
@@ -224,9 +222,9 @@ public class BBox {
 			}
 		}
 		
-		coordinates.get().setX(coord[0]);
-		coordinates.get().setY(coord[1]);
-		coordinates.get().setZ(coord[2]);
+		coordinates.setX(coord[0]);
+		coordinates.setY(coord[1]);
+		coordinates.setZ(coord[2]);
 		return true;	// ray hits box
 	}
 }

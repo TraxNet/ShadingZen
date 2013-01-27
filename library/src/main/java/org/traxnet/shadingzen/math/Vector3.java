@@ -67,6 +67,12 @@ public class Vector3 {
 		
 		return array;
 	}
+
+    public void toArray(float [] array){
+        array[0] = x;
+        array[1] = y;
+        array[2] = z;
+    }
 	
 	/*** Lenght of this vector */
 	public float length(){
