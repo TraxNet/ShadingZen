@@ -54,7 +54,7 @@ public abstract class SceneTransition extends Scene {
 	@Override
 	public void onTick(float delta) {
 		super.onTick(delta);
-		_entityManager.updateTick(delta);
+		_entityManager.updateTick(delta, getLocalModelMatrix().getAsArray());
 		
 		_currentTime += delta;
 		

@@ -87,7 +87,7 @@ public class BBox {
 		if(min > _mins.getZ())
 			min = _mins.getZ();
 		float d = max > min? max : min;
-		return d/2.f;
+		return d;
 	}
 	
 	public boolean isPointInside( Vector3 p ){

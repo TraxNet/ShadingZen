@@ -231,6 +231,7 @@ public final class Engine implements Runnable {
 		
 		_frameTime = nanotime;
 	}
+
 	
 	public void drawFrame(RenderService renderer){
 		if(null != _currentGameInfo)
@@ -344,7 +345,8 @@ public final class Engine implements Runnable {
 			
 			for(int index = 0; index < node2d_background_ordered_list.size(); index++){
 
-				drawActor(renderer, (Actor)node2d_background_ordered_list.get(index).getEntity(), scene_model_matrix);
+				//drawActor(renderer, (Actor)node2d_background_ordered_list.get(index).getEntity(), scene_model_matrix);
+                drawEntity(renderer, node2d_background_ordered_list.get(index), scene_model_matrix);
 			}
 			
 			for(int index = 0; index < ordered_list.size(); index++){
@@ -352,7 +354,8 @@ public final class Engine implements Runnable {
 			}
 			
 			for(int index = 0; index < node2d_ordered_list.size(); index++){
-				drawActor(renderer, (Actor)node2d_ordered_list.get(index).getEntity(), scene_model_matrix);
+                drawEntity(renderer, node2d_ordered_list.get(index), scene_model_matrix);
+				//drawActor(renderer, (Actor)node2d_ordered_list.get(index).getEntity(), scene_model_matrix);
 			}
 		//}
 	}
@@ -363,13 +366,13 @@ public final class Engine implements Runnable {
 
 		Entity entity = holder.getEntity();
 		
-		
+		        /*
 		if(Actor.class.isInstance(entity)){
 				drawActor(renderer, (Actor)entity, parent_model_matrix);
 			
-		} else{
-			if(entity.getFrameId() == _currentFrameId)
-				return;
+		} else*/{
+			//if(entity.getFrameId() == _currentFrameId)
+			//	return;
 			
 			try{
 				entity.onDraw(renderer);
@@ -379,7 +382,7 @@ public final class Engine implements Runnable {
 		
 		}
 		
-		entity.setFrameId(_currentFrameId);
+		//entity.setFrameId(_currentFrameId);
 	}
 
 	private void drawActor(RenderService renderer, Actor actor, float[] parent_model_matrix) {
@@ -431,52 +434,82 @@ public final class Engine implements Runnable {
     public Camera getCurrentCamera(){
         return _openglRenderer.getCamera();
     }
+
+
   
-    public boolean onTouchEvent(MotionEvent event)  
+    public boolean onTouchEvent(MotionEvent event)
     {  
     	if(_inputControllerStack.empty())
     		return false;
 
-        int index = event.getActionIndex();
-        int pointerId = event.getPointerId(index);
-    	
-        //when user touches the screen  
-        if(event.getAction() == MotionEvent.ACTION_DOWN)  
-        {  
-            //reset deltaX and deltaY  
-            deltaX = deltaY = 0;  
-  
-            //get initial positions  
-            initialX = event.getRawX();  
-            initialY = event.getRawY();
+        Log.i("ShadingZen", "onTouchEvent count=" + event.getPointerCount());
 
-        }  
-       
-        //when screen is released  
-        if(event.getAction() == MotionEvent.ACTION_MOVE )  
-        {  
-         	deltaX = event.getRawX() - initialX;  
-         	deltaY = event.getRawY() - initialY;  
-  
-         	//if(Math.abs(deltaY) < 15 && Math.abs(deltaX) < 15)
-         	{
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+
+        int pointerId =  action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+
+        for(int index =0; index < event.getPointerCount(); index++){
+
+            if(pointerId != event.getPointerId(index))
+                continue;
+
+
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            event.getPointerCoords(index, coords);
+
+
+            //when screen is released
+            if(actionCode == MotionEvent.ACTION_MOVE )
+            {
+                if(event.getHistorySize() > 0){
+                    deltaX = event.getRawX() - event.getHistoricalX(0);
+                    deltaY = event.getRawY() - event.getHistoricalY(0);
+                }
+                Log.i("ShadingZen", "User touch event ACTION_MOVE pointerId=" + pointerId + " deltaX=" + deltaX + " deltaY=" + deltaY);
+
+                //if(Math.abs(deltaY) < 15 && Math.abs(deltaX) < 15)
+                {
+                    for (InputController controller : _inputControllerStack){
+                        if(controller.onTouchDrag(pointerId, event.getRawX(), event.getRawY(), deltaX, deltaY))
+                            break;
+                    }
+
+                }
+
+                return true;
+            } else if(actionCode == MotionEvent.ACTION_POINTER_DOWN){
+
+
+                Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
                 for (InputController controller : _inputControllerStack){
-                    if(controller.onTouchDrag(pointerId, event.getRawX(), event.getRawY(), deltaX, deltaY))
+                    if(controller.onTouchDown(pointerId, coords.x, coords.y))
                         break;
                 }
-         		
-         	}
-  
-         	return true;  
-        } else if(event.getAction() == MotionEvent.ACTION_DOWN){
-            for (InputController controller : _inputControllerStack){
-                if(controller.onTouchDown(pointerId, event.getRawX(), event.getRawY()))
-                    break;
-            }
-        } else if(event.getAction() == MotionEvent.ACTION_UP){
-            for (InputController controller : _inputControllerStack){
-                if(controller.onTouchUp(pointerId, event.getRawX(), event.getRawY()))
-                    break;
+            } else if(actionCode == MotionEvent.ACTION_POINTER_UP){
+                Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+                for (InputController controller : _inputControllerStack){
+                    if(controller.onTouchUp(pointerId, coords.x, coords.y))
+                        break;
+                }
+            } else if(actionCode == MotionEvent.ACTION_DOWN){
+
+
+                Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+                for (InputController controller : _inputControllerStack){
+                    if(controller.onTouchDown(pointerId, coords.x, coords.y))
+                        break;
+                }
+            } else if(actionCode == MotionEvent.ACTION_UP){
+                Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+                for (InputController controller : _inputControllerStack){
+                    if(controller.onTouchUp(pointerId, coords.x, coords.y))
+                        break;
+                }
             }
         }
         
@@ -485,6 +518,83 @@ public final class Engine implements Runnable {
 		return true;  
 		
     }
+
+    /*
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        if(_inputControllerStack.empty())
+            return false;
+
+        Log.i("ShadingZen", "onTouchEvent count=" + event.getPointerCount());
+
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+
+        final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        final int pointerId = event.getPointerId(pointerIndex);
+
+        //int pointerId =  action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+
+        //when screen is released
+        if(actionCode == MotionEvent.ACTION_MOVE )
+        {
+            if(event.getHistorySize() > 0){
+                deltaX = event.getRawX() - event.getHistoricalX(0);
+                deltaY = event.getRawY() - event.getHistoricalY(0);
+            }
+            Log.i("ShadingZen", "User touch event ACTION_MOVE pointerId=" + pointerId + " deltaX=" + deltaX + " deltaY=" + deltaY);
+
+            //if(Math.abs(deltaY) < 15 && Math.abs(deltaX) < 15)
+            {
+                for (InputController controller : _inputControllerStack){
+                    if(controller.onTouchDrag(pointerId, event.getRawX(), event.getRawY(), deltaX, deltaY))
+                        break;
+                }
+
+            }
+
+            return true;
+        } else if(actionCode == MotionEvent.ACTION_POINTER_DOWN){
+
+
+            Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+            for (InputController controller : _inputControllerStack){
+                if(controller.onTouchDown(pointerId, coords.x, coords.y))
+                    break;
+            }
+        } else if(actionCode == MotionEvent.ACTION_POINTER_UP){
+            Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+            for (InputController controller : _inputControllerStack){
+                if(controller.onTouchUp(pointerId, coords.x, coords.y))
+                    break;
+            }
+        } else if(actionCode == MotionEvent.ACTION_DOWN){
+
+
+            Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+            for (InputController controller : _inputControllerStack){
+                if(controller.onTouchDown(pointerId, coords.x, coords.y))
+                    break;
+            }
+        } else if(actionCode == MotionEvent.ACTION_UP){
+            Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
+
+            for (InputController controller : _inputControllerStack){
+                if(controller.onTouchUp(pointerId, coords.x, coords.y))
+                    break;
+            }
+        }
+
+
+
+        return true;
+
+    }
+    */
     
     public boolean onScaleGesture(float scale_factor){
     	if(_inputControllerStack.empty())

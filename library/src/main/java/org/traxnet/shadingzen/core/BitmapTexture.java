@@ -25,6 +25,7 @@ public class BitmapTexture extends CompressedResource implements Texture {
 	protected Parameters _params;
 	protected int _target;
 	protected Bitmap [] _bmps;
+    protected ByteBuffer _compressedBuffer;
 	
 	public enum TextureType{
 		Texture2D,
@@ -215,16 +216,32 @@ public class BitmapTexture extends CompressedResource implements Texture {
     {
         try{
             ZipEntry entry = zipfile.getEntry(location);
+
             if(null == entry){
                 Log.e("ShadingZen", "Given compressed resource location was not found:" + location);
                 return false;
             }
 
-            return loadTextureFromInputStream(context, manager, id, params, zipfile.getInputStream(entry));
+            if(entry.isDirectory()){
+                /*File file = new File(location);
+                String filename = file.getName();
+
+                if(manager.isPVRCompressedTexturesSupported())
+                   return loadCompressedPVRCompressedTextureSet(manager, zipfile, filename, id, (BitmapTexture.Parameters) params);
+                else
+                   return false; */
+                return false;
+            } else{
+                return loadTextureFromInputStream(context, manager, id, params, zipfile.getInputStream(entry));
+            }
         } catch(IOException ex){
             Log.e("ShadingZen", "Error getting input stream from zip file:" + ex.getMessage(), ex);
             return false;
         }
+    }
+
+    protected boolean loadCompressedPVRCompressedTextureSet(ResourcesManager manager, ZipFile zipfile, String filename, String id, BitmapTexture.Parameters params){
+        return false;
     }
 
 	@Override

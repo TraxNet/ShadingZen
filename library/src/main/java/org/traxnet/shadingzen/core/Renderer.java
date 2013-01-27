@@ -48,7 +48,10 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	boolean _abortedByException = false;
 	RenderTaskBatch [] _tasksArray;
 	RenderTask _backgroundRenderTask = null;
-	
+    boolean _isPVR1Supported = false;
+
+
+
 	
 	/// Public methods ///////////////////
 	
@@ -66,6 +69,26 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		_orthoVertsBuffer = new float[_orthoVertsMaxBuffSize];
 		_tasksArray = new RenderTaskBatch[1];
 	}
+
+    public boolean isPVRCompressedTexturesSupported(){
+        return _isPVR1Supported;
+    }
+
+    protected void checkForCompressedTexturesSupport(){
+        String s = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+
+        if (s.contains("GL_IMG_texture_compression_pvrtc")){
+            _isPVR1Supported = true;
+        }else if (s.contains("GL_AMD_compressed_ATC_texture") ||
+                s.contains("GL_ATI_texture_compression_atitc")){
+            //Load ATI Textures
+        }else if (s.contains("GL_OES_texture_compression_S3TC") ||
+                s.contains("GL_EXT_texture_compression_s3tc")){
+            //Use DTX Textures
+        }else{
+            //Handle no texture compression founded.
+        }
+    }
 	
 	
 	public void setClearColor(Vector4 color){
@@ -82,8 +105,11 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	 */
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		if(false == _isContentReady)
-			return;
+		if(false == _isContentReady){
+            checkForCompressedTexturesSupport();
+
+            return;
+        }
 		if(this._abortedByException)
 			return;
 		

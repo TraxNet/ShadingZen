@@ -26,10 +26,12 @@ public abstract class VehicleActor extends Collider {
     protected float currentSteerVelocityX = 0.f;
     protected float currentSteerVelocityY = 0.f;
     protected float currentVelocity = 0.f;
+    protected float currentRollVelocity = 0.f;
     protected Matrix4 _currentMatrixRotation = new Matrix4();
     protected Quaternion _currentStepAngularRotation = new Quaternion();
 
     private Quaternion _right_axis_quaternion = new Quaternion();
+    private Quaternion _front_axis_quaternion = new Quaternion();
 
     public enum AccelerateState{
         MAINTAIN_VELOCITY,
@@ -62,8 +64,10 @@ public abstract class VehicleActor extends Collider {
 
     private void rotateUsingCurrentSteerVelocity(float deltatime){
         _right_axis_quaternion.setRotation(currentLocalUpAxis, -currentSteerVelocityX *deltatime);
+        _front_axis_quaternion.setRotation(currentLocalFrontAxis, currentRollVelocity*deltatime);
         _currentStepAngularRotation.setRotation(currentLocalRightAxis, currentSteerVelocityY *deltatime);
         _currentStepAngularRotation.mulInplace(_right_axis_quaternion);
+        _currentStepAngularRotation.mulInplace(_front_axis_quaternion);
        /* Log.i("ShadingZen", "currentSteerVelocityX=" + currentSteerVelocityX);
         Log.i("ShadingZen", "currentSteerVelocityY=" + currentSteerVelocityY);
         Log.i("ShadingZen", "currentTargetFrontVelocity=" + currentTargetFrontVelocity);

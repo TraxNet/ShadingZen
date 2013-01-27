@@ -32,6 +32,7 @@ public class ResourcesManager {
     ZipFile _expansionPack = null;
     int _mimapLevel = 0;
 
+
     public void setDefaultMipmapLevel(int level){
         _mimapLevel = level;
     }
@@ -59,6 +60,8 @@ public class ResourcesManager {
 		_lock = new Object();
 		_soundPool = new SoundPool(8, AudioManager.STREAM_MUSIC, 100);
 	}
+
+
 
     public void setExpansionPack(String path) throws Exception {
         _expansionPackPath = path;

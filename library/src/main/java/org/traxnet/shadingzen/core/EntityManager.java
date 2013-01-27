@@ -1,5 +1,6 @@
 package org.traxnet.shadingzen.core;
 
+import android.opengl.Matrix;
 import android.util.Log;
 import org.traxnet.shadingzen.math.Vector3;
 
@@ -11,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 
 public final class EntityManager {
-	//private static EntityManager _global_instance;
+	Scene _ownerScene;
 	
 	public class EntityHolder {
 		final Entity _entity;
@@ -58,7 +59,7 @@ public final class EntityManager {
 		_entities = new HashMap<Entity, EntityHolder>();
 
         _lightEmitters = new LinkedList<LightEmitter>();
-		//_ownerScene = owner;
+		_ownerScene = owner;
 	}
 	
 	public void unloadEntityResources(){
@@ -185,6 +186,9 @@ public final class EntityManager {
             addLightEmitter(entity);
 
             entity.onLoad();
+
+            if(Collider.class.isAssignableFrom(_class))
+                _ownerScene.registerCollider((Collider)entity);
 	
 		} catch (Exception e){
 			Log.e("ShadingZen", "Error spawning class <" + _class.toString() + ">:" + e.getLocalizedMessage());
@@ -213,7 +217,7 @@ public final class EntityManager {
 		_entities.get(entity).mark();
 	}*/
 	
-	public void updateTick(float deltatime){
+	public void updateTick(float deltatime, float [] scene_model_matrix){
 		deletePendingEntities();
 		
 		//synchronized(this._entities){
@@ -221,18 +225,43 @@ public final class EntityManager {
 			for(int index=0; index < _numEntitiesCached; index++){
 
 				EntityHolder holder = (EntityHolder)_entitiesCache[index];
-				if(!holder.getEntity().isPendingDestroy())
-					holder.getEntity().onTick(deltatime);
-				/*else{
-					Log.v("ShadingZen", "Removing entity " + holder.getEntity().getNameId());
-					_entities.remove(holder.getEntity());
-					holder.getEntity().onDestroy();
-				}*/
+                Entity entity = holder.getEntity();
+				if(entity.isPendingDestroy())
+                    continue;
+
+                if(Actor.class.isInstance(entity))
+                {
+                    Actor actor = (Actor) entity;
+                    if(null != actor.getParent() && actor.getParent() != _ownerScene)
+                        continue;
+
+                    updateActor((Actor) entity, deltatime, scene_model_matrix);
+                } else{
+			        entity.onTick(deltatime);
+                }
+
 			}
 		//}
 	}
-	
-	public void deletePendingEntities(){
+
+    private void updateActor(Actor actor, float delta_time, float[] parent_model_matrix) {
+        Matrix.multiplyMM(actor.getWorldModelMatrix().getAsArray(), 0, parent_model_matrix, 0, actor.getLocalModelMatrix().getAsArray(), 0);
+        Matrix.invertM(actor.getInverseWorldModelMatrix().getAsArray(), 0, actor.getWorldModelMatrix().getAsArray(), 0);
+
+
+        actor.onTick(delta_time);
+
+
+        Object [] children = actor.getChildren();
+        int size = actor.getNumChildren();
+        for(int index=0; index < size; index++){
+            Actor child = ((Actor) children[index]);
+            updateActor(child, delta_time, actor.getWorldModelMatrix().getAsArray());
+            //child.setFrameId(_currentFrameId);
+        }
+    }
+
+    public void deletePendingEntities(){
 		synchronized(this._entities){
 
             for(int index=0; index < _numEntitiesCached; index++){

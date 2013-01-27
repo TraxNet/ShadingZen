@@ -81,7 +81,7 @@ public class Camera extends Actor {
 		return _dir;
 	}
 
-    /** Sets the camera view dir without performing a normalization */
+    /** Sets the camera view _temp_dir without performing a normalization */
     public void setDirUnsafe(float x, float y, float z){
         _dir.x = x;
         _dir.y = y;

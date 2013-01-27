@@ -32,7 +32,7 @@ public abstract class Collider extends Actor {
 	public void register(String name){
 		super.register(name);
 		
-		Engine.getSharedInstance().getCurrentScene().registerCollider(this);
+		//Engine.getSharedInstance().getCurrentScene().registerCollider(this);
 	}
 	
 	@Override
@@ -46,7 +46,7 @@ public abstract class Collider extends Actor {
     public abstract float getBoundingRadius();
 
     /**
-     * Should check whenever the given ray (origin, dir, radius, length) intersects this actor
+     * Should check whenever the given ray (origin, _temp_dir, radius, length) intersects this actor
      * If an intersection is found a CollisionInfo object is returned. If no collision is found
      * a null object must be returned
      * @param info Collision info. It may contain previous info, must be returned filled if an intersection is found
@@ -66,6 +66,5 @@ public abstract class Collider extends Actor {
      * @return If returns is false, the engine will continue probing for more collisions
      */
 	public abstract boolean onTouch(CollisionInfo info);
-
 
 }

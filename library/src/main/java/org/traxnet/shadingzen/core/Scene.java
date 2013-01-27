@@ -5,6 +5,7 @@ import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 
 import java.util.HashMap;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Scene extends Actor{
@@ -36,6 +37,11 @@ public class Scene extends Actor{
 	public synchronized Actor spawn(Class<? extends Actor> _class, Actor parent, String nameId){
 		return _entityManager.spawn(_class, parent, nameId);
 	}
+
+    @Override
+    public Actor spawn(Class<? extends Actor> _class, String nameId){
+        return _entityManager.spawn(_class, this, nameId);
+    }
 	
 	public  void registerCollider(Collider reg){
 		synchronized(_colliders){
@@ -53,14 +59,15 @@ public class Scene extends Actor{
 		}
 	}
 
-    float [] previous_position = new float[4];
-    float [] previous_position_targetspace = new float[4];
-    Vector3 dir = new Vector3();
-    Vector3 previous_position_vec = new Vector3();
-    Vector3 distance_vec = new Vector3();
-    float [] dir_as_array = new float[4];
-    float [] dir_as_array_targetspace = new float[4];
+    float [] _temp_previous_position = new float[4];
+    float [] _temp_ray_origin_targetspace = new float[4];
+    Vector3 _temp_dir = new Vector3();
+    Vector3 _temp_ray_origin_vec = new Vector3();
+    Vector3 _temp_distance_vec = new Vector3();
+    float [] _temp_dir_as_array = new float[4];
+    float [] _temp_dir_as_array_targetspace = new float[4];
     CollisionInfo info = new CollisionInfo();
+    Vector<CollisionInfo> detected_collisions = new Vector<CollisionInfo>();
 
     public void processColliders(){
         //ArrayList<Collider> processed = new ArrayList<Collider>();
@@ -89,95 +96,109 @@ public class Scene extends Actor{
                 continue;
 
             Vector3 pre_pos_vec = collider.getPreviousPosition();
-            previous_position[0] = pre_pos_vec.x;
-            previous_position[1] = pre_pos_vec.y;
-            previous_position[2] = pre_pos_vec.z;
-            previous_position[3] = 1.f;
+            _temp_previous_position[0] = pre_pos_vec.x;
+            _temp_previous_position[1] = pre_pos_vec.y;
+            _temp_previous_position[2] = pre_pos_vec.z;
+            _temp_previous_position[3] = 1.f;
 
 
-            dir.set(collider.getPosition());
-            dir.subNoCopy(pre_pos_vec);
+            _temp_dir.set(collider.getPosition());
+            _temp_dir.subNoCopy(pre_pos_vec);
 
-            float distance_traveled = dir.lengthSqrt();
+            float distance_traveled = _temp_dir.lengthSqrt();
             if(distance_traveled >= 0.000001f){
-                dir.x /= distance_traveled;
-                dir.y /= distance_traveled;
-                dir.z /= distance_traveled;
+                _temp_dir.x /= distance_traveled;
+                _temp_dir.y /= distance_traveled;
+                _temp_dir.z /= distance_traveled;
             } else{
-                dir.set(0.f, 0.f, 0.f);
+                _temp_dir.set(0.f, 0.f, 0.f);
             }
 
-            dir_as_array[0] = dir.x;
-            dir_as_array[1] = dir.y;
-            dir_as_array[2] = dir.z;
+            _temp_dir_as_array[0] = _temp_dir.x;
+            _temp_dir_as_array[1] = _temp_dir.y;
+            _temp_dir_as_array[2] = _temp_dir.z;
 
-            for(int target_index = 0; target_index < _numCachedColliders; target_index++){
-                Collider target = (Collider) _collidersCache[target_index];
+            checkCollidersAlongRayPathInTargetLocalSpace(true, detected_collisions, ref, collider, distance_traveled, _temp_previous_position, _temp_dir_as_array, collider.getBoundingRadius());
+        }
+    }
 
-                if(collider == target)
+    private void checkCollidersAlongRayPathInTargetLocalSpace(boolean callOnTouch, Vector<CollisionInfo> detected_collisions, AtomicReference ref, Collider collider, float ray_length, float[] ray_origin, float[] ray_dir, float ray_radius) {
+        for(int target_index = 0; target_index < _numCachedColliders; target_index++){
+            Collider target = (Collider) _collidersCache[target_index];
+
+            if(collider == target)
+                continue;
+
+            /*if(processed.contains(target))
+                continue; */
+            if(target.isPendingDestroy())
+                continue;
+            if(target.getCollidableStatus() == Collider.CollidableStatus.DISABLED)
+                continue;
+
+            float [] target_inv_model_matrix = target.getInverseWorldModelMatrix().getAsArray();
+
+            Matrix.multiplyMV(_temp_ray_origin_targetspace, 0, target_inv_model_matrix, 0, ray_origin, 0);
+            _temp_ray_origin_vec.x = _temp_ray_origin_targetspace[0];
+            _temp_ray_origin_vec.y = _temp_ray_origin_targetspace[1];
+            _temp_ray_origin_vec.z = _temp_ray_origin_targetspace[2];
+            //Vector3 position_in_targetspace = target.getInverseWorldModelMatrix().mul(collider.getPreviousPosition());
+            BBox target_bbox = target.getBoundingBox();
+
+            float distance_from_target = _temp_ray_origin_vec.lengthSqrt();
+            if(distance_from_target > target.getBoundingRadius() + ray_radius + ray_length)
+                continue;
+
+            /*if(target_bbox.isPointInside(position_in_targetspace, target.getBoundingRadius())){
+                info.hitActor = target;
+
+                if(collider.onTouch(info))
+                    break;
+                else
                     continue;
-
-                /*if(processed.contains(target))
-                    continue; */
-                if(target.isPendingDestroy())
-                    continue;
-                if(target.getCollidableStatus() == Collider.CollidableStatus.DISABLED)
-                    continue;
-
-                float [] target_inv_model_matrix = target.getInverseWorldModelMatrix().getAsArray();
-
-                Matrix.multiplyMV(previous_position_targetspace, 0, target_inv_model_matrix, 0, previous_position, 0);
-                previous_position_vec.x = previous_position_targetspace[0];
-                previous_position_vec.y = previous_position_targetspace[1];
-                previous_position_vec.z = previous_position_targetspace[2];
-                //Vector3 position_in_targetspace = target.getInverseWorldModelMatrix().mul(collider.getPreviousPosition());
-                BBox target_bbox = target.getBoundingBox();
-
-                float distance_from_target = previous_position_vec.lengthSqrt();
-                if(distance_from_target > target.getBoundingRadius() + collider.getBoundingRadius() + distance_traveled)
-                    continue;
-
-                /*if(target_bbox.isPointInside(position_in_targetspace, target.getBoundingRadius())){
-                    info.hitActor = target;
-
-                    if(collider.onTouch(info))
-                        break;
-                    else
-                        continue;
-                } */
+            } */
 
 
-                Matrix.multiplyMV(dir_as_array_targetspace, 0, target_inv_model_matrix, 0, dir_as_array, 0);
-                dir.x = dir_as_array_targetspace[0];
-                dir.y = dir_as_array_targetspace[1];
-                dir.z = dir_as_array_targetspace[2];
+            Matrix.multiplyMV(_temp_dir_as_array_targetspace, 0, target_inv_model_matrix, 0, ray_dir, 0);
+           /* _temp_dir.x = _temp_dir_as_array_targetspace[0];
+            _temp_dir.y = _temp_dir_as_array_targetspace[1];
+            _temp_dir.z = _temp_dir_as_array_targetspace[2];   */
 
-                /*
-                Vector4 rot_dir = new Vector4(dir, 0.f);
-                Vector4 rot_dir2 = target.getInverseWorldModelMatrix().mul(rot_dir);
-                dir.set(rot_dir2.x, rot_dir2.y, rot_dir2.z);  */
+            /*
+            Vector4 rot_dir = new Vector4(_temp_dir, 0.f);
+            Vector4 rot_dir2 = target.getInverseWorldModelMatrix().mul(rot_dir);
+            _temp_dir.set(rot_dir2.x, rot_dir2.y, rot_dir2.z);  */
 
-                if(distance_traveled > 0.f){
-                    // dir.normalizeNoCopy();
+            if(ray_length >= 0.f){
+                // _temp_dir.normalizeNoCopy();
 
-                    ref.set(info.hitPoint);
-                    if(target_bbox.testRay(previous_position_targetspace, dir_as_array_targetspace, collider.getBoundingRadius(), ref)){
-                        distance_vec.set(info.hitPoint);
-                        distance_vec.sub(previous_position_vec);
-                        //Vector3 distance = info.hitPoint.sub(previous_position_vec);
+                ref.set(info.hitPoint);
+                if(target_bbox.testRay(_temp_ray_origin_targetspace, _temp_dir_as_array_targetspace, collider.getBoundingRadius(), ref)){
+                    _temp_distance_vec.set(info.hitPoint);
+                    _temp_distance_vec.sub(_temp_ray_origin_vec);
+                    //Vector3 distance = info.hitPoint.sub(_temp_ray_origin_vec);
 
 
-                        float distance_from_hit = distance_vec.lengthSqrt();
-                        if(distance_traveled >= distance_from_hit){
-                            info = target.checkForRayIntersection(info, previous_position_targetspace, dir_as_array_targetspace, collider.getBoundingRadius(), distance_traveled);
-                            info.hitActor = target;
+                    float distance_from_hit = _temp_distance_vec.lengthSqrt();
+                    if(ray_length >= distance_from_hit){
+                        info = target.checkForRayIntersection(info, _temp_ray_origin_targetspace, _temp_dir_as_array_targetspace, collider.getBoundingRadius(), ray_length);
+                        info.hitActor = target;
+                        info.hitLength = distance_from_hit;
 
-                            //Log.i("ShadingZen", "Collision Detected collider="+collider.getNameId() + " target="+target.getNameId());
+                        //Log.i("ShadingZen", "Collision Detected collider="+collider.getNameId() + " target="+target.getNameId());
 
-                            if(collider.onTouch(info))
-                                break;
-                            else
-                                continue;
+                        if(callOnTouch && collider.onTouch(info))
+                            break;
+                        else if(!callOnTouch){
+                            CollisionInfo info_clone = new CollisionInfo();
+                            info_clone.hitActor = info.hitActor;
+                            info_clone.hitPoint.set(info.hitPoint);
+                            info_clone.hitNormal.set(info.hitNormal);
+                            info_clone.hitLength = info.hitLength;
+
+                            detected_collisions.add(info_clone);
+
+                            continue;
                         }
                     }
                 }
@@ -217,6 +238,10 @@ public class Scene extends Actor{
 		}
 	}
 
+    public CollisionInfo getNearestColliderAlongRay(float [] orig, float [] dir, float length, float radius){
+         return null;
+    }
+
     /*
 	public ColliderRayTestResult getColliderAlongRay(Vector3 ray_orig, Vector3 ray_dir){
 		ArrayList<ColliderRayTestResult> list = new ArrayList<ColliderRayTestResult>();
@@ -244,9 +269,10 @@ public class Scene extends Actor{
 	@Override
 	public void onTick(float delta) {
 		super.onTick(delta);
-		_entityManager.updateTick(delta);
+		_entityManager.updateTick(delta, getLocalModelMatrix().getAsArray());
         processColliders();
 	}
+
 
 	@Override
 	public void onDraw(RenderService renderer) {

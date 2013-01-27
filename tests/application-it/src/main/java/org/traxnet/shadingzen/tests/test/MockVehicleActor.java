@@ -2,7 +2,7 @@ package org.traxnet.shadingzen.tests.test;
 
 import org.traxnet.shadingzen.core.CollisionInfo;
 import org.traxnet.shadingzen.core.RenderService;
-import org.traxnet.shadingzen.math.BBox;
+import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 
 /**
@@ -15,18 +15,23 @@ public class MockVehicleActor extends VehicleActor {
         this.currentAcceleration = 1.f;
         this._position.set(0.f, 0.f, 0.f);
         this.currentSteeringAcceleration = 5.f;
+        _boundingBox.setFromRadius(Vector3.zero, 1.f);
     }
 
+    public int getNumCollisions() {
+        return numCollisions;
+    }
 
+    int numCollisions = 0;
+
+
+    public void setCollisionRadius(float radius){
+        _boundingBox.setFromRadius(Vector3.zero, radius);
+    }
 
     @Override
     protected void setupBehaviours() {
 
-    }
-
-    @Override
-    public BBox getBoundingBox() {
-        return new BBox();
     }
 
 
@@ -52,16 +57,21 @@ public class MockVehicleActor extends VehicleActor {
 
     @Override
     public float getBoundingRadius() {
-        return 0;
+        return _boundingBox.radius();
     }
 
     @Override
     public CollisionInfo checkForRayIntersection(CollisionInfo info, float [] orig, float [] dir, float radius, float length) {
-        return null;
+        return info;
     }
 
     @Override
     public boolean onTouch(CollisionInfo info) {
+        numCollisions++;
         return false;
+    }
+
+    public void setMockPreviousPosition(float x, float y, float z) {
+        _previousPosition.set(x, y, z);
     }
 }
