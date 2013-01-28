@@ -43,7 +43,7 @@ public class CollidersAlongRayPathTests extends ActivityInstrumentationTestCase2
     public void testGetEmptyList(){
        Scene scene = createTestSceneAndRay(Vector3.zero, Vector3.vectorFront);
 
-       assertNull(scene.getNearestColliderAlongRay(orig, dir, 10.f, 0.25f));
+       assertNull(scene.getNearestColliderAlongRay(null, orig, dir, 10.f, 0.25f));
     }
 
     public void testOneHit(){
@@ -53,7 +53,7 @@ public class CollidersAlongRayPathTests extends ActivityInstrumentationTestCase2
 
         scene.onTick(1.f/30.f);
 
-        CollisionInfo info = scene.getNearestColliderAlongRay(orig, dir, 10.f, 0.25f);
+        CollisionInfo info = scene.getNearestColliderAlongRay(null, orig, dir, 10.f, 0.25f);
         assertNotNull(info);
 
     }
@@ -69,7 +69,7 @@ public class CollidersAlongRayPathTests extends ActivityInstrumentationTestCase2
 
         scene.onTick(1.f/30.f);
 
-        CollisionInfo info = scene.getNearestColliderAlongRay(orig, dir, 10.f, 0.25f);
+        CollisionInfo info = scene.getNearestColliderAlongRay(null, orig, dir, 10.f, 0.25f);
         assertNotNull(info);
         assertEquals("actorA", info.hitActor.getNameId());
     }

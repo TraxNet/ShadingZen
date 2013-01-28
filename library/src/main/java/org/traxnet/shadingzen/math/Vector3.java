@@ -9,13 +9,13 @@ import android.util.FloatMath;
 public class Vector3 {
 
     // Global ShadingZen's axis vectors
-    public static Vector3 vectorRight = new Vector3(1.f, 0.f, 0.f);
-    public static Vector3 vectorUp = new Vector3(0.f, 1.f, 0.f);
-    public static Vector3 vectorFront = new Vector3(0.f, 0.f, 1.f);
-    public static float[] vectorRightArray = {1.f, 0.f, 0.f, 0.f};
-    public static float[] vectorUpArray = {0.f, 1.f, 0.f, 0.f};
-    public static float[] vectorFrontArray = {0.f, 0.f, 1.f, 0.f};
-    public static Vector3 zero = new Vector3();
+    public static final Vector3 vectorRight = new Vector3(1.f, 0.f, 0.f);
+    public static final Vector3 vectorUp = new Vector3(0.f, 1.f, 0.f);
+    public static final Vector3 vectorFront = new Vector3(0.f, 0.f, 1.f);
+    public static final float[] vectorRightArray = {1.f, 0.f, 0.f, 0.f};
+    public static final float[] vectorUpArray = {0.f, 1.f, 0.f, 0.f};
+    public static final float[] vectorFrontArray = {0.f, 0.f, 1.f, 0.f};
+    public static final Vector3 zero = new Vector3();
 
 	public float x, y, z;
 	public Vector3(){

@@ -1,6 +1,5 @@
 package org.traxnet.shadingzen.simulation.ai;
 
-import org.traxnet.shadingzen.core.Actor;
 import org.traxnet.shadingzen.core.InvalidTargetActorException;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.simulation.BehaviourAction;
@@ -9,7 +8,7 @@ import org.traxnet.shadingzen.simulation.BehaviourAction;
  * Approaches a given Actor until a minimum distance is met.
  */
 public class ApproachBehaviourAction extends BehaviourAction {
-    protected Actor _navpoint;
+    protected Vector3 _navpoint;
     protected VehicleActor _vehicle;
     protected boolean _done = false;
     protected float _meetDistance;
@@ -24,8 +23,8 @@ public class ApproachBehaviourAction extends BehaviourAction {
     protected boolean fleeFromTarget = false;
     protected float _minimunVelocityFactorWhileSteering = 0.f;
 
-    public ApproachBehaviourAction(Actor navpoint_actor, float meet_distance, boolean flee){
-        _navpoint = navpoint_actor;
+    public ApproachBehaviourAction(Vector3 navpoint, float meet_distance, boolean flee){
+        _navpoint = navpoint;
         _meetDistance = meet_distance;
         fleeFromTarget = flee;
     }
@@ -71,7 +70,7 @@ public class ApproachBehaviourAction extends BehaviourAction {
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            currentDesiredVelocityVector.set(_navpoint.getPosition());
+            currentDesiredVelocityVector.set(_navpoint);
             currentDesiredVelocityVector.subNoCopy(_targetActor.getPosition());
 
             if(!fleeFromTarget && currentDesiredVelocityVector.lengthSqrt() <= _meetDistance){

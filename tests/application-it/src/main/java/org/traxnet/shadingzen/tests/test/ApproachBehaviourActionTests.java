@@ -33,7 +33,7 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         navpoint.getPosition().set(0.f, 100.f, 0.f);
 
 
-        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint, 5.f, false);
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
         vehicle.runAction(action);
         executeTicks(vehicle, action, 1000, 1.f/30.f);
         assertTrue(action.isDone());
@@ -49,7 +49,7 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         navpoint.getPosition().set(0.f, -100.f, 0.f);
 
 
-        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint, 5.f, false);
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
         vehicle.runAction(action);
         executeTicks(vehicle, action, 1000, 1.f/30.f);
         assertTrue(action.isDone());
@@ -65,7 +65,7 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         navpoint.getPosition().set(100.f, 0.f, 0.f);
 
 
-        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint, 5.f, false);
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
         vehicle.runAction(action);
         executeTicks(vehicle, action, 1000, 1.f/30.f);
         assertTrue(action.isDone());
@@ -80,7 +80,7 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         navpoint.getPosition().set(-100.f, 0.f, 0.f);
 
 
-        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint, 5.f, false);
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
         vehicle.runAction(action);
         executeTicks(vehicle, action, 1000, 1.f/30.f);
         assertTrue(action.isDone());
@@ -97,7 +97,7 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         navpoint.getPosition().set(100.f, 0.f, 0.f);
 
 
-        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint, 5.f, false);
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
         vehicle.runAction(action);
         executeTicks(vehicle, action, 10, 1.f/30.f);
         action.cancel();

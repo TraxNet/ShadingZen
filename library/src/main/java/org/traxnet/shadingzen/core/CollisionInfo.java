@@ -21,4 +21,11 @@ public class CollisionInfo implements Comparable{
         else
             return 0;
     }
+
+    public void setZeros() {
+        hitPoint.set(0, 0, 0);
+        hitNormal.set(0, 0, 0);
+        hitLength = 0;
+
+    }
 }

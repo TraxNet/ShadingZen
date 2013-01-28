@@ -8,6 +8,8 @@ import org.traxnet.shadingzen.simulation.ai.VehicleActor;
 /**
  */
 public class MockVehicleActor extends VehicleActor {
+    private boolean _isColliding;
+
     public void init(){
         this.currentVelocity = 0.f;
         this.maxSteerVelocity = 1.f;
@@ -20,6 +22,10 @@ public class MockVehicleActor extends VehicleActor {
 
     public int getNumCollisions() {
         return numCollisions;
+    }
+
+    public boolean isCurrentlyColliding(){
+        return _isColliding;
     }
 
     int numCollisions = 0;
@@ -50,6 +56,7 @@ public class MockVehicleActor extends VehicleActor {
 
     @Override
     protected void onUpdate(float deltaTime) {
+        _isColliding = false;
         super.onUpdate(deltaTime);
 
         //Log.i("ShadingZen", "TestVehicle position: " + _position.x + "," + _position.y + "," + _position.z);
@@ -68,6 +75,7 @@ public class MockVehicleActor extends VehicleActor {
     @Override
     public boolean onTouch(CollisionInfo info) {
         numCollisions++;
+        _isColliding = true;
         return false;
     }
 

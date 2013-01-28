@@ -162,6 +162,7 @@ public class Scene extends Actor{
 
             if(ray_length >= 0.f){
                 CollisionInfo info = detected_collisions[num_detected_collisions];
+                info.setZeros();
 
                 if(target_bbox.testRay(_temp_ray_origin_targetspace, _temp_dir_as_array_targetspace, ray_radius, info.hitPoint)){
                     _temp_distance_vec.set(info.hitPoint);
@@ -224,8 +225,8 @@ public class Scene extends Actor{
 		}
 	}
 
-    public CollisionInfo getNearestColliderAlongRay(float [] orig, float [] dir, float length, float radius){
-        int num_collision = checkCollidersAlongRayPathInTargetLocalSpace(null, _temp_detected_collisions, MAX_DETECTABLE_COLLISIONS, length, orig, dir, radius);
+    public CollisionInfo getNearestColliderAlongRay(Collider exclude, float [] orig, float [] dir, float length, float radius){
+        int num_collision = checkCollidersAlongRayPathInTargetLocalSpace(exclude, _temp_detected_collisions, MAX_DETECTABLE_COLLISIONS, length, orig, dir, radius);
 
         if(0 == num_collision)
             return null;

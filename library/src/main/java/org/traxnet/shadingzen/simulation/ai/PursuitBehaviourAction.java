@@ -7,25 +7,25 @@ import org.traxnet.shadingzen.math.Vector3;
  *
  */
 public class PursuitBehaviourAction extends ApproachBehaviourAction {
-    VehicleActor _pursedActor;
+    VehicleActor _pursuedActor;
     Vector3 to_target = new Vector3();
 
     public PursuitBehaviourAction(VehicleActor navpoint_actor, float meet_distance, boolean flee){
-        super(navpoint_actor, meet_distance, flee);
+        super(navpoint_actor.getPosition(), meet_distance, flee);
 
-        _pursedActor = navpoint_actor;
+        _pursuedActor = navpoint_actor;
     }
 
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            to_target.set(_navpoint.getPosition());
+            to_target.set(_pursuedActor.getPosition());
             to_target.subNoCopy(_targetActor.getPosition());
 
             float t = calculateTimeToIntercept(to_target);
 
-            Vector3 displacement = _pursedActor.getLocalFrontAxis().mul(_pursedActor.getCurrentVelocity()*t);
-            currentDesiredVelocityVector = _pursedActor.getPosition().add(displacement);
+            Vector3 displacement = _pursuedActor.getLocalFrontAxis().mul(_pursuedActor.getCurrentVelocity()*t);
+            currentDesiredVelocityVector = _pursuedActor.getPosition().add(displacement);
 
 
             if(!fleeFromTarget && to_target.lengthSqrt() <= _meetDistance){
@@ -45,9 +45,9 @@ public class PursuitBehaviourAction extends ApproachBehaviourAction {
     }
 
     private float calculateTimeToIntercept(Vector3 to_target) {
-        float a = _pursedActor.getCurrentVelocity()*_pursedActor.getCurrentVelocity() -
+        float a = _pursuedActor.getCurrentVelocity()* _pursuedActor.getCurrentVelocity() -
                 _vehicle.getCurrentVelocity()*_vehicle.getCurrentVelocity();
-        float b = 2*_pursedActor.getLocalFrontAxis().mul(_pursedActor.getCurrentVelocity()).dot(to_target);
+        float b = 2* _pursuedActor.getLocalFrontAxis().mul(_pursuedActor.getCurrentVelocity()).dot(to_target);
         float c = to_target.length();
 
         float p = -b/(2*a);
