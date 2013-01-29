@@ -16,6 +16,10 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
     Vector3 _navpoint = new Vector3();
     float [] trajectory_dir = new float[4], trajectory_orig = new float[4];
     float _frontalCheckDistance, _radiusOffset;
+    float _timeToNextRecalculation = 0.f;
+    ApproachBehaviourAction approach_action;
+    boolean _isStateActive = false;
+    private boolean obstacleInMovementTrajectory;
 
     private boolean isObstacleInMovementTrajectory() {
         Scene scene = Engine.getSharedInstance().getCurrentScene();
@@ -43,8 +47,8 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
 
         calculateTrajectoryToObstacleCoordinates(actor);
 
-        float up_projection = actor.getLocalFrontAxis().dot(tangent_to_obstacle);
-        float right_projection = actor.getLocalFrontAxis().dot(bitangent_to_obstacle);
+        float right_projection = actor.getLocalFrontAxis().dot(tangent_to_obstacle);
+        float up_projection = actor.getLocalFrontAxis().dot(bitangent_to_obstacle);
 
         Vector3 escape_dir;
 
@@ -56,6 +60,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
 
         if(escape_dir.length() == 0)
             escape_dir.set(actor.getLocalRightAxis());
+        escape_dir.normalizeNoCopy();
 
         float escape_radius = _lastObstacleInfo.hitActor.getBoundingRadius();
         escape_radius +=  actor.getBoundingRadius() + _radiusOffset;
@@ -65,6 +70,14 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
         _navpoint.mulInplace(escape_radius);
         _navpoint.addNoCopy(_lastObstacleInfo.hitActor.getPosition());
 
+        if(null == approach_action){
+            float meet_distance = actor.getBoundingRadius() + _radiusOffset;
+            approach_action = new ApproachBehaviourAction(_navpoint ,meet_distance, false);
+            runAction(approach_action);
+        }
+        approach_action.setNavpoint(_navpoint);
+
+        _timeToNextRecalculation = 1.f;
     }
 
     private void calculateTrajectoryToObstacleCoordinates(VehicleActor actor) {
@@ -88,12 +101,40 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
 
     @Override
     public void step(float deltaTime) {
-        recalculateNavPoint();
+
+        if(isTimeForNavpointRecalculation()){
+            if(obstacleInMovementTrajectory){
+                recalculateNavPoint();
+            } else {
+                disableApproachActionAndResetSteering();
+            }
+        } else{
+            continueWithCurrentAction(deltaTime);
+        }
+    }
+
+    private void continueWithCurrentAction(float deltaTime) {
+        _timeToNextRecalculation -= deltaTime;
+    }
+
+    private void disableApproachActionAndResetSteering() {
+        if(null != approach_action ){
+            approach_action.cancel();
+            approach_action = null;
+        }
+        VehicleActor actor = (VehicleActor)_targetActor;
+        actor.setSteeringAngles(0.f, 0.f);
+    }
+
+    private boolean isTimeForNavpointRecalculation() {
+        return _timeToNextRecalculation <= 0.f;
     }
 
     @Override
     public boolean takeOver() {
-        if(isObstacleInMovementTrajectory())
+        obstacleInMovementTrajectory = isObstacleInMovementTrajectory();
+
+        if(obstacleInMovementTrajectory)
             return true;
 
         return false;
@@ -104,12 +145,13 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
        if(null == _lastObstacleInfo)
            return;
 
-       VehicleActor actor = (VehicleActor)_targetActor;
-       float meet_distance = actor.getBoundingRadius() + _radiusOffset;
+       _timeToNextRecalculation = 0.f;
 
-       recalculateNavPoint();
 
-       ApproachBehaviourAction approach_action = new ApproachBehaviourAction(_navpoint ,meet_distance, false);
-       runAction(approach_action);
+
+
+       //recalculateNavPoint();
+
+
     }
 }

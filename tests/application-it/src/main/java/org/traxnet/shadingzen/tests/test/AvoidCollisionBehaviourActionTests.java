@@ -37,6 +37,16 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         return actorA;
     }
 
+    private void addBehavioursAndMakeItGoForward(MockVehicleActor vehicle, float velocity, int frontal_check_distance, int radius_offset) {
+        AvoidCollisionBehaviourState state = new AvoidCollisionBehaviourState(frontal_check_distance, radius_offset);
+        BehaviourArbitrator arbitrator = new BehaviourArbitrator(1);
+        arbitrator.registerBehaviour(state, 2);
+
+        vehicle.runAction(arbitrator);
+        vehicle.setAccelerateState(VehicleActor.AccelerateState.AUTO);
+        vehicle.setTargetFrontVelocity(velocity);
+    }
+
     public void testObjectIsInsideObstacle(){
         Engine engine = new Engine(640, 480);
 
@@ -80,13 +90,7 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         obstacle = createMockActorAtPosition(scene, "obstacle1",
                 Collider.CollidableStatus.COLLIDABLE_BY_OTHERS, new Vector3(0, 0, 10));
 
-        AvoidCollisionBehaviourState state = new AvoidCollisionBehaviourState(20, 1);
-        BehaviourArbitrator arbitrator = new BehaviourArbitrator(1);
-        arbitrator.registerBehaviour(state, 2);
-
-        vehicle.runAction(arbitrator);
-        vehicle.setAccelerateState(VehicleActor.AccelerateState.AUTO);
-        vehicle.setTargetFrontVelocity(10.f);
+        addBehavioursAndMakeItGoForward(vehicle, 10.f, 20, 1);
 
 
         for(int i=0; i < 1000; i++)
@@ -100,5 +104,32 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         engine.popScene();
     }
 
+    public void testEscapePointShouldBeStable(){
+        Engine engine = new Engine(640, 480);
 
+        Scene scene = new Scene();
+        engine.pushScene(scene);
+
+        MockVehicleActor vehicle, obstacle;
+        vehicle = createMockActorAtPosition(scene, "tester",
+                Collider.CollidableStatus.FULL_COLLIDABLE, new Vector3(2.0f, 0.f, 0.f));
+        obstacle = createMockActorAtPosition(scene, "obstacle1",
+                Collider.CollidableStatus.COLLIDABLE_BY_OTHERS, new Vector3(0, 0, 300));
+
+        addBehavioursAndMakeItGoForward(vehicle, 10.f, 200, 5);
+
+        for(int i=0; i < 10000; i++){
+            scene.onTick(1.f / 30.f);
+            assertTrue(vehicle.getPosition().x > 0.f);
+        }
+
+        assertTrue(vehicle.getNumCollisions() == 0);
+        assertTrue(vehicle.getCurrentVelocity() > 0.f);
+        assertFalse(vehicle.isCurrentlyColliding());
+        assertFalse(vehicle.getPosition().z == 0);
+        assertTrue(vehicle.getPosition().x > 0.f);
+        assertEquals(0.f, vehicle.getPosition().y, 0.1f);
+
+        engine.popScene();
+    }
 }

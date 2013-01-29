@@ -39,6 +39,10 @@ public class ApproachBehaviourAction extends BehaviourAction {
         _minimunVelocityFactorWhileSteering = Math.max(0.f,Math.min(1.f,value));
     }
 
+    public void setNavpoint(Vector3 navpoint){
+        _navpoint = navpoint;
+    }
+
     protected boolean calculateTargetVelocityVector(){
         float lengthSqrt = currentDesiredVelocityVector.lengthSqrt();
         if(lengthSqrt < 0.0001f)
