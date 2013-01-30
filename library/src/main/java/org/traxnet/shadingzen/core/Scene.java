@@ -184,7 +184,7 @@ public class Scene extends Actor{
                         //Log.i("ShadingZen", "Collision Detected collider="+collider.getNameId() + " target="+target.getNameId());
 
                         if(num_detected_collisions >= detected_collisions_size)
-                            continue;
+                            break;
                     }
                 }
             }

@@ -148,4 +148,23 @@ public class CollisionDetectionTests  extends ActivityInstrumentationTestCase2<D
         assertEquals(1, actorA.getNumCollisions());
         assertEquals(0, actorB.getNumCollisions());
     }
+
+    public void testCodeDoesntBreakIfMoreThan20Collisions(){
+        Scene scene = new Scene();
+
+        MockVehicleActor actorA = createMockVehicleActors(scene);
+        actorA.setRotation(new Quaternion(Vector3.vectorFront, (float) Math.PI/2.f));
+        actorA.setPosition(0, 0, 0);
+        actorA.setCollidableStatus(Collider.CollidableStatus.FULL_COLLIDABLE);
+
+        for(int i=0; i < 21; i++){
+            MockVehicleActor actor = createMockVehicleActors(scene);
+            actorA.setRotation(new Quaternion(Vector3.vectorFront, (float) Math.PI/2.f));
+            actorA.setPosition(0, 0, 0);
+            actorA.setCollidableStatus(Collider.CollidableStatus.FULL_COLLIDABLE);
+        }
+
+        scene.onTick(1.f/30.f);
+        assertEquals(20, actorA.getNumCollisions());
+    }
 }

@@ -126,7 +126,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
             TaskManager.getSharedInstance().debugExecuteSync(delta_time);
 			//TaskManager.getSharedInstance().synchronizeTasks();
 
-            Engine.getSharedInstance().fenceWait();
+
 			
 			synchronized(_renderTasksLock){
 				_tasksArray = _renderBatchesBuffer.toArray(_tasksArray);
@@ -192,10 +192,13 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			// UPDATE: Android perform a glSwap command after calling to this method
 			// which ensure the commands are going to be rendered properly to the
 			// back buffer. 
-			
-			//Engine.getSharedInstance().updateTick();
+
+
+		    Engine.getSharedInstance().updateTick();
 
             Engine.getSharedInstance().drawFrame(this);
+            //Engine.getSharedInstance().fenceWait();
+
 
 		} catch(Exception e){
 			Log.e("ShadingZen", "Error rendering frame:" + e.getLocalizedMessage());

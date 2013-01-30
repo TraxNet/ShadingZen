@@ -37,7 +37,7 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         return actorA;
     }
 
-    private void addBehavioursAndMakeItGoForward(MockVehicleActor vehicle, float velocity, int frontal_check_distance, int radius_offset) {
+    private AvoidCollisionBehaviourState addBehavioursAndMakeItGoForward(MockVehicleActor vehicle, float velocity, int frontal_check_distance, int radius_offset) {
         AvoidCollisionBehaviourState state = new AvoidCollisionBehaviourState(frontal_check_distance, radius_offset);
         BehaviourArbitrator arbitrator = new BehaviourArbitrator(1);
         arbitrator.registerBehaviour(state, 2);
@@ -45,6 +45,8 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         vehicle.runAction(arbitrator);
         vehicle.setAccelerateState(VehicleActor.AccelerateState.AUTO);
         vehicle.setTargetFrontVelocity(velocity);
+
+        return state;
     }
 
     public void testObjectIsInsideObstacle(){
@@ -116,11 +118,12 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         obstacle = createMockActorAtPosition(scene, "obstacle1",
                 Collider.CollidableStatus.COLLIDABLE_BY_OTHERS, new Vector3(0, 0, 300));
 
-        addBehavioursAndMakeItGoForward(vehicle, 10.f, 200, 5);
+        AvoidCollisionBehaviourState state = addBehavioursAndMakeItGoForward(vehicle, 10.f, 200, 5);
 
         for(int i=0; i < 10000; i++){
             scene.onTick(1.f / 30.f);
             assertTrue(vehicle.getPosition().x > 0.f);
+            assertTrue(vehicle.getLocalFrontAxis().x > -0.1f);
         }
 
         assertTrue(vehicle.getNumCollisions() == 0);
@@ -129,6 +132,8 @@ public class AvoidCollisionBehaviourActionTests extends ActivityInstrumentationT
         assertFalse(vehicle.getPosition().z == 0);
         assertTrue(vehicle.getPosition().x > 0.f);
         assertEquals(0.f, vehicle.getPosition().y, 0.1f);
+
+        assertFalse(state.takeOver());
 
         engine.popScene();
     }

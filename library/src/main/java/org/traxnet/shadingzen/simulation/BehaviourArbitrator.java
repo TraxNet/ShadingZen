@@ -54,11 +54,16 @@ public class BehaviourArbitrator extends Action {
     }
 
     private BehaviourStatePrioritizer findNewCurrentBehaviour() {
-        BehaviourStatePrioritizer new_state = _currentRunningState;
+        BehaviourStatePrioritizer new_state = null;
         int new_state_priority = 0;
 
-        if(null != _currentRunningState)
+        if(null != _currentRunningState && _currentRunningState.getState().takeOver()){
+            new_state = _currentRunningState;
             new_state_priority += _runninStatePriorityBonus;
+        } else{
+            _currentRunningState = null;
+        }
+
 
         int size = _behaviours.size();
         for(int i=0; i < size; i++){

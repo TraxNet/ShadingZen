@@ -105,4 +105,28 @@ public class ApproachBehaviourActionTests  extends ActivityInstrumentationTestCa
         assertTrue((navpoint.getPosition().sub(vehicle.getPosition())).lengthSqrt() > 5.f);
         assertEquals(new Vector3(0.f, 1.f, 0.0f), vehicle.getLocalUpAxis(), 0.01f);
     }
+
+
+    void executeTicksWithoutCheckingActionIsDone(MockVehicleActor actor, Action check, int n, float deltatime){
+        for(int i=0; i < n; i++)
+            actor.onTick(deltatime);
+
+
+    }
+
+    public void testApproachLeftWithoutOrbitAfter(){
+        MockVehicleActor vehicle = new MockVehicleActor();
+        vehicle.init();
+        MockActor navpoint = new MockActor();
+        navpoint.getPosition().set(-100.f, 0.f, 0.f);
+
+
+        ApproachBehaviourAction action = new ApproachBehaviourAction(navpoint.getPosition(), 5.f, false);
+        vehicle.runAction(action);
+        executeTicksWithoutCheckingActionIsDone(vehicle, action, 20000, 1.f/30.f);
+        assertTrue(action.isDone());
+
+        assertEquals(new Vector3(0.f, 0.f, 1.0f), vehicle.getLocalRightAxis(), 0.1f);
+        assertEquals(new Vector3(0.f, 1.f, 0.0f), vehicle.getLocalUpAxis(), 0.01f);
+    }
 }

@@ -1,5 +1,6 @@
 package org.traxnet.shadingzen.tests.test;
 
+import android.util.Log;
 import org.traxnet.shadingzen.core.CollisionInfo;
 import org.traxnet.shadingzen.core.RenderService;
 import org.traxnet.shadingzen.math.Vector3;
@@ -9,6 +10,7 @@ import org.traxnet.shadingzen.simulation.ai.VehicleActor;
  */
 public class MockVehicleActor extends VehicleActor {
     private boolean _isColliding;
+    private boolean _positionLogging = false;
 
     public void init(){
         this.currentVelocity = 0.f;
@@ -59,7 +61,14 @@ public class MockVehicleActor extends VehicleActor {
         _isColliding = false;
         super.onUpdate(deltaTime);
 
-        //Log.i("ShadingZen", "TestVehicle position: " + _position.x + "," + _position.y + "," + _position.z);
+        if(_positionLogging){
+            Log.i("ShadingZen", "TestVehicle position: " + _position.x + "," + _position.y + "," + _position.z);
+            Log.i("ShadingZen", "TestVehicle front dir: " + currentLocalFrontAxis.x + "," + currentLocalFrontAxis.y + "," + currentLocalFrontAxis.z);
+        }
+    }
+
+    public void enablePositionLogging(){
+        _positionLogging = true;
     }
 
     @Override

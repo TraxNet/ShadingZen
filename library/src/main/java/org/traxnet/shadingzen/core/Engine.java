@@ -122,7 +122,7 @@ public final class Engine implements Runnable {
 		TaskManager.getSharedInstance().registerHandler(_mainHandler);
 		
 		loadDebugShaders();
-		_logicThread.start();
+		//_logicThread.start();
 		
 		_currentDeviceConfig = this._context.getResources().getConfiguration();
 	}
@@ -187,11 +187,7 @@ public final class Engine implements Runnable {
 	
 	public void updateTick(){
 		//Log.i("ShadingZen", "updateTick");
-        try{
-            _barrier.await();
-        } catch (Exception e){
-            Log.e("ShadingZen", "updateTick fence wait error:" + e.getLocalizedMessage());
-        }
+        //fenceWait();
 		
 		long nanotime = System.nanoTime();
 		long delta_time = nanotime - _frameTime;
@@ -447,14 +443,13 @@ public final class Engine implements Runnable {
         int action = event.getAction();
         int actionCode = action & MotionEvent.ACTION_MASK;
 
-        int pointerId =  action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+        //int pointerId =  action >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+
+        final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK)
+                >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        final int pointerId = event.getPointerId(pointerIndex);
 
         for(int index =0; index < event.getPointerCount(); index++){
-
-            if(pointerId != event.getPointerId(index))
-                continue;
-
-
             MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
             event.getPointerCoords(index, coords);
 
@@ -462,24 +457,27 @@ public final class Engine implements Runnable {
             //when screen is released
             if(actionCode == MotionEvent.ACTION_MOVE )
             {
-                if(event.getHistorySize() > 0){
-                    deltaX = event.getRawX() - event.getHistoricalX(0);
-                    deltaY = event.getRawY() - event.getHistoricalY(0);
+                int move_pointerId = event.getPointerId(index);
+
+                if(event.getHistorySize() > index){
+                    deltaX = event.getX(index) - event.getHistoricalX(index);
+                    deltaY = event.getY(index) - event.getHistoricalY(index);
                 }
-                Log.i("ShadingZen", "User touch event ACTION_MOVE pointerId=" + pointerId + " deltaX=" + deltaX + " deltaY=" + deltaY);
+                Log.i("ShadingZen", "User touch event ACTION_MOVE pointerId=" + move_pointerId + " deltaX=" + deltaX + " deltaY=" + deltaY);
 
                 //if(Math.abs(deltaY) < 15 && Math.abs(deltaX) < 15)
                 {
                     for (InputController controller : _inputControllerStack){
-                        if(controller.onTouchDrag(pointerId, event.getRawX(), event.getRawY(), deltaX, deltaY))
+                        if(controller.onTouchDrag(move_pointerId,  event.getX(index),  event.getY(index), deltaX, deltaY))
                             break;
                     }
 
                 }
 
-                return true;
-            } else if(actionCode == MotionEvent.ACTION_POINTER_DOWN){
 
+            } else if(actionCode == MotionEvent.ACTION_POINTER_DOWN){
+                if(pointerId != event.getPointerId(index))
+                    continue;
 
                 Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
 
@@ -488,6 +486,9 @@ public final class Engine implements Runnable {
                         break;
                 }
             } else if(actionCode == MotionEvent.ACTION_POINTER_UP){
+                if(pointerId != event.getPointerId(index))
+                    continue;
+
                 Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
 
                 for (InputController controller : _inputControllerStack){
@@ -495,7 +496,8 @@ public final class Engine implements Runnable {
                         break;
                 }
             } else if(actionCode == MotionEvent.ACTION_DOWN){
-
+                if(pointerId != event.getPointerId(index))
+                    continue;
 
                 Log.i("ShadingZen", "User touch event ACTION_DOWN pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
 
@@ -504,6 +506,9 @@ public final class Engine implements Runnable {
                         break;
                 }
             } else if(actionCode == MotionEvent.ACTION_UP){
+                if(pointerId != event.getPointerId(index))
+                    continue;
+
                 Log.i("ShadingZen", "User touch event ACTION_UP pointerId=" + pointerId + " x=" + event.getRawX() + " y=" + event.getRawY());
 
                 for (InputController controller : _inputControllerStack){

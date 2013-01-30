@@ -164,5 +164,10 @@ public class BehaviourTests extends ActivityInstrumentationTestCase2<DummyTestAc
         assertEquals(0, state02.timesCalledStep);
         assertEquals(0, state03.timesCalledStep);
         assertEquals(1, state04.timesCalledStep);
+
+        state04.shouldTakeOver = false;
+        actor.onTick(0.0f);
+        assertEquals(1, state03.timesCalledStep);
+
     }
 }

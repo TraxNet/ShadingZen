@@ -1,25 +1,20 @@
 package com.example.shadingzen_helloworld;
 
-import org.traxnet.shadingzen.core.actors.SkyDomeScene;
-import org.traxnet.shadingzen.core.Camera;
-import org.traxnet.shadingzen.core.Engine;
-import org.traxnet.shadingzen.core.GameInfo;
-import org.traxnet.shadingzen.core.InputController;
-import org.traxnet.shadingzen.core.RenderService;
+import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 
 public class HelloWorldGameInfo extends GameInfo implements InputController {
-	protected SkyDomeScene _gameScene;
+	protected Scene _gameScene;
 	protected Camera _currentCamera;
     protected float _time = 0.f;
     protected float _domeSize = 600.f;
 	
 	public HelloWorldGameInfo() throws Exception{
-		_gameScene = new SkyDomeScene();
+		_gameScene = new Scene();
 
-        _gameScene.init(_domeSize, R.raw.skydome1, R.raw.skydome2,
-                R.raw.skydome3, R.raw.skydome4, R.raw.skydome5, R.raw.skydome6);
+       /* _gameScene.init(_domeSize, R.raw.skydome1, R.raw.skydome2,
+                R.raw.skydome3, R.raw.skydome4, R.raw.skydome5, R.raw.skydome6);  */
 
 		Engine.getSharedInstance().pushScene(_gameScene);
 		

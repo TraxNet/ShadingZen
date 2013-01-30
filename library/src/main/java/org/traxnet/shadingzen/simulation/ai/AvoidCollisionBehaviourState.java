@@ -1,5 +1,6 @@
 package org.traxnet.shadingzen.simulation.ai;
 
+import android.util.Log;
 import org.traxnet.shadingzen.core.CollisionInfo;
 import org.traxnet.shadingzen.core.Engine;
 import org.traxnet.shadingzen.core.Scene;
@@ -12,7 +13,7 @@ import org.traxnet.shadingzen.simulation.ActionsDrivenBehaviouralState;
  * Time: 7:47
  */
 public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState {
-    CollisionInfo _lastObstacleInfo;
+    CollisionInfo _lastObstacleInfo, _previousObstacleInfo;
     Vector3 _navpoint = new Vector3();
     float [] trajectory_dir = new float[4], trajectory_orig = new float[4];
     float _frontalCheckDistance, _radiusOffset;
@@ -20,6 +21,11 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
     ApproachBehaviourAction approach_action;
     boolean _isStateActive = false;
     private boolean obstacleInMovementTrajectory;
+    boolean _enableLogging = false;
+
+    public void enableLogging(boolean value){
+        _enableLogging = value;
+    }
 
     private boolean isObstacleInMovementTrajectory() {
         Scene scene = Engine.getSharedInstance().getCurrentScene();
@@ -29,6 +35,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
         actor.getPosition().toArray(trajectory_orig);
         float radius = actor.getBoundingRadius() + _radiusOffset;
 
+        _previousObstacleInfo = _lastObstacleInfo;
         _lastObstacleInfo = scene.getNearestColliderAlongRay(actor, trajectory_orig, trajectory_dir,
                 _frontalCheckDistance, radius);
 
@@ -63,7 +70,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
         escape_dir.normalizeNoCopy();
 
         float escape_radius = _lastObstacleInfo.hitActor.getBoundingRadius();
-        escape_radius +=  actor.getBoundingRadius() + _radiusOffset;
+        escape_radius +=  actor.getBoundingRadius()*10 + _radiusOffset;
 
 
         _navpoint.set(escape_dir);
@@ -71,11 +78,16 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
         _navpoint.addNoCopy(_lastObstacleInfo.hitActor.getPosition());
 
         if(null == approach_action){
-            float meet_distance = actor.getBoundingRadius() + _radiusOffset;
-            approach_action = new ApproachBehaviourAction(_navpoint ,meet_distance, false);
+            float meet_distance = actor.getBoundingRadius();
+            approach_action = new ApproachBehaviourAction(_navpoint ,meet_distance*0.3f, false);
             runAction(approach_action);
         }
         approach_action.setNavpoint(_navpoint);
+
+        if(_enableLogging){
+            Log.i("ShadingZen", "Avoid collision. New navpoint=" + _navpoint.x + "," + _navpoint.y + "," + _navpoint.z);
+            Log.i("ShadingZen", "Collision detected with object=" + _lastObstacleInfo.hitActor.getNameId());
+        }
 
         _timeToNextRecalculation = 1.f;
     }
@@ -103,7 +115,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
     public void step(float deltaTime) {
 
         if(isTimeForNavpointRecalculation()){
-            if(obstacleInMovementTrajectory){
+            if(newObstacleInMovementTrajectoryOrPreviousObstacleHasMoved()){
                 recalculateNavPoint();
             } else {
                 disableApproachActionAndResetSteering();
@@ -111,6 +123,10 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
         } else{
             continueWithCurrentAction(deltaTime);
         }
+    }
+
+    private boolean newObstacleInMovementTrajectoryOrPreviousObstacleHasMoved() {
+        return obstacleInMovementTrajectory && null != _previousObstacleInfo && null != _lastObstacleInfo && _previousObstacleInfo != _lastObstacleInfo;
     }
 
     private void continueWithCurrentAction(float deltaTime) {
@@ -148,7 +164,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
        _timeToNextRecalculation = 0.f;
 
 
-
+        Log.i("ShadingZen", "AvoidCOllisionBehaviourState has staken over");
 
        //recalculateNavPoint();
 

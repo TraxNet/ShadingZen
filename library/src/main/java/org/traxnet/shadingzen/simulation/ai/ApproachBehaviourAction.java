@@ -78,6 +78,7 @@ public class ApproachBehaviourAction extends BehaviourAction {
             currentDesiredVelocityVector.subNoCopy(_targetActor.getPosition());
 
             if(!fleeFromTarget && currentDesiredVelocityVector.lengthSqrt() <= _meetDistance){
+                _vehicle.setSteeringAngles(0, 0);
                 _done = true;
                 return;
             }
