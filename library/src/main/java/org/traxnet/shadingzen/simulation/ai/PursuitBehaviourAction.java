@@ -7,31 +7,53 @@ import org.traxnet.shadingzen.math.Vector3;
  *
  */
 public class PursuitBehaviourAction extends ApproachBehaviourAction {
-    VehicleActor _pursuedActor;
-    Vector3 to_target = new Vector3();
+    VehicleActor _quarry;
+    Vector3 vector_to_quarry = new Vector3();
+    Vector3 quarry_displacement = new Vector3();
 
-    public PursuitBehaviourAction(VehicleActor navpoint_actor, float meet_distance, boolean flee){
-        super(navpoint_actor.getPosition(), meet_distance, flee);
+    public PursuitBehaviourAction(VehicleActor quarry, float meet_distance, boolean flee){
+        super(quarry.getPosition(), meet_distance, flee);
 
-        _pursuedActor = navpoint_actor;
+        _quarry = quarry;
     }
+
 
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            to_target.set(_pursuedActor.getPosition());
-            to_target.subNoCopy(_targetActor.getPosition());
+            vector_to_quarry.set(_quarry.getPosition());
+            vector_to_quarry.subNoCopy(_targetActor.getPosition());
 
-            float t = calculateTimeToIntercept(to_target);
-
-            Vector3 displacement = _pursuedActor.getLocalFrontAxis().mul(_pursuedActor.getCurrentVelocity()*t);
-            currentDesiredVelocityVector = _pursuedActor.getPosition().add(displacement);
-
-
-            if(!fleeFromTarget && to_target.lengthSqrt() <= _meetDistance){
+            if(!fleeFromTarget && vector_to_quarry.lengthSqrt() <= _meetDistance){
                 _done = true;
+                _vehicle.setSteeringAngles(0, 0);
                 return;
             }
+
+            if(_quarry.getCurrentVelocity() < 0.1f || _vehicle.getCurrentVelocity() < 0.1f){
+                navigation_vector.set(vector_to_quarry);
+            } else{
+                float estimated_time_intercept = calculateTimeToIntercept(vector_to_quarry);
+
+                float estimated_quarry_travel_distance =  _quarry.getCurrentVelocity() * estimated_time_intercept;
+                quarry_displacement.set(_quarry.getLocalFrontAxis());
+                quarry_displacement.mulInplace(estimated_quarry_travel_distance);
+
+                navigation_vector.set(_quarry.getPosition().add(quarry_displacement));
+                navigation_vector.subNoCopy(_targetActor.getPosition());
+            }
+
+
+            /*
+            Log.i("ShadingZen", "navigation_vector=(" +
+                    navigation_vector.x + "," +
+                    navigation_vector.y + "," +
+                    navigation_vector.z + ")");
+            Log.i("ShadingZen", "vector_to_quarry =(" +
+                    vector_to_quarry.x + "," +
+                    vector_to_quarry.y + "," +
+                    vector_to_quarry.z + ")");
+            */
 
             if(calculateTargetVelocityVector()){
                 calculateCurrentSteering(deltaTime);
@@ -45,13 +67,20 @@ public class PursuitBehaviourAction extends ApproachBehaviourAction {
     }
 
     private float calculateTimeToIntercept(Vector3 to_target) {
-        float a = _pursuedActor.getCurrentVelocity()* _pursuedActor.getCurrentVelocity() -
+        float a = _quarry.getCurrentVelocity()* _quarry.getCurrentVelocity() -
                 _vehicle.getCurrentVelocity()*_vehicle.getCurrentVelocity();
-        float b = 2* _pursuedActor.getLocalFrontAxis().mul(_pursuedActor.getCurrentVelocity()).dot(to_target);
+
+        if(Math.abs(a) < 0.01f)
+            return to_target.lengthSqrt()/_vehicle.getMaxVelocity();
+
+        float b = 2* _quarry.getLocalFrontAxis().mul(_quarry.getCurrentVelocity()).dot(to_target);
         float c = to_target.length();
 
         float p = -b/(2*a);
-        float q = (float)Math.sqrt((b*b)-4*a*c)/(2*a);
+        float r = (b*b)-4*a*c;
+        if(r < 0.f)
+            return to_target.lengthSqrt()/_vehicle.getMaxVelocity();
+        float q = (float)Math.sqrt(r)/(2*a);
 
         float t1 = p - q;
         float t2 = p + q;

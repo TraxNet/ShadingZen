@@ -126,7 +126,7 @@ public class AvoidCollisionBehaviourState extends ActionsDrivenBehaviouralState 
     }
 
     private boolean newObstacleInMovementTrajectoryOrPreviousObstacleHasMoved() {
-        return obstacleInMovementTrajectory && null != _previousObstacleInfo && null != _lastObstacleInfo && _previousObstacleInfo != _lastObstacleInfo;
+        return obstacleInMovementTrajectory || (null != _previousObstacleInfo && null != _lastObstacleInfo && _previousObstacleInfo != _lastObstacleInfo);
     }
 
     private void continueWithCurrentAction(float deltaTime) {

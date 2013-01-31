@@ -32,6 +32,9 @@ public class MockVehicleActor extends VehicleActor {
 
     int numCollisions = 0;
 
+    public void setMaxVelocity(float value){
+        maxVelocity = value;
+    }
 
     public void setCollisionRadius(float radius){
         _boundingBox.setFromRadius(Vector3.zero, radius);

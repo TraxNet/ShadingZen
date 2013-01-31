@@ -103,7 +103,7 @@ public abstract class VehicleActor extends Collider {
     }
 
     private void updateVelocity(float deltaTime) {
-        //float cosine = currentDesiredVelocityVector.dot(currentLocalFrontAxis);
+        //float cosine = navigation_vector.dot(currentLocalFrontAxis);
 
         if(_accelerateState == AccelerateState.ACCELERATE){
             currentVelocity = Math.min(maxVelocity, currentVelocity + currentAcceleration * deltaTime);

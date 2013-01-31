@@ -13,7 +13,7 @@ public class ApproachBehaviourAction extends BehaviourAction {
     protected boolean _done = false;
     protected float _meetDistance;
 
-    protected Vector3 currentDesiredVelocityVector = new Vector3();
+    protected Vector3 navigation_vector = new Vector3();
     protected Vector3 currentDesiredVelocityVectorNormalize = new Vector3();
     protected float currentTargetFrontVelocity = 0.f;
     protected float currentTargetSteerVelocityX = 0.f;
@@ -44,12 +44,12 @@ public class ApproachBehaviourAction extends BehaviourAction {
     }
 
     protected boolean calculateTargetVelocityVector(){
-        float lengthSqrt = currentDesiredVelocityVector.lengthSqrt();
+        float lengthSqrt = navigation_vector.lengthSqrt();
         if(lengthSqrt < 0.0001f)
             return false;
-        currentDesiredVelocityVectorNormalize.set(currentDesiredVelocityVector);
+        currentDesiredVelocityVectorNormalize.set(navigation_vector);
         currentDesiredVelocityVectorNormalize.mulInplace(1.f/lengthSqrt);
-        //currentDesiredVelocityVectorNormalize = currentDesiredVelocityVector.mul(1.f/lengthSqrt);
+        //currentDesiredVelocityVectorNormalize = navigation_vector.mul(1.f/lengthSqrt);
         if(fleeFromTarget)
             currentDesiredVelocityVectorNormalize.negateNoCopy();
 
@@ -74,10 +74,10 @@ public class ApproachBehaviourAction extends BehaviourAction {
     @Override
     public void step(float deltaTime) throws InvalidTargetActorException {
         if(!_cancelled && !_done){
-            currentDesiredVelocityVector.set(_navpoint);
-            currentDesiredVelocityVector.subNoCopy(_targetActor.getPosition());
+            navigation_vector.set(_navpoint);
+            navigation_vector.subNoCopy(_targetActor.getPosition());
 
-            if(!fleeFromTarget && currentDesiredVelocityVector.lengthSqrt() <= _meetDistance){
+            if(!fleeFromTarget && navigation_vector.lengthSqrt() <= _meetDistance){
                 _vehicle.setSteeringAngles(0, 0);
                 _done = true;
                 return;
