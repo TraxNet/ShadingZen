@@ -156,7 +156,7 @@ public class PursuitBehaviourActionTests  extends ActivityInstrumentationTestCas
         PursuitBehaviourAction action = new PursuitBehaviourAction(quarry, 1.f, false);
         pursuer.runAction(action);
 
-        pursuer.enablePositionLogging();
+
 
         executeTicks(scene, action, 5000, 1.f/30.f);
 
@@ -164,5 +164,27 @@ public class PursuitBehaviourActionTests  extends ActivityInstrumentationTestCas
         float distance = quarry.getPosition().sub(pursuer.getPosition()).lengthSqrt();
         assertTrue(distance <= 1.f);
 
+    }
+
+    public void testCanEvadePursuerIfSetAsEavadeMode(){
+        createQuarryAndPursuer(new Vector3(0, 0, 100.f));
+
+        quarry.setMaxVelocity(5.f);
+        quarry.setAccelerateState(VehicleActor.AccelerateState.AUTO);
+        pursuer.setMaxVelocity(5.f);
+        pursuer.setTargetFrontVelocity(3.f);
+        pursuer.setAccelerateState(VehicleActor.AccelerateState.AUTO);
+
+        PursuitBehaviourAction action = new PursuitBehaviourAction(quarry, 1.f, false);
+        pursuer.runAction(action);
+        action = new PursuitBehaviourAction(pursuer, 1.f, true);
+        quarry.runAction(action);
+
+        quarry.enablePositionLogging();
+
+        executeTicks(scene, action, 5000, 1.f/30.f);
+
+        float distance = quarry.getPosition().sub(pursuer.getPosition()).lengthSqrt();
+        assertTrue(distance >= 10.f);
     }
 }
