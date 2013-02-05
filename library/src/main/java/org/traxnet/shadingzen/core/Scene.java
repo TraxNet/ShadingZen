@@ -46,12 +46,16 @@ public class Scene extends Actor{
 	 * @return a new instance of the given Actor class
 	 */
 	public synchronized Actor spawn(Class<? extends Actor> _class, Actor parent, String nameId){
-		return _entityManager.spawn(_class, parent, nameId);
+		Actor actor = _entityManager.spawn(_class, parent, nameId);
+        actor.setOwnerScene(this);
+        return actor;
 	}
 
     @Override
     public Actor spawn(Class<? extends Actor> _class, String nameId){
-        return _entityManager.spawn(_class, this, nameId);
+        Actor actor = _entityManager.spawn(_class, this, nameId);
+        actor.setOwnerScene(this);
+        return actor;
     }
 	
 	public  void registerCollider(Collider reg){

@@ -35,6 +35,16 @@ public abstract class Actor extends Entity {
 	protected Actor _parent;
 
     protected BBox _boundingBox;
+    protected Scene _ownerScene;
+
+    /**
+     * This method is called during entity spawning. Sets the owner scene from which this entity depends
+     *
+     * @param scene an Scene derived object, owner of this entity
+     */
+    public void setOwnerScene(Scene scene){
+        _ownerScene = scene;
+    }
 	
 	public Actor(){
 		_rotation = new Quaternion();
@@ -72,6 +82,20 @@ public abstract class Actor extends Entity {
 		
 		super.unregister();
 	}
+
+    /** Spawn a new child Actor.
+     *
+     * Spawn only instantiates Actors. Please also note that the spawned actor will
+     * be attached to current entity and its life cycle is attached to it.
+     *
+     * @param _class Type of Actor we want to instantiate
+     * @param nameId Runtime name for this actor
+     * @return Return a new instance for the given class.
+     */
+    @Override
+    public Actor spawn(Class<? extends Actor> _class, String nameId){
+        return _ownerScene.spawn(_class, this, nameId);
+    }
 	
 	/** Finds an actor given its nameId
 	 * 

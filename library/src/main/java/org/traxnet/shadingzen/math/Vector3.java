@@ -101,7 +101,7 @@ public class Vector3 {
 	/***
 	 * Normalizes this vector without creating a new one
 	 */
-	public void normalizeNoCopy(){
+	public float normalizeNoCopy(){
 		float sqr_length =  FloatMath.sqrt(length());
 		if(sqr_length >= 0.0000001f){
 			float inv = 1/sqr_length;
@@ -113,6 +113,8 @@ public class Vector3 {
 			y = 0.f;
 			z = 0.f;
 		}
+
+        return sqr_length;
 	}
 	
 	public float getX(){
