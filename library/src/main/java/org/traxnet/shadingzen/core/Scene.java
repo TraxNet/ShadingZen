@@ -1,6 +1,9 @@
 package org.traxnet.shadingzen.core;
 
 import android.opengl.Matrix;
+import org.traxnet.shadingzen.core.queries.ActorQuery;
+import org.traxnet.shadingzen.core.queries.ActorQueryByClass;
+import org.traxnet.shadingzen.core.queries.ActorQueryResultCallback;
 import org.traxnet.shadingzen.math.BBox;
 import org.traxnet.shadingzen.math.Vector3;
 
@@ -26,6 +29,8 @@ public class Scene extends Actor{
     //CollisionInfo info = new CollisionInfo();
     static int  MAX_DETECTABLE_COLLISIONS = 20;
     CollisionInfo [] _temp_detected_collisions = new CollisionInfo[MAX_DETECTABLE_COLLISIONS];
+
+    ActorQueryPool actorQueryPool = new ActorQueryPool();
 	
 	public Scene(){
 		_entityManager = new EntityManager(this);
@@ -300,9 +305,31 @@ public class Scene extends Actor{
 
 	@Override
 	protected void onUpdate(float deltaTime) {
-		// TODO Auto-generated method stub
-		
+
 	}
 	
-	
+
+    public void runActorQuery(ActorQuery query, ActorQueryResultCallback callback){
+        final Object [] holders = _entityManager.getCurrentEntityHolders();
+
+        if(null == holders)
+            return;
+
+        for(int index=0; index < holders.length; index++){
+            EntityManager.EntityHolder holder = (EntityManager.EntityHolder) holders[index];
+
+            if(!Actor.class.isInstance(holder.getEntity()))
+                continue;
+
+            Actor actor = (Actor) holder.getEntity();
+             if(query.testActor(actor))
+                 callback.onActorFound(actor);
+        }
+
+        actorQueryPool.freeQuery(query);
+    }
+
+    public ActorQueryByClass newQueryByClass(){
+        return (ActorQueryByClass) actorQueryPool.newQuery(ActorQueryByClass.class);
+    }
 }

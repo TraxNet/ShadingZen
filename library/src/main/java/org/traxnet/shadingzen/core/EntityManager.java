@@ -201,7 +201,7 @@ public final class EntityManager {
 		return entity;
 	}
 	
-	public Object[] getCurrentEntityHolders(){
+	public final Object[] getCurrentEntityHolders(){
         synchronized(this._entities){
             if(_needCacheUpdate){
                 _entitiesCache = _entities.values().toArray();
