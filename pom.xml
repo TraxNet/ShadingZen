@@ -21,4 +21,9 @@
         <module>tests</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:git@github.com:TraxNet/ShadingZen.git</connection>
+        <url>scm:git:git@github.com:TraxNet/ShadingZen.git</url>
+        <developerConnection>scm:git:git@github.com:TraxNet/ShadingZen.git</developerConnection>
+    </scm>
 </project>
