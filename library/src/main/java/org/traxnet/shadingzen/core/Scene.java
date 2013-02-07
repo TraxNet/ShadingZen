@@ -332,4 +332,8 @@ public class Scene extends Actor{
     public ActorQueryByClass newQueryByClass(){
         return (ActorQueryByClass) actorQueryPool.newQuery(ActorQueryByClass.class);
     }
+
+    public ActorQuery newActorQuery(Class<? extends ActorQuery> queryClass){
+        return actorQueryPool.newQuery(queryClass);
+    }
 }
