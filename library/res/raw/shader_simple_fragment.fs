@@ -29,7 +29,7 @@ void main(void){
 	vec3 _rgb = c_Color*depth_interpolation+c_Color2*(1.0-depth_interpolation);
 	
 	//gl_FragColor = vec4(_rgb*max(0.2,intensity)+c_Color3*(1.0-intensity2), 1.0);
-	//gl_FragColor = vec4(0.05, 0.0, 0.2, 1.0)+texture2D(tex_unit, var_uv);
+	gl_FragColor =  max(0.1,intensity)*texture2D(tex_unit, var_uv);
 	//gl_FragColor = diffuse_color*intensity+vec4(ambient_color.rgb*pow(10.0,(1.0-intensity2)*0.5), 1.0);
-	gl_FragColor = max(0.1,intensity)*texture2D(tex_unit, var_uv)+vec4(ambient_color.rgb*pow(6.0,(1.0-intensity2)*1.2)*0.3, 1.0);
+	//gl_FragColor = max(0.1,intensity)*texture2D(tex_unit, var_uv)+vec4(ambient_color.rgb*pow(6.0,(1.0-intensity2)*1.2)*0.3, 1.0);
 }

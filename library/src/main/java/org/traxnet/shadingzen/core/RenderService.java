@@ -21,4 +21,5 @@ public interface RenderService {
 	public void setClearColor(Vector4 color);
 	public RenderTask getBackgroundRenderTask();
 	public void pushRenderBatch(RenderTaskBatch batch);
+    public boolean isDeviceCapabilitySupported(RenderDeviceCapability capability);
 }

@@ -16,8 +16,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * Android GLSurfaceView.Renderer implementation.
@@ -48,9 +50,11 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	boolean _abortedByException = false;
 	RenderTaskBatch [] _tasksArray;
 	RenderTask _backgroundRenderTask = null;
-    boolean _isPVR1Supported = false;
-
-
+    boolean _isPVRSupported = false;
+    boolean _isETC1Supported = false;
+    boolean _isS3TCSupported = false;
+    boolean _isATICSupported = false;
+    boolean enumateDeviceCapabilitiesOnce = false;
 
 	
 	/// Public methods ///////////////////
@@ -70,23 +74,50 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		_tasksArray = new RenderTaskBatch[1];
 	}
 
-    public boolean isPVRCompressedTexturesSupported(){
-        return _isPVR1Supported;
+    private boolean isRunningOnAndroid(){
+        Properties p = System.getProperties();
+        Enumeration keys = p.keys();
+        while(keys.hasMoreElements()) {
+            String key = (String) keys.nextElement();
+            String value = (String) p.get(key);
+            if(key.compareToIgnoreCase("java.runtime.name") == 0 && value.compareToIgnoreCase("android runtime") == 0)
+                return true;
+        }
+
+        return false;
     }
 
-    protected void checkForCompressedTexturesSupport(){
-        String s = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+    public boolean isDeviceCapabilitySupported(RenderDeviceCapability capability){
+        switch (capability){
+            case TEXTURE_COMPRESSION_ETC1:
+                return _isETC1Supported;
+            case TEXTURE_COMPRESSION_PVR:
+                return _isPVRSupported;
+            default:
+                return false;
+        }
 
-        if (s.contains("GL_IMG_texture_compression_pvrtc")){
-            _isPVR1Supported = true;
-        }else if (s.contains("GL_AMD_compressed_ATC_texture") ||
-                s.contains("GL_ATI_texture_compression_atitc")){
-            //Load ATI Textures
-        }else if (s.contains("GL_OES_texture_compression_S3TC") ||
-                s.contains("GL_EXT_texture_compression_s3tc")){
-            //Use DTX Textures
-        }else{
-            //Handle no texture compression founded.
+    }
+
+    protected void enumerateCompressedTexturesSupport(){
+        if(!enumateDeviceCapabilitiesOnce){
+            String s = GLES20.glGetString(GLES20.GL_EXTENSIONS);
+
+            if (s.contains("GL_IMG_texture_compression_pvrtc")){
+                _isPVRSupported = true;
+            }
+            if (s.contains("GL_AMD_compressed_ATC_texture") ||
+                    s.contains("GL_ATI_texture_compression_atitc")){
+                _isS3TCSupported = true;
+            }
+            if (s.contains("GL_OES_texture_compression_S3TC") ||
+                    s.contains("GL_EXT_texture_compression_s3tc")){
+                _isATICSupported = true;
+            }
+
+            _isETC1Supported = isRunningOnAndroid();
+
+            enumateDeviceCapabilitiesOnce = true;
         }
     }
 	
@@ -106,7 +137,7 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		if(false == _isContentReady){
-            checkForCompressedTexturesSupport();
+            enumerateCompressedTexturesSupport();
 
             return;
         }
@@ -209,6 +240,8 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 			this._abortedByException = true;
 		}
 	}
+
+
 	
 	public void setDelegate(RenderNotificationsDelegate delegate){
 		_notifyDelegate = delegate;
@@ -223,7 +256,8 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		GLES20.glViewport(0, 0, (int)_width, (int)_height);
 		GLES20.glClearColor(_clearColor.getX(), _clearColor.getY(), _clearColor.getZ(), _clearColor.getW());
         GLES20.glEnable(GLES20.GL_DITHER);
-		
+
+        //enumerateCompressedTexturesSupport();
 		
 		if(null != _currentCamera){
 			_currentCamera.setAspect(0.707f, _width/_height);
@@ -249,8 +283,10 @@ public class Renderer implements GLSurfaceView.Renderer, RenderService {
 		RenderConstants.initRenderConstants();
 		
 		GLES20.glDisable(GLES20.GL_DITHER);
-		
-		forceReloadResouces();
+
+        enumerateCompressedTexturesSupport();
+
+        forceReloadResouces();
 		
 		
 		if(null != _notifyDelegate && !_isContentReady){

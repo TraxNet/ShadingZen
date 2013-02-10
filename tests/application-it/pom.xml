@@ -20,7 +20,15 @@
           <groupId>org.traxnet</groupId>
           <artifactId>shadingzen</artifactId>
           <version>1.0-beta2-SNAPSHOT</version>
+          <scope>provided</scope>
           <type>apklib</type>
+      </dependency>
+      <dependency>
+          <groupId>org.traxnet</groupId>
+          <artifactId>shadingzen</artifactId>
+          <version>1.0-beta2-SNAPSHOT</version>
+          <scope>provided</scope>
+          <type>jar</type>
       </dependency>
       <dependency>
           <groupId>com.google.android</groupId>

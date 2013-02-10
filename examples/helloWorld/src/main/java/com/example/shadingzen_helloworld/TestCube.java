@@ -2,6 +2,8 @@ package com.example.shadingzen_helloworld;
 
 import android.util.FloatMath;
 import org.traxnet.shadingzen.core.*;
+import org.traxnet.shadingzen.core.resources.CompressedTexture;
+import org.traxnet.shadingzen.core.resources.TextureParameters;
 import org.traxnet.shadingzen.rendertask.RenderModelTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
@@ -12,7 +14,7 @@ public class TestCube extends Actor {
 	OBJMesh _mesh;
 	ShadersProgram _program;
 	Renderer _openglRenderer;
-	BitmapTexture _texture;
+    Texture _texture;
 	float _time = 0.f;
 	
 	public TestCube(){
@@ -27,9 +29,12 @@ public class TestCube extends Actor {
         	_program.setProgramsDefined();
 		}
         //_mesh.attachProgram(_program);
-        BitmapTexture.Parameters params = new BitmapTexture.Parameters();
-        _texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, "cubletableTexture_"+UUID.randomUUID().toString(), R.raw.cubetext02, params);
-	}
+        //BitmapTexture.Parameters params = new BitmapTexture.Parameters();
+        //_texture = (BitmapTexture) ResourcesManager.getSharedInstance().factory(BitmapTexture.class, (Entity)this, "cubletableTexture_"+UUID.randomUUID().toString(), R.raw.cubetext02, params);
+        TextureParameters params = new TextureParameters(64, 64);
+        _texture = (Texture) ResourcesManager.getSharedInstance().factoryCompressed(CompressedTexture.class, null, "alpha_tex", "textures/alpha_tex", params);
+
+    }
 
 	@Override
 	protected void onUpdate(float deltaTime) {

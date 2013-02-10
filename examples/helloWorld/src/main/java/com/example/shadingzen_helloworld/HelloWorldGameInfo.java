@@ -1,6 +1,8 @@
 package com.example.shadingzen_helloworld;
 
 import org.traxnet.shadingzen.core.*;
+import org.traxnet.shadingzen.core.resources.CompressedTexture;
+import org.traxnet.shadingzen.core.resources.TextureParameters;
 import org.traxnet.shadingzen.math.Vector3;
 import org.traxnet.shadingzen.math.Vector4;
 
@@ -26,6 +28,8 @@ public class HelloWorldGameInfo extends GameInfo implements InputController {
         
     	Engine.getSharedInstance().setCurrentCamera(_currentCamera);
     	Engine.getSharedInstance().getRenderService().setClearColor(new Vector4(0.0f, 0.0f, 0.3f, 0.f));
+
+
 	}
 	
 	@Override
@@ -75,8 +79,7 @@ public class HelloWorldGameInfo extends GameInfo implements InputController {
 
 	@Override
 	public void onLoad() {
-
-	}
+    }
 
 	@Override
 	public void onUnload() {

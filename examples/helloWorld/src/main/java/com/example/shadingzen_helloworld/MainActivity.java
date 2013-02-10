@@ -1,19 +1,13 @@
 package com.example.shadingzen_helloworld;
 
-import android.util.Log;
-import org.traxnet.shadingzen.core.EngineGLSurfaceView;
-import org.traxnet.shadingzen.core.Engine;
-import org.traxnet.shadingzen.core.GameInfo;
-import org.traxnet.shadingzen.core.InputController;
-import org.traxnet.shadingzen.core.Renderer;
-
-import android.os.Bundle;
 import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.RelativeLayout;
-import com.example.shadingzen_helloworld.R;
+import org.traxnet.shadingzen.core.*;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements RenderNotificationsDelegate {
 	EngineGLSurfaceView _surfaceView;
 	Renderer _openglRenderer;
 	
@@ -28,6 +22,7 @@ public class MainActivity extends Activity {
         
 		_openglRenderer = new org.traxnet.shadingzen.core.Renderer(this);
         _surfaceView = new EngineGLSurfaceView(this, _openglRenderer);
+        _openglRenderer.setDelegate(this);
         
         layout.addView(_surfaceView, params);
 	}
@@ -52,10 +47,18 @@ public class MainActivity extends Activity {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
+
+
+	}
+
+    @Override
+    public void onRenderCreated() {
         try{
-		loadGameInfo();
+            ResourcesManager.getSharedInstance().setExpansionPack("/mnt/sdcard/shadingzen/org.traxnet.shadingzen.tests.resources.zip");
+
+            loadGameInfo();
         } catch (Exception ex){
             Log.e("HelloWorld", "Unable to load game scene:" + ex.getMessage(), ex);
         }
-	}
+    }
 }

@@ -15,6 +15,7 @@ public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotifica
 	private Context _context;
 	private Handler _handler;
 	private Engine _engine;
+    private boolean _isRendererReady = false;
 	
 	public EngineGLSurfaceView(Context context, org.traxnet.shadingzen.core.Renderer renderer){
 		super(context);	
@@ -96,9 +97,19 @@ public class EngineGLSurfaceView extends GLSurfaceView implements RenderNotifica
         	
         }
     }
+
+    public void waitForRenderer(){
+        try{
+        while(!_isRendererReady)
+            Thread.sleep(100);
+        } catch (InterruptedException ex){
+
+        }
+    }
 	
 	@Override
 	public void onRenderCreated() {
 		Log.i("ShadingZen", "Renderer has been initialized");
+        _isRendererReady = true;
 	}
 }
