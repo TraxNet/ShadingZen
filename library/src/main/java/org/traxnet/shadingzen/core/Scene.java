@@ -52,14 +52,12 @@ public class Scene extends Actor{
 	 */
 	public synchronized Actor spawn(Class<? extends Actor> _class, Actor parent, String nameId){
 		Actor actor = _entityManager.spawn(_class, parent, nameId);
-        actor.setOwnerScene(this);
         return actor;
 	}
 
     @Override
     public Actor spawn(Class<? extends Actor> _class, String nameId){
         Actor actor = _entityManager.spawn(_class, this, nameId);
-        actor.setOwnerScene(this);
         return actor;
     }
 	

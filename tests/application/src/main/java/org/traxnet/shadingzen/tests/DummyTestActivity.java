@@ -3,18 +3,14 @@ package org.traxnet.shadingzen.tests;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.LinearLayout;
-import org.traxnet.shadingzen.core.EngineGLSurfaceView;
-import org.traxnet.shadingzen.core.RenderNotificationsDelegate;
-import org.traxnet.shadingzen.core.Renderer;
-import org.traxnet.shadingzen.core.ResourcesManager;
 
-public class DummyTestActivity extends Activity implements RenderNotificationsDelegate {
+
+public class DummyTestActivity extends Activity /*implements RenderNotificationsDelegate*/ {
 
     private static String TAG = "shadingzen-tests";
 
-    EngineGLSurfaceView surfaceView;
-    Renderer renderer;
+   // EngineGLSurfaceView surfaceView;
+    //Renderer renderer;
     private boolean  _isRendererReady;
 
     /**
@@ -29,19 +25,19 @@ public class DummyTestActivity extends Activity implements RenderNotificationsDe
         Log.i(TAG, "onCreate");
         setContentView(R.layout.main);
 
-        renderer = new Renderer(this);
+       /* renderer = new Renderer(this);
         surfaceView = new EngineGLSurfaceView(this, renderer);
         LinearLayout layout = (LinearLayout) findViewById(R.id.fullscreen_content);
 
         LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
-        layout.addView(surfaceView, lparams);
+        layout.addView(surfaceView, lparams);   */
 
         //layout.invalidate();
     }
 
     public void waitForRenderer(){
-        surfaceView.waitForRenderer();
+        //surfaceView.waitForRenderer();
     }
 
     public boolean rendererIsReady(){
@@ -49,11 +45,11 @@ public class DummyTestActivity extends Activity implements RenderNotificationsDe
     }
 
     public void onRenderCreated() {
-        try{
+        /*try{
             ResourcesManager.getSharedInstance().setExpansionPack("/mnt/sdcard/shadingzen/org.traxnet.shadingzen.tests.resources.zip");
         } catch (Exception ex){
 
-        }
+        }       */
         _isRendererReady = true;
     }
 }

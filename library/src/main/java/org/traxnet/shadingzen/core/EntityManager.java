@@ -181,6 +181,9 @@ public final class EntityManager {
 			
 			_entities.put(entity, new EntityHolder(entity));
 
+            if(Actor.class.isAssignableFrom(_class))
+                ((Actor)entity).setOwnerScene(_ownerScene);
+
             _needCacheUpdate = true;
 
             addLightEmitter(entity);

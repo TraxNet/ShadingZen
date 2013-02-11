@@ -6,6 +6,8 @@ import android.opengl.Matrix;
 import org.traxnet.shadingzen.R;
 import org.traxnet.shadingzen.core.*;
 import org.traxnet.shadingzen.math.Matrix4;
+import org.traxnet.shadingzen.math.Vector3;
+import org.traxnet.shadingzen.math.Vector4;
 import org.traxnet.shadingzen.rendertask.RenderTask;
 import org.traxnet.shadingzen.rendertask.RenderTaskPool;
 
@@ -152,10 +154,10 @@ public class QuadAtlas extends Node2d {
 		RenderBuffer _buffer;
 		Matrix4 _matrix = Matrix4.identity();
 		int _offset, _numQuads;
-		Node2d _owner;
+        Vector4 taskColor;
+
 		boolean _needsBufferUpdate = true;
 		float [] mvp = new float[16];
-		float [] ortho_matrix = new float[16];
 		
 		public QuadRenderTask(){}
 		/*
@@ -170,38 +172,11 @@ public class QuadAtlas extends Node2d {
 			_buffer = buffer;
 			_offset = quad_offset;
 			_numQuads = 0;
-			_owner = owner; // TODO: remove!!
+            Vector3 color = owner.getNodeColor();
+            taskColor.set(color.x, color.y, color.z, owner.getNodeAlpha());
 			_blendSrc = GLES20.GL_SRC_ALPHA;
 			_blendDst = GLES20.GL_ONE_MINUS_SRC_ALPHA;
 			_matrix.set(owner.getWorldModelMatrix());
-
-            int viewport_w = Engine.getSharedInstance().getViewWidth();
-			int viewport_h = Engine.getSharedInstance().getViewHeight();
-
-			float view_factor_x = (float)viewport_w/(float)480;
-			float view_factor_y = (float)viewport_h/(float)800;
-
-            //ortho_matrix[0] = view_factor_x*2.f/viewport_w;
-            ortho_matrix[0] = 2.f/viewport_w;
-			ortho_matrix[1] = 0.f;
-			ortho_matrix[2] = 0.f;
-			ortho_matrix[3] = 0.f;
-			
-			ortho_matrix[4] = 0.f;
-            //ortho_matrix[5] = view_factor_y*2.f/viewport_h;
-            ortho_matrix[5] = 2.f/viewport_h;
-			ortho_matrix[6] = 0.f;
-			ortho_matrix[7] = 0.f;
-			
-			ortho_matrix[8] = 0.f;
-			ortho_matrix[9] = 0.f;
-			ortho_matrix[10] = 1.f;
-			ortho_matrix[11] = 0.f;
-			
-			ortho_matrix[12] = -1.f;
-			ortho_matrix[13] = -1.f;
-			ortho_matrix[14] = 1.f;
-			ortho_matrix[15] = 1.f;
 		}
 		
 		public void setNumQuads(int num_quads){
@@ -232,7 +207,7 @@ public class QuadAtlas extends Node2d {
 			
 
 			service.setProgram(_program);
-			setProgramUniforms();
+			setProgramUniforms(service);
 			
 			if(null != _texture)
 				_texture.bindTexture(0);
@@ -249,7 +224,7 @@ public class QuadAtlas extends Node2d {
 			
 		}
 		
-		void setProgramUniforms() throws Exception {
+		void setProgramUniforms(RenderService service) throws Exception {
 			
 			/*
 			float [] ortho_matrix2 = {
@@ -259,13 +234,13 @@ public class QuadAtlas extends Node2d {
                     -1.f, 					  				-1.f, 	1.f, 1.f
 			};*/
 			
+			float [] current_ortho_matrix = service.getOrthoProjectionMatrix();
 			
+			Matrix.multiplyMM(mvp, 0, current_ortho_matrix/*ortho_matrix*/, 0, _matrix.getAsArray(), 0);
 			
-			Matrix.multiplyMM(mvp, 0, ortho_matrix, 0, _matrix.getAsArray(), 0);
+			GLES20.glUniform1f(_program.getUniformLocation("node_alpha"), taskColor.w);
 			
-			GLES20.glUniform1f(_program.getUniformLocation("node_alpha"), this._owner.getNodeAlpha());
-			
-			GLES20.glUniform3f(_program.getUniformLocation("node_color"), this._owner.getNodeColor().getX(), this._owner.getNodeColor().getY(), this._owner.getNodeColor().getZ());
+			GLES20.glUniform3f(_program.getUniformLocation("node_color"), taskColor.getX(), taskColor.getY(), taskColor.getZ());
 			// Move to the shaders as an uniform
 			GLES20.glUniformMatrix4fv(_program.getUniformLocation("mvp_matrix"), 1, false, mvp, 0);
 			
