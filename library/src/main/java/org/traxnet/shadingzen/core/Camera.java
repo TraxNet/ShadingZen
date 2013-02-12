@@ -14,7 +14,7 @@ import org.traxnet.shadingzen.math.Vector4;
  *  +x coord is RIGHT 
  */
 public class Camera extends Actor {
-	protected Vector3 _dir;
+	protected Vector3 _dir = new Vector3(0.f, 0.f, 1.f);
     protected Vector3 _up = new Vector3(0.f, 1.f, 0.f);
     protected Vector3 _right  = new Vector3(1.f, 0.f, 0.f);
 
@@ -61,11 +61,11 @@ public class Camera extends Actor {
 		buildOrthoProjectionMatrix();
 	}
 	
-	public float getViewportWidth(){
+	public final float getViewportWidth(){
 		return _viewportWidth;
 	}
 	
-	public float getViewportHeight(){
+	public final float getViewportHeight(){
 		return _viewportHeight;
 	}
 	
@@ -77,7 +77,7 @@ public class Camera extends Actor {
         _mvpIsDirty = true;
 	}
 	
-	public Vector3 getDirection(){
+	public final Vector3 getDirection(){
 		return _dir;
 	}
 
@@ -89,13 +89,27 @@ public class Camera extends Actor {
         _mvpIsDirty = true;
     }
 	public void setDirection(Vector3 dir){
-		_dir = dir.normalize();
+		_dir.set(dir);
+        _dir.normalizeNoCopy();
         _mvpIsDirty = true;
 	}
 	public void setDirection(float x, float y, float z){
-		setDirection(new Vector3(x, y, z));
-
+        _dir.set(x, y, z);
+        _dir.normalizeNoCopy();
+        _mvpIsDirty = true;
 	}
+
+    @Override
+    public void setPosition(float x, float y, float z) {
+        super.setPosition(x, y, z);
+
+        _mvpIsDirty = true;
+    }
+
+    @Override
+    public void setPosition(Vector3 v) {
+        setPosition(v.x, v.y, v.z);
+    }
 
     public void setCameraUp(float x, float y, float z){
         _up.x = x;
@@ -104,16 +118,16 @@ public class Camera extends Actor {
         _mvpIsDirty = true;
     }
 
-    public Vector3 getCameraUp(){ return _up; }
+    public final Vector3 getCameraUp(){ return _up; }
 
-    public Vector3 getCameraRight(){ return _up.cross(_dir).normalize(); }
+    public final Vector3 getCameraRight(){ return _up.cross(_dir).normalize(); }
 	
 	/***
 	 * Returns the View matrix for this camera.
 	 * We pass this to the shaders as an openGL SL uniform.
 	 * @return View matrix for this camera.
 	 */
-	public Matrix4 getViewMatrix(){
+	public final Matrix4 getViewMatrix(){
 		Matrix.setLookAtM(_viewMatrix.getAsArray(), 0, _position.getX(), _position.getY(), _position.getZ(), _position.getX()+_dir.getX(), _position.getY()+_dir.getY(), _position.getZ()+_dir.getZ(), _up.x, _up.y, _up.z);
 		return _viewMatrix;
 	}
@@ -124,7 +138,7 @@ public class Camera extends Actor {
 	 * We pass this to the shaders as an openGL SL uniform.
 	 * @return  Projection matrix for this camera.
 	 */
-	public Matrix4 getProjectionMatrix(){
+	public final Matrix4 getProjectionMatrix(){
 		if(null == _projectionMatrix)
 			_projectionMatrix = buildProjectionMatrix(_projectionMatrix);
 		
@@ -132,7 +146,7 @@ public class Camera extends Actor {
 		
 	}
 
-    public Matrix4 getViewProjectionMatrix(){
+    public final Matrix4 getViewProjectionMatrix(){
         if(_mvpIsDirty){
 
             Matrix4 projectionMatrix = getProjectionMatrix();
@@ -211,7 +225,7 @@ public class Camera extends Actor {
 		this._orthoProjectionMatrix = new Matrix4(ortho_matrix2);
 	}
 	
-	public Matrix4 getOrthoProjectionMatrix(){
+	public final Matrix4 getOrthoProjectionMatrix(){
 		return this._orthoProjectionMatrix;
 	}
 	
@@ -234,7 +248,7 @@ public class Camera extends Actor {
 	float mvp_f[] = new float[16];
 	float [] inv_mvp_f = new float[16];
 	
-	public Vector3 rayDirectionForViewportCoordinate(float x, float y){
+	public final Vector3 rayDirectionForViewportCoordinate(float x, float y){
 		float normalized_x = 2.f * x / _viewportWidth - 1.f;
 		float normalized_y = 1 - 2.f * y / _viewportHeight;
 		
